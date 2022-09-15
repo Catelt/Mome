@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "541715569412",
+    "project_id": "mome-5d8e4",
+    "storage_bucket": "mome-5d8e4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:541715569412:android:c5e8e87768507952544e51",
+        "android_client_info": {
+          "package_name": "com.catelt.mome"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "541715569412-556e7bir6nkejqh9a2gkj8253o17ki73.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.catelt.mome",
+            "certificate_hash": "488b772fb56ec5d89547448de4a7d4f7f854c626"
+          }
+        },
+        {
+          "client_id": "541715569412-204qndq5npgqjihr5bsa3hlekhc3ge0q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA4gH1OZfl6ndqCnEHn8mlsnF4ovmeXoSk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "541715569412-204qndq5npgqjihr5bsa3hlekhc3ge0q.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

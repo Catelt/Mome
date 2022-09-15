@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<font-family xmlns:android="http://schemas.android.com/apk/res/android">
+    <font
+        android:fontStyle="normal"
+        android:fontWeight="100"
+        android:font="@font/netflix_sans_thin" />
+
+    <font
+        android:fontStyle="normal"
+        android:fontWeight="300"
+        android:font="@font/netflix_sans_light" />
+
+
+    <font
+        android:fontStyle="normal"
+        android:fontWeight="400"
+        android:font="@font/netflix_sans_regular" />
+
+    <font
+        android:fontStyle="normal"
+        android:fontWeight="500"
+        android:font="@font/netflix_sans_medium" />
+
+    <font
+        android:fontStyle="normal"
+        android:fontWeight="700"
+        android:font="@font/netflix_sans_bold" />
+
+    <font
+        android:fontStyle="normal"
+        android:fontWeight="900"
+        android:font="@font/netflix_sans_black" />
+</font-family>
