@@ -17,8 +17,8 @@ android {
         applicationId "com.catelt.mome"
         minSdk 26
         targetSdk 33
-        versionCode 1
-        versionName "1.0"
+        versionCode rootProject.versionCode
+        versionName "1.${rootProject.versionName}.${rootProject.versionCode}"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
