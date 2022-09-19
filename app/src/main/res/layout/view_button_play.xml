@@ -17,17 +17,20 @@
         <ImageView
             android:layout_width="18dp"
             android:layout_height="18dp"
+            android:contentDescription="@string/image"
             android:src="@drawable/ic_play" />
 
         <TextView
             android:id="@+id/txtTopic"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="11dp"
+            android:layout_marginStart="5dp"
             android:gravity="center"
-            android:text="Play"
-            android:textSize="14sp"
-            android:textStyle="bold" />
+            android:text="@string/play"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            tools:letterSpacing="0.07" />
     </LinearLayout>
-
 </androidx.cardview.widget.CardView>
+
+
