@@ -44,7 +44,6 @@ abstract class BaseFragment<VBinding : ViewBinding>(
         arguments?.run {
             setUpArgument(this)
         }
-        setUpAdapter()
     }
 
     override fun onCreateView(
@@ -59,6 +58,7 @@ abstract class BaseFragment<VBinding : ViewBinding>(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setUpAdapter()
         setUpViews()
     }
 
