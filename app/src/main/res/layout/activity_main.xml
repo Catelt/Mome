@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:fitsSystemWindows="false"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
@@ -22,12 +23,13 @@
         android:layout_height="wrap_content"
         app:backgroundTint="@color/black"
         app:itemIconTint="@color/color_selector_navigation"
+        app:itemRippleColor="@null"
+        android:padding="0dp"
         app:itemTextColor="@color/color_selector_navigation"
         app:labelVisibilityMode="labeled"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:itemRippleColor="@null"
         app:menu="@menu/menu_navigation" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
