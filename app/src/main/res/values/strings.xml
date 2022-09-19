@@ -3,4 +3,12 @@
     <string name="home">Home</string>
     <string name="new_amp_hot"><![CDATA[New & Hot]]></string>
     <string name="downloads">Downloads</string>
+    <string name="image">image</string>
+    <string name="my_list">My List</string>
+    <string name="play">Play</string>
+    <string name="info">Info</string>
+    <string name="button">button</string>
+    <string name="categories">Categories</string>
+    <string name="movies">Movies</string>
+    <string name="tv_shows">TV Shows</string>
 </resources>
