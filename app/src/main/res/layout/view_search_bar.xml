@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/grey_dark_1"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingHorizontal="16dp"
+    android:paddingVertical="12dp">
+
+    <ImageView
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/ic_search_edit_text"
+        android:contentDescription="@string/button" />
+
+    <EditText
+        android:id="@+id/editTextSearch"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="4dp"
+        android:layout_weight="1"
+        android:background="@android:color/transparent"
+        android:hint="@string/search_for_show_movie_genre_etc"
+        android:imeOptions="actionDone"
+        android:inputType="text"
+        android:maxLines="1"
+        android:textColor="@color/grey_light_1"
+        android:textColorHint="@color/grey_light_1"
+        android:textCursorDrawable="@drawable/custom_edit_text_cursor"
+        android:textSize="16sp"
+        android:autofillHints="true" />
+
+    <ImageView
+        android:id="@+id/btnClear"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:background="?selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:focusable="true"
+        android:src="@drawable/ic_close"
+        android:visibility="gone"
+        android:contentDescription="@string/button" />
+
+    <ImageView
+        android:id="@+id/btnMic"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:background="?selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:focusable="true"
+        android:src="@drawable/ic_baseline_mic"
+        android:contentDescription="@string/button" />
+
+</LinearLayout>

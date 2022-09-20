@@ -13,4 +13,7 @@
     <string name="tv_shows">TV Shows</string>
     <string name="remind_me">Remind Me</string>
     <string name="reminder_set">Reminder Set</string>
+    <string name="top_searches">Top Searches</string>
+    <string name="search_for_show_movie_genre_etc">Search for show, movie, genre, etc.</string>
+    <string name="movies_amp_tv"><![CDATA[Movies & TV]]></string>
 </resources>

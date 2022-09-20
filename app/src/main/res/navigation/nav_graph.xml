@@ -20,6 +20,11 @@
         android:name="com.catelt.mome.ui.download.DownloadFragment"
         android:label="fragment_download"
         tools:layout="@layout/fragment_download" />
+    <fragment
+        android:id="@+id/searchFragment"
+        android:name="com.catelt.mome.ui.search.SearchFragment"
+        android:label="fragment_search"
+        tools:layout="@layout/fragment_search" />
 
 
 </navigation>
