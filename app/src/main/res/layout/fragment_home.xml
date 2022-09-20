@@ -6,7 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black"
-    android:paddingBottom="@dimen/padding_bottom_follow_size_navigation"
     app:layoutDescription="@xml/fragment_home_scene">
 
     <androidx.core.widget.NestedScrollView
@@ -37,7 +36,6 @@
                 android:layout_marginTop="25dp"
                 android:layout_marginBottom="10dp"
                 android:text="Popular on Netflix"
-                android:textColor="@color/text_color"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
@@ -142,7 +140,6 @@
                 android:layout_marginTop="25dp"
                 android:layout_marginBottom="10dp"
                 android:text="Popular on Netflix"
-                android:textColor="@color/text_color"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
@@ -227,7 +224,6 @@
                 android:layout_weight="1"
                 android:gravity="center_horizontal"
                 android:text="@string/tv_shows"
-                android:textColor="@color/text_color"
                 android:textSize="16sp" />
 
             <TextView
@@ -237,7 +233,6 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="@string/movies"
-                android:textColor="@color/text_color"
                 android:textSize="16sp" />
 
             <LinearLayout
@@ -253,7 +248,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/categories"
-                    android:textColor="@color/text_color"
                     android:textSize="16sp" />
 
                 <ImageView

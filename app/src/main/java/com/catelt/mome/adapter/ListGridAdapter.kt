@@ -1,15 +1,14 @@
-package com.catelt.mome.ui.search
+package com.catelt.mome.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.viewbinding.ViewBinding
 import com.catelt.mome.core.BaseAdapter
-import com.catelt.mome.databinding.ItemTopMovieBinding
+import com.catelt.mome.databinding.ItemMediaBinding
 
-
-class TopSearchAdapter : BaseAdapter<String>(){
+class ListGridAdapter : BaseAdapter<String>() {
     override fun createBinding(parent: ViewGroup, viewType: Int): ViewBinding {
-        return ItemTopMovieBinding.inflate(
+        return ItemMediaBinding.inflate(
             LayoutInflater.from(parent.context), parent, false
         )
     }

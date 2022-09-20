@@ -13,6 +13,7 @@ class SearchEditText @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : CardView(context, attrs, defStyleAttr) {
     private val binding = ViewSearchBarBinding.inflate(LayoutInflater.from(context), this, true)
+    var handleTextChange: ((CharSequence?) -> Unit)? = null
 
     init {
         binding.apply {
@@ -27,6 +28,7 @@ class SearchEditText @JvmOverloads constructor(
                     else{
                         setButtonClear(true)
                     }
+                    handleTextChange?.invoke(p0)
                 }
 
                 override fun afterTextChanged(p0: Editable?) {
