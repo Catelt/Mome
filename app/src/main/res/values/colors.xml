@@ -11,6 +11,9 @@
     <color name="grey_light_1">#FFB2B2B2</color>
     <color name="grey_light_2">#FFCBCBCB</color>
     <color name="grey_light_3">#FFE6E6E6</color>
+    <color name="grey_dark_1">#FF323232</color>
+    <color name="grey_dark_2">#FF191919</color>
+    <color name="grey_dark_3">#FF010101</color>
 
     <color name="text_color">#EBFFFFFF</color>
     <color name="background_appbar">#AA000000</color>
