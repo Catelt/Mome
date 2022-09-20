@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black"
-    android:paddingBottom="100dp"
+    android:paddingBottom="@dimen/padding_bottom_follow_size_navigation"
     app:layoutDescription="@xml/fragment_home_scene">
 
     <androidx.core.widget.NestedScrollView

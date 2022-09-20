@@ -8,6 +8,10 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="grey">#FF737373</color>
+    <color name="grey_light_1">#FFB2B2B2</color>
+    <color name="grey_light_2">#FFCBCBCB</color>
+    <color name="grey_light_3">#FFE6E6E6</color>
+
     <color name="text_color">#EBFFFFFF</color>
     <color name="background_appbar">#AA000000</color>
 </resources>
