@@ -16,4 +16,8 @@
     <string name="top_searches">Top Searches</string>
     <string name="search_for_show_movie_genre_etc">Search for show, movie, genre, etc.</string>
     <string name="movies_amp_tv"><![CDATA[Movies & TV]]></string>
+    <string name="download">Download</string>
+    <string name="episodes">EPISODES</string>
+    <string name="trailers_amp_more"><![CDATA[TRAILERS & MORE]]></string>
+    <string name="more_like_this">MORE LIKE THIS</string>
 </resources>

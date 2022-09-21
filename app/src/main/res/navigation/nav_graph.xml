@@ -25,6 +25,16 @@
         android:name="com.catelt.mome.ui.search.SearchFragment"
         android:label="fragment_search"
         tools:layout="@layout/fragment_search" />
+    <fragment
+        android:id="@+id/detailMovieFragment"
+        android:name="com.catelt.mome.ui.detail.DetailMovieFragment"
+        android:label="fragment_detail_movie"
+        tools:layout="@layout/fragment_detail_movie" />
+    <fragment
+        android:id="@+id/detailTvShowFragment"
+        android:name="com.catelt.mome.ui.detail.DetailTvShowFragment"
+        android:label="fragment_detail_tv_show"
+        tools:layout="@layout/fragment_detail_tv_show" />
 
 
 </navigation>

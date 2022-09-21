@@ -18,6 +18,9 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
             btnSearch.setOnClickListener{
                 findNavController().navigate(R.id.searchFragment)
             }
+            layoutHeaderHome.btnPlay.setOnClickListener {
+                findNavController().navigate(R.id.detailTvShowFragment)
+            }
         }
     }
 }
