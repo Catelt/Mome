@@ -17,4 +17,14 @@
 
         <item name="windowNoTitle">true</item>
     </style>
+
+    <style name="TabLayoutTheme" parent="@style/Theme.Mome">
+        <item name="android:singleLine">true</item>
+    </style>
+
+    <style name="TabText" parent="TextAppearance.Design.Tab">
+        <item name="android:textSize">15sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="fontFamily">@font/netflix_sans</item>
+    </style>
 </resources>
