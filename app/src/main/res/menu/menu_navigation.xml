@@ -9,7 +9,7 @@
         android:icon="@drawable/ic_play_stacked"
         android:title="@string/new_amp_hot" />
     <item
-        android:id="@+id/downloadFragment"
-        android:icon="@drawable/ic_download"
-        android:title="@string/downloads" />
+        android:id="@+id/myListFragment"
+        android:icon="@drawable/ic_baseline_playlist"
+        android:title="@string/my_list" />
 </menu>
