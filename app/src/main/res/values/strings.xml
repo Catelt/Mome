@@ -28,4 +28,9 @@
     <string name="status_released_label">Released</string>
     <string name="status_cancelled_label">Cancelled</string>
 
+    <string name="sort_type_popularity_label">Popularity</string>
+    <string name="sort_type_release_date_label">Date</string>
+    <string name="sort_type_vote_average_label">Score</string>
+    <string name="sort_type_title_label">Title</string>
+    <string name="sort_type_vote_count_label">Vote count</string>
 </resources>

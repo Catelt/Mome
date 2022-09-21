@@ -102,6 +102,14 @@ dependencies {
     //Splash screen
     implementation 'androidx.core:core-splashscreen:1.0.0'
 
+    //Paging
+    implementation 'androidx.paging:paging-common-ktx:3.1.1'
+
+    //Room
+    implementation "androidx.room:room-ktx:2.4.3"
+    implementation "androidx.room:room-paging:2.4.3"
+    kapt "androidx.room:room-compiler:2.4.3"
+
     //Youtube Player
     implementation 'com.pierfrancescosoffritti.androidyoutubeplayer:core:11.1.0'
 }
