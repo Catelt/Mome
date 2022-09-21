@@ -20,4 +20,12 @@
     <string name="episodes">EPISODES</string>
     <string name="trailers_amp_more"><![CDATA[TRAILERS & MORE]]></string>
     <string name="more_like_this">MORE LIKE THIS</string>
+
+    <string name="status_rumored_label">Rumored</string>
+    <string name="status_planned_label">Planned</string>
+    <string name="status_in_production_label">In production</string>
+    <string name="status_post_production_label">Post production</string>
+    <string name="status_released_label">Released</string>
+    <string name="status_cancelled_label">Cancelled</string>
+
 </resources>
