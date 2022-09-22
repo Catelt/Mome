@@ -1,4 +1,4 @@
-package com.catelt.mome.data
+package com.catelt.mome.data.model
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
