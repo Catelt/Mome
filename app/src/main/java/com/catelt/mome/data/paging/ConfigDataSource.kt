@@ -1,6 +1,9 @@
 package com.catelt.mome.data.paging
 
+import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
+import android.speech.RecognizerIntent
 import com.catelt.mome.data.model.Config
 import com.catelt.mome.data.model.DeviceLanguage
 import com.catelt.mome.data.model.Genre
@@ -29,16 +32,16 @@ class ConfigDataSource @Inject constructor(
 ) {
     private val _config: MutableStateFlow<Config?> = MutableStateFlow(null)
 
-//    @SuppressLint("QueryPermissionsNeeded")
-//    val speechToTextAvailable: Flow<Boolean> = flow {
-//        val packageManager = context.packageManager
-//        val activities: List<*> = packageManager.queryIntentActivities(
-//            Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH),
-//            0
-//        )
-//
-//        emit(activities.isNotEmpty())
-//    }.flowOn(defaultDispatcher)
+    @SuppressLint("QueryPermissionsNeeded")
+    val speechToTextAvailable: Flow<Boolean> = flow {
+        val packageManager = context.packageManager
+        val activities: List<*> = packageManager.queryIntentActivities(
+            Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH),
+            0
+        )
+
+        emit(activities.isNotEmpty())
+    }.flowOn(defaultDispatcher)
 
 
     private val _deviceLanguage: MutableStateFlow<DeviceLanguage> =
@@ -55,18 +58,10 @@ class ConfigDataSource @Inject constructor(
     private val _movieGenres: MutableStateFlow<List<Genre>> = MutableStateFlow(emptyList())
     val movieGenres: StateFlow<List<Genre>> = _movieGenres.asStateFlow()
 
-//    private val _tvShowGenres: MutableStateFlow<List<Genre>> = MutableStateFlow(emptyList())
-//    val tvShowGenres: StateFlow<List<Genre>> = _tvShowGenres.asStateFlow()
-
     private val _movieWatchProviders: MutableStateFlow<List<ProviderSource>> = MutableStateFlow(
         emptyList()
     )
     val movieWatchProviders: StateFlow<List<ProviderSource>> = _movieWatchProviders.asStateFlow()
-
-//    private val _tvShowWatchProviders: MutableStateFlow<List<ProviderSource>> = MutableStateFlow(
-//        emptyList()
-//    )
-//    val tvShowWatchProviders: StateFlow<List<ProviderSource>> = _tvShowWatchProviders.asStateFlow()
 
     val isInitialized: StateFlow<Boolean> = combine(
         _config, _movieGenres, _movieWatchProviders

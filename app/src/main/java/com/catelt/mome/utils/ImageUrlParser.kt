@@ -1,6 +1,7 @@
 package com.catelt.mome.utils
 
 import android.util.Size
+import com.catelt.mome.data.model.ImagesConfig
 import kotlin.math.abs
 
 class ImageUrlParser(private val imagesConfig: ImagesConfig) {
