@@ -2,6 +2,7 @@ package com.catelt.mome.data.remote.api.movie
 
 import androidx.annotation.FloatRange
 import com.catelt.mome.data.model.*
+import com.catelt.mome.data.model.movie.MovieDetails
 import com.catelt.mome.data.model.movie.MoviesResponse
 import retrofit2.Call
 import retrofit2.http.GET
@@ -31,5 +32,103 @@ interface TmdbMoviesApi {
         fromReleaseDate: DateParam?,
         @Query("release_date.lte")
         toReleaseDate: DateParam?
+    ): MoviesResponse
+
+    @GET("movie/popular")
+    suspend fun getPopularMovies(
+        @Query("page") page: Int,
+        @Query("language") isoCode: String,
+        @Query("region") region: String
+    ): MoviesResponse
+
+    @GET("movie/upcoming")
+    suspend fun getUpcomingMovies(
+        @Query("page") page: Int,
+        @Query("language") isoCode: String,
+        @Query("region") region: String
+    ): MoviesResponse
+
+    @GET("movie/top_rated")
+    suspend fun getTopRatedMovies(
+        @Query("page") page: Int,
+        @Query("language") isoCode: String,
+        @Query("region") region: String
+    ): MoviesResponse
+
+    @GET("movie/now_playing")
+    suspend fun getNowPlayingMovies(
+        @Query("page") page: Int,
+        @Query("language") isoCode: String,
+        @Query("region") region: String
+    ): MoviesResponse
+
+    @GET("movie/{movie_id}")
+    fun getMovieDetails(
+        @Path("movie_id") movieId: Int,
+        @Query("language") isoCode: String
+    ): Call<MovieDetails>
+
+    @GET("movie/{movie_id}/credits")
+    fun getMovieCredits(
+        @Path("movie_id") movieId: Int,
+        @Query("language") isoCode: String
+    ): Call<Credits>
+
+    @GET("movie/{movie_id}/similar")
+    suspend fun getSimilarMovies(
+        @Path("movie_id") movieId: Int,
+        @Query("page") page: Int,
+        @Query("language") isoCode: String,
+        @Query("region") region: String
+    ): MoviesResponse
+
+    @GET("movie/{movie_id}/recommendations")
+    suspend fun getMoviesRecommendations(
+        @Path("movie_id") movieId: Int,
+        @Query("page") page: Int,
+        @Query("language") isoCode: String,
+        @Query("region") region: String
+    ): MoviesResponse
+
+    @GET("trending/movie/week")
+    suspend fun getTrendingMovies(
+        @Query("page") page: Int,
+        @Query("language") isoCode: String,
+        @Query("region") region: String
+    ): MoviesResponse
+
+    @GET("movie/{movie_id}/images")
+    fun getMovieImages(
+        @Path("movie_id") movieId: Int
+    ): Call<ImagesResponse>
+
+    @GET("genre/movie/list")
+    fun getMovieGenres(
+        @Query("language") isoCode: String
+    ): Call<GenresResponse>
+
+    @GET("movie/{movie_id}/watch/providers")
+    fun getMovieWatchProviders(
+        @Path("movie_id") movieId: Int
+    ): Call<WatchProvidersResponse>
+
+    @GET("watch/providers/movie")
+    fun getAllMoviesWatchProviders(
+        @Query("language") isoCode: String,
+        @Query("watch_region") region: String
+    ): Call<AllWatchProvidersResponse>
+
+    @GET("movie/{movie_id}/videos")
+    fun getMovieVideos(
+        @Path("movie_id") movieId: Int,
+        @Query("language") isoCode: String
+    ): Call<VideosResponse>
+
+    @GET("discover/movie")
+    suspend fun getOtherMoviesOfDirector(
+        @Query("page") page: Int,
+        @Query("language") isoCode: String,
+        @Query("region") region: String,
+        @Query("with_crew") directorId: Int
     ): MoviesResponse
 }

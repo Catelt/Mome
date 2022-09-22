@@ -1,6 +1,5 @@
 package com.catelt.mome.data.remote.api.movie
 
-import com.catelt.mome.data.VideosResponse
 import com.catelt.mome.data.model.*
 import com.catelt.mome.data.model.movie.MovieDetails
 import com.catelt.mome.data.model.movie.MoviesResponse
