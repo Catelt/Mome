@@ -9,6 +9,7 @@ import com.catelt.mome.databinding.FragmentHomeBinding
 class HomeFragment : BaseFragment<FragmentHomeBinding>(
     FragmentHomeBinding::inflate
 ) {
+    private val feedAdapter = FeedAdapter()
     init {
         isFullScreen = true
     }
@@ -21,6 +22,14 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
             layoutHeaderHome.btnPlay.setOnClickListener {
                 findNavController().navigate(R.id.detailTvShowFragment)
             }
+
+            recyclerViewListFeed.adapter = feedAdapter
+
+            feedAdapter.submitList(listOf(
+                getString(R.string.title_trending),
+                getString(R.string.title_popular),
+                getString(R.string.title_top_rate)
+            ))
         }
     }
 }

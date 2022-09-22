@@ -33,4 +33,8 @@
     <string name="sort_type_vote_average_label">Score</string>
     <string name="sort_type_title_label">Title</string>
     <string name="sort_type_vote_count_label">Vote count</string>
+
+    <string name="title_trending">Trending Now</string>
+    <string name="title_popular">Popular</string>
+    <string name="title_top_rate">Top rated of all time</string>
 </resources>

@@ -28,121 +28,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
-            <TextView
-                android:id="@+id/trendingNow"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerViewListFeed"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="25dp"
-                android:layout_marginBottom="10dp"
-                android:text="Popular on Netflix"
-                android:textSize="20sp"
-                android:textStyle="bold" />
-
-            <HorizontalScrollView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:overScrollMode="never"
-                android:scrollbars="none">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal">
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginEnd="8dp"
-                        android:orientation="vertical">
-
-                        <androidx.cardview.widget.CardView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            app:cardCornerRadius="8dp">
-
-                            <ImageView
-                                android:id="@+id/moneyHeist"
-                                android:layout_width="111dp"
-                                android:layout_height="155dp"
-                                app:srcCompat="@drawable/img_sample" />
-
-                        </androidx.cardview.widget.CardView>
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_marginEnd="8dp"
-                        android:orientation="vertical">
-
-                        <androidx.cardview.widget.CardView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            app:cardCornerRadius="8dp">
-
-                            <ImageView
-                                android:id="@+id/nevertheless"
-                                android:layout_width="111dp"
-                                android:layout_height="155dp"
-                                app:srcCompat="@drawable/img_sample" />
-                        </androidx.cardview.widget.CardView>
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_marginEnd="8dp"
-                        android:orientation="vertical">
-
-                        <androidx.cardview.widget.CardView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            app:cardCornerRadius="8dp">
-
-                            <ImageView
-                                android:id="@+id/intoTheNight"
-                                android:layout_width="111dp"
-                                android:layout_height="155dp"
-                                app:srcCompat="@drawable/img_sample" />
-                        </androidx.cardview.widget.CardView>
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_marginEnd="8dp"
-                        android:orientation="vertical">
-
-                        <androidx.cardview.widget.CardView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            app:cardCornerRadius="8dp">
-
-                            <ImageView
-                                android:id="@+id/dp"
-                                android:layout_width="111dp"
-                                android:layout_height="155dp"
-                                app:srcCompat="@drawable/img_sample" />
-                        </androidx.cardview.widget.CardView>
-                    </LinearLayout>
-
-                </LinearLayout>
-            </HorizontalScrollView>
-
-            <TextView
-                android:id="@+id/txtTest"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="25dp"
-                android:layout_marginBottom="10dp"
-                android:text="Popular on Netflix"
-                android:textSize="20sp"
-                android:textStyle="bold" />
-
+                tools:itemCount="3"
+                tools:listitem="@layout/item_feed_horizontal_list"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
