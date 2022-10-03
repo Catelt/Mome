@@ -8,6 +8,9 @@ import com.catelt.mome.data.remote.api.TMDB_API_KEY
 import com.catelt.mome.data.remote.api.movie.TmdbMoviesApi
 import com.catelt.mome.data.remote.api.movie.TmdbMoviesApiHelper
 import com.catelt.mome.data.remote.api.movie.TmdbMoviesApiHelperImpl
+import com.chuckerteam.chucker.api.ChuckerCollector
+import com.chuckerteam.chucker.api.ChuckerInterceptor
+import com.chuckerteam.chucker.api.RetentionManager
 import com.squareup.moshi.Moshi
 import dagger.Module
 import dagger.Provides
@@ -18,10 +21,12 @@ import okhttp3.Cache
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import java.util.*
 import javax.inject.Singleton
+import kotlin.time.toJavaDuration
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -47,6 +52,46 @@ object NetworkModule {
             chain.proceed(modifiedRequest)
         }
     }
+
+    @Singleton
+    @Provides
+    fun provideChuckerInterceptor(@ApplicationContext context: Context): ChuckerInterceptor {
+        val collector = ChuckerCollector(
+            context = context,
+            showNotification = true,
+            retentionPeriod = RetentionManager.Period.ONE_HOUR
+        )
+
+        return ChuckerInterceptor.Builder(context)
+            .collector(collector)
+            .maxContentLength(250_000L)
+            .redactHeaders("Auth-Token", "Bearer")
+            .alwaysReadResponseBody(true)
+            .build()
+    }
+
+    @Singleton
+    @Provides
+    fun provideOkHttpClient(
+        cache: Cache,
+        authenticationInterceptor: Interceptor,
+        chuckerInterceptor: ChuckerInterceptor
+    ): OkHttpClient = OkHttpClient.Builder()
+        .apply {
+            if (BuildConfig.DEBUG) {
+                val loggingInterceptor = HttpLoggingInterceptor().apply {
+                    level = HttpLoggingInterceptor.Level.BODY
+                }
+                addInterceptor(loggingInterceptor)
+            }
+        }
+        .addInterceptor(chuckerInterceptor)
+        .addInterceptor(authenticationInterceptor)
+        .cache(cache)
+        .connectTimeout(ApiParams.Timeouts.connect.toJavaDuration())
+        .writeTimeout(ApiParams.Timeouts.write.toJavaDuration())
+        .readTimeout(ApiParams.Timeouts.read.toJavaDuration())
+        .build()
 
     @Singleton
     @Provides

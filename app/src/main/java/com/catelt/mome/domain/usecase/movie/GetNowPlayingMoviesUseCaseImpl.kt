@@ -3,8 +3,8 @@ package com.catelt.mome.domain.usecase.movie
 import androidx.paging.PagingData
 import androidx.paging.filter
 import androidx.paging.map
-import com.catelt.mome.data.model.DetailPresentable
 import com.catelt.mome.data.model.DeviceLanguage
+import com.catelt.mome.data.model.Presentable
 import com.catelt.mome.data.model.movie.Movie
 import com.catelt.mome.data.repository.movie.MovieRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -20,7 +20,7 @@ class GetNowPlayingMoviesUseCaseImpl @Inject constructor(
     operator fun invoke(
         deviceLanguage: DeviceLanguage,
         filtered: Boolean
-    ): Flow<PagingData<DetailPresentable>> {
+    ): Flow<PagingData<Presentable>> {
         return movieRepository.nowPlayingMovies(deviceLanguage).mapLatest { data ->
             if (filtered) data.filterCompleteInfo() else data
         }.mapLatest { data -> data.map { it } }

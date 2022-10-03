@@ -12,6 +12,7 @@ import com.catelt.mome.data.paging.movie.DiscoverMoviesPagingDataSource
 import com.catelt.mome.data.paging.movie.MovieDetailsResponsePagingDataSource
 import com.catelt.mome.data.paging.movie.MovieResponsePagingDataSource
 import com.catelt.mome.data.remote.api.movie.TmdbMoviesApiHelper
+import com.catelt.mome.utils.SIZE_PAGE
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -38,7 +39,7 @@ class MovieRepositoryImpl @Inject constructor(
         onlyWithOverview: Boolean,
         releaseDateRange: DateRange
     ): Flow<PagingData<Movie>> = Pager(
-        PagingConfig(pageSize = 20)
+        PagingConfig(pageSize = SIZE_PAGE)
     ) {
         DiscoverMoviesPagingDataSource(
             apiMovieHelper = apiMovieHelper,
@@ -57,7 +58,7 @@ class MovieRepositoryImpl @Inject constructor(
 
     override fun popularMovies(deviceLanguage: DeviceLanguage): Flow<PagingData<Movie>> =
         Pager(
-            PagingConfig(pageSize = 20)
+            PagingConfig(pageSize = SIZE_PAGE)
         ){
             MovieResponsePagingDataSource(
                 language = deviceLanguage.languageCode,
@@ -67,7 +68,7 @@ class MovieRepositoryImpl @Inject constructor(
 
     override fun upcomingMovies(deviceLanguage: DeviceLanguage): Flow<PagingData<Movie>> =
         Pager(
-            PagingConfig(pageSize = 20)
+            PagingConfig(pageSize = SIZE_PAGE)
         ){
             MovieResponsePagingDataSource(
                 language = deviceLanguage.languageCode,
@@ -77,7 +78,7 @@ class MovieRepositoryImpl @Inject constructor(
 
     override fun trendingMovies(deviceLanguage: DeviceLanguage): Flow<PagingData<Movie>> =
         Pager(
-            PagingConfig(pageSize = 20)
+            PagingConfig(pageSize = SIZE_PAGE)
         ){
             MovieResponsePagingDataSource(
                 language = deviceLanguage.languageCode,
@@ -87,22 +88,22 @@ class MovieRepositoryImpl @Inject constructor(
 
     override fun topRatedMovies(deviceLanguage: DeviceLanguage): Flow<PagingData<Movie>> =
         Pager(
-            PagingConfig(pageSize = 20)
+            PagingConfig(pageSize = SIZE_PAGE)
         ){
             MovieResponsePagingDataSource(
                 language = deviceLanguage.languageCode,
-                apiMovieHelperMethod = apiMovieHelper::getTrendingMovies
+                apiMovieHelperMethod = apiMovieHelper::getTopRatedMovies
             )
         }.flow.flowOn(defaultDispatcher)
 
 
     override fun nowPlayingMovies(deviceLanguage: DeviceLanguage): Flow<PagingData<Movie>> =
         Pager(
-            PagingConfig(pageSize = 20)
+            PagingConfig(pageSize = SIZE_PAGE)
         ){
             MovieResponsePagingDataSource(
                 language = deviceLanguage.languageCode,
-                apiMovieHelperMethod = apiMovieHelper::getTrendingMovies
+                apiMovieHelperMethod = apiMovieHelper::getNowPlayingMovies
             )
         }.flow.flowOn(defaultDispatcher)
 
@@ -110,7 +111,7 @@ class MovieRepositoryImpl @Inject constructor(
         movieId: Int,
         deviceLanguage: DeviceLanguage
     ): Flow<PagingData<Movie>> = Pager(
-        PagingConfig(pageSize = 20)
+        PagingConfig(pageSize = SIZE_PAGE)
     ) {
         MovieDetailsResponsePagingDataSource(
             movieId = movieId,
@@ -123,7 +124,7 @@ class MovieRepositoryImpl @Inject constructor(
         movieId: Int,
         deviceLanguage: DeviceLanguage
     ): Flow<PagingData<Movie>> = Pager(
-        PagingConfig(pageSize = 20)
+        PagingConfig(pageSize = SIZE_PAGE)
     ) {
         MovieDetailsResponsePagingDataSource(
             movieId = movieId,
@@ -156,7 +157,7 @@ class MovieRepositoryImpl @Inject constructor(
         directorId: Int,
         deviceLanguage: DeviceLanguage
     ): Flow<PagingData<Movie>> = Pager(
-        PagingConfig(pageSize = 20)
+        PagingConfig(pageSize = SIZE_PAGE)
     ) {
         DirectorOtherMoviePagingDataSource(
             apiMovieHelper = apiMovieHelper,

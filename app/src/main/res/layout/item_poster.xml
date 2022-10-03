@@ -20,6 +20,7 @@
             android:layout_width="111dp"
             android:layout_height="155dp"
             android:scaleType="centerCrop"
+            android:background="@color/grey_dark_2"
             app:srcCompat="@drawable/img_sample" />
 
     </androidx.cardview.widget.CardView>
