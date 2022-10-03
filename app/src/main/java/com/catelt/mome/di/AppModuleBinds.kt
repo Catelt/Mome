@@ -1,6 +1,7 @@
 package com.catelt.mome.di
 
 import com.catelt.mome.data.initializer.AppInitializer
+import com.catelt.mome.data.initializer.ConfigDataSourceInitializer
 import com.catelt.mome.data.initializer.FirebaseInitializer
 import dagger.Binds
 import dagger.Module
@@ -18,4 +19,9 @@ abstract class AppModuleBinds {
         initializer: FirebaseInitializer
     ): AppInitializer
 
+    @Binds
+    @IntoSet
+    abstract fun provideConfigRepositoryInitializer(
+        initializer: ConfigDataSourceInitializer
+    ): AppInitializer
 }
