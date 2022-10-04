@@ -9,6 +9,7 @@ import com.catelt.mome.R
 import com.catelt.mome.core.BaseFragment
 import com.catelt.mome.data.model.Presentable
 import com.catelt.mome.databinding.FragmentHomeBinding
+import com.catelt.mome.ui.bottomsheet.MediaDetailsBottomSheet
 import com.catelt.mome.utils.ImageUrlParser
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
@@ -24,7 +25,11 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
     FragmentHomeBinding::inflate
 ) {
     override val viewModel: HomeViewModel by viewModels()
-    private var positionNowPlaying = Random.nextInt(0,10)
+    private var positionNowPlaying = Random.nextInt(0, 10)
+    private val onMovieClicked = { movieId: Int ->
+        handleClickMedia(movieId)
+    }
+    private var imageParser: ImageUrlParser? = null
 
     init {
         isFullScreen = true
@@ -46,14 +51,14 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
         viewModel.apply {
             lifecycleScope.launch {
                 imageUrlParser.collectLatest { imageParser ->
-
+                    this@HomeFragment.imageParser = imageParser
                     moviesState.collectLatest {
                         it.nowPlaying.flowOn(Dispatchers.IO).onEach { list ->
                             val adapter = HorizontalAdapter()
 
                             adapter.addLoadStateListener {
                                 adapter.snapshot().items.let { items ->
-                                    if (items.isNotEmpty()){
+                                    if (items.isNotEmpty()) {
                                         setupUIMoviePlaying(items[positionNowPlaying])
                                     }
                                 }
@@ -62,10 +67,11 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
 
                         }.launchIn(lifecycleScope)
 
-                        it.trending.flowOn(Dispatchers.IO).onEach { list->
+                        it.trending.flowOn(Dispatchers.IO).onEach { list ->
                             binding.listTrending.init(
                                 imageParser,
                                 viewLifecycleOwner,
+                                onMovieClicked,
                                 list,
                                 getString(R.string.title_trending)
                             )
@@ -75,6 +81,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
                             binding.listUpCome.init(
                                 imageParser,
                                 viewLifecycleOwner,
+                                onMovieClicked,
                                 list,
                                 getString(R.string.title_top_rate)
                             )
@@ -84,6 +91,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
                             binding.listPopular.init(
                                 imageParser,
                                 viewLifecycleOwner,
+                                onMovieClicked,
                                 list,
                                 getString(R.string.title_popular)
                             )
@@ -93,6 +101,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
                             binding.listExplore.init(
                                 imageParser,
                                 viewLifecycleOwner,
+                                onMovieClicked,
                                 list,
                                 getString(R.string.title_explore)
                             )
@@ -100,13 +109,40 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
                     }
                 }
             }
+            movieDetails.observe(viewLifecycleOwner) {
+                if (it != null) {
+                    MediaDetailsBottomSheet.newInstance(it, imageParser)
+                        .show(parentFragmentManager, it.id.toString())
+                    movieDetails.postValue(null)
+                }
+            }
         }
     }
 
-    private fun setupUIMoviePlaying(presentable: Presentable){
-        binding.layoutHeaderHome.apply{
-            viewModel.imageUrlParser.value?.getImageUrl(presentable.posterPath,ImageUrlParser.ImageType.Poster).let { url ->
+    private fun handleClickMedia(movieId: Int) {
+        lifecycleScope.launch {
+            launch {
+                viewModel.apply {
+                    getMovieDetail(movieId)
+                }
+            }
+        }
+    }
+
+    private fun setupUIMoviePlaying(presentable: Presentable) {
+        binding.layoutHeaderHome.apply {
+            viewModel.imageUrlParser.value?.getImageUrl(
+                presentable.posterPath,
+                ImageUrlParser.ImageType.Poster
+            ).let { url ->
                 imgHomeCover.load(url)
+            }
+
+            imgHomeCover.setOnClickListener {
+                onMovieClicked(presentable.id)
+            }
+            btnInfo.setOnClickListener {
+                onMovieClicked(presentable.id)
             }
         }
     }

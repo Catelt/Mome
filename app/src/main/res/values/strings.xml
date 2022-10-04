@@ -21,6 +21,8 @@
     <string name="trailers_amp_more"><![CDATA[TRAILERS & MORE]]></string>
     <string name="more_like_this">MORE LIKE THIS</string>
 
+    <string name="text_run_time">• %1$s</string>
+
     <string name="status_rumored_label">Rumored</string>
     <string name="status_planned_label">Planned</string>
     <string name="status_in_production_label">In production</string>
@@ -38,4 +40,5 @@
     <string name="title_popular">Popular</string>
     <string name="title_top_rate">Top rated of all time</string>
     <string name="title_explore">Explore Movies</string>
+
 </resources>

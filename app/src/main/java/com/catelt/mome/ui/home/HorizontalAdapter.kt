@@ -11,6 +11,7 @@ import com.catelt.mome.utils.ImageUrlParser
 
 class HorizontalAdapter: BasePagingAdapter<Presentable>() {
     var imageUrlParser: ImageUrlParser? = null
+    var onMovieClicked: ((Int) -> Unit)? = null
 
     override fun createBinding(parent: ViewGroup, viewType: Int): ViewBinding {
         return ItemPosterBinding.inflate(
@@ -24,6 +25,9 @@ class HorizontalAdapter: BasePagingAdapter<Presentable>() {
             item?.let {
                 imgPoster.load(imageUrlParser?.getImageUrl(it.posterPath,ImageUrlParser.ImageType.Poster)){
                     crossfade(true)
+                }
+                imgPoster.setOnClickListener {
+                    onMovieClicked?.invoke(item.id)
                 }
             }
         }
