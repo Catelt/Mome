@@ -4,9 +4,6 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_marginEnd="20dp"
-    android:clickable="true"
-    android:focusable="true"
-    android:foreground="?selectableItemBackgroundBorderless"
     android:orientation="vertical">
 
     <androidx.cardview.widget.CardView
@@ -19,8 +16,11 @@
             android:id="@+id/imgPoster"
             android:layout_width="111dp"
             android:layout_height="155dp"
-            android:scaleType="centerCrop"
             android:background="@color/grey_dark_2"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?selectableItemBackgroundBorderless"
+            android:scaleType="centerCrop"
             app:srcCompat="@drawable/img_sample" />
 
     </androidx.cardview.widget.CardView>

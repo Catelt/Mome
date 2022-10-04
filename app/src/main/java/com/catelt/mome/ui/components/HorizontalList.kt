@@ -24,11 +24,13 @@ class HorizontalList @JvmOverloads constructor(
     fun init(
         imageUrlParser: ImageUrlParser?,
         lifecycleOwner: LifecycleOwner,
+        onMovieClicked: (Int) -> Unit,
         data: PagingData<Presentable>,
         title: String
     ) {
         val adapter = HorizontalAdapter()
         adapter.imageUrlParser = imageUrlParser
+        adapter.onMovieClicked = onMovieClicked
         binding.txtTitle.text = title
         binding.recyclerViewHorizontal.adapter = adapter
         lifecycleOwner.lifecycleScope.launch {
