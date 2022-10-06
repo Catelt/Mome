@@ -27,8 +27,6 @@ abstract class BaseFragment<VBinding : ViewBinding>(
 
     open fun setUpViewModel() {}
 
-    open fun observeData() {}
-
     open fun setUpAdapter() {}
 
     open fun setUpArgument(bundle: Bundle) {}

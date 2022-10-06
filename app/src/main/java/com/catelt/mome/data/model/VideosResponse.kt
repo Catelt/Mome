@@ -45,3 +45,14 @@ fun Video.getThumbnailUrl(): String {
         }
     }
 }
+
+fun Video.getVideoUrl(): String{
+    return when (site) {
+        VideoSite.YouTube -> {
+            "https://www.youtube.com/watch?v=$key"
+        }
+        VideoSite.Vimeo -> {
+            "https://vimeo.com/$key"
+        }
+    }
+}

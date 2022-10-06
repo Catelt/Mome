@@ -12,6 +12,7 @@ import com.catelt.mome.data.paging.movie.DiscoverMoviesPagingDataSource
 import com.catelt.mome.data.paging.movie.MovieDetailsResponsePagingDataSource
 import com.catelt.mome.data.paging.movie.MovieResponsePagingDataSource
 import com.catelt.mome.data.remote.api.movie.TmdbMoviesApiHelper
+import com.catelt.mome.data.remote.api.others.TmdbOthersApiHelper
 import com.catelt.mome.utils.SIZE_PAGE
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -26,6 +27,7 @@ import javax.inject.Singleton
 class MovieRepositoryImpl @Inject constructor(
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default,
     private val apiMovieHelper: TmdbMoviesApiHelper,
+    private val apiOtherHelper: TmdbOthersApiHelper
 ) : MovieRepository {
     override fun discoverMovies(
         deviceLanguage: DeviceLanguage,
@@ -143,6 +145,10 @@ class MovieRepositoryImpl @Inject constructor(
 
     override fun movieImages(movieId: Int): Call<ImagesResponse> {
         return apiMovieHelper.getMovieImages(movieId)
+    }
+
+    override fun collection(collectionId: Int, isoCode: String): Call<CollectionResponse> {
+        return apiOtherHelper.getCollection(collectionId, isoCode)
     }
 
     override fun watchProviders(movieId: Int): Call<WatchProvidersResponse> {
