@@ -65,6 +65,11 @@ interface MovieRepository {
         movieId: Int
     ): Call<ImagesResponse>
 
+    fun collection(
+        collectionId: Int,
+        isoCode: String = DeviceLanguage.default.languageCode
+    ): Call<CollectionResponse>
+
     fun watchProviders(movieId: Int): Call<WatchProvidersResponse>
 
     fun getMovieVideos(
