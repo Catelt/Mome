@@ -29,7 +29,7 @@ class MovieDetailsResponsePagingDataSource (
             val movieResponse = apiHMovieHelperMethod(movieId, nextPage, language, region)
 
             val currentPage = movieResponse.page
-            val totalPages = movieResponse.totalPages
+            val totalPages = 1
 
             LoadResult.Page(
                 data = movieResponse.movies,
