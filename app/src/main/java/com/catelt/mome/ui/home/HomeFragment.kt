@@ -27,8 +27,9 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
     override val viewModel: HomeViewModel by viewModels()
     private var positionNowPlaying = Random.nextInt(0, 10)
     private val onMovieClicked = { movieId: Int ->
-        handleClickMedia(movieId)
+        MediaDetailsBottomSheet.newInstance(movieId).show(requireActivity().supportFragmentManager,movieId.toString())
     }
+
     private var imageParser: ImageUrlParser? = null
 
     init {
@@ -107,23 +108,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
                             )
                         }.launchIn(lifecycleScope)
                     }
-                }
-            }
-            movieDetails.observe(viewLifecycleOwner) {
-                if (it != null) {
-                    MediaDetailsBottomSheet.newInstance(it, imageParser)
-                        .show(parentFragmentManager, it.id.toString())
-                    movieDetails.postValue(null)
-                }
-            }
-        }
-    }
-
-    private fun handleClickMedia(movieId: Int) {
-        lifecycleScope.launch {
-            launch {
-                viewModel.apply {
-                    getMovieDetail(movieId)
                 }
             }
         }
