@@ -16,10 +16,10 @@
         android:label="fragment_new_hot"
         tools:layout="@layout/fragment_new_hot" />
     <fragment
-        android:id="@+id/downloadFragment"
-        android:name="com.catelt.mome.ui.download.DownloadFragment"
-        android:label="fragment_download"
-        tools:layout="@layout/fragment_download" />
+        android:id="@+id/myListFragment"
+        android:name="com.catelt.mome.ui.mylist.MyListFragment"
+        android:label="fragment_new_list"
+        tools:layout="@layout/fragment_my_list" />
     <fragment
         android:id="@+id/searchFragment"
         android:name="com.catelt.mome.ui.search.SearchFragment"
@@ -35,6 +35,7 @@
         android:name="com.catelt.mome.ui.detail.DetailTvShowFragment"
         android:label="fragment_detail_tv_show"
         tools:layout="@layout/fragment_detail_tv_show" />
+
 
 
 </navigation>
