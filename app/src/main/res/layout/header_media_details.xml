@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:paddingHorizontal="8dp">
 
     <TextView
-        android:id="@+id/title_text"
+        android:id="@+id/txtTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:text="Selling Sunset"
         android:textSize="28sp"
-        android:textStyle="bold"
-        android:text="Selling Sunset" />
+        android:textStyle="bold" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -28,7 +29,7 @@
             android:layout_height="wrap_content"
             android:textColor="@color/grey_light_1"
             android:textSize="12sp"
-            android:text="2016" />
+            tools:text="2016" />
 
         <androidx.cardview.widget.CardView
             android:layout_width="wrap_content"
@@ -59,7 +60,7 @@
             android:layout_marginStart="8dp"
             android:textColor="@color/grey_light_1"
             android:textSize="12sp"
-            android:text="2h 31m" />
+            tools:text="2h 31m" />
 
 
     </LinearLayout>
@@ -90,12 +91,41 @@
         android:maxLines="4"
         android:textColor="@color/white"
         android:textSize="14sp"
-        android:text="Hearts flip as Heather weds Tarek. Jason and Mary grapple with being ghosted. Go solo or take the next step: The agents face life-changing decisions." />
+        tools:text="Hearts flip as Heather weds Tarek. Jason and Mary grapple with being ghosted. Go solo or take the next step: The agents face life-changing decisions." />
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:ellipsize="end"
+            android:text="Starring:"
+            android:textColor="@color/grey_light_2"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/txtListStarring"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="2dp"
+            android:clickable="true"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/grey_light_1"
+            android:textSize="14sp"
+            tools:text="Victor Vu" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:orientation="horizontal">
 
         <TextView
@@ -109,6 +139,7 @@
             android:textStyle="bold" />
 
         <TextView
+            android:id="@+id/txtDirector"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="2dp"
@@ -117,7 +148,7 @@
             android:maxLines="1"
             android:textColor="@color/grey_light_1"
             android:textSize="14sp"
-            android:text="Victor Vu" />
+            tools:text="Victor Vu" />
 
     </LinearLayout>
 

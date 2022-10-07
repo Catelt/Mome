@@ -27,7 +27,7 @@
         tools:layout="@layout/fragment_search" />
     <fragment
         android:id="@+id/detailMovieFragment"
-        android:name="com.catelt.mome.ui.detail.DetailMovieFragment"
+        android:name="com.catelt.mome.ui.detail.movie.DetailMovieFragment"
         android:label="fragment_detail_movie"
         tools:layout="@layout/fragment_detail_movie" />
     <fragment
