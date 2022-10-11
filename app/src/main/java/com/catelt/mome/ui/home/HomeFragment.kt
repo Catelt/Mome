@@ -1,6 +1,10 @@
 package com.catelt.mome.ui.home
 
 
+import android.annotation.SuppressLint
+import android.view.MotionEvent
+import androidx.activity.OnBackPressedCallback
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -31,12 +35,23 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
     }
 
     private var imageParser: ImageUrlParser? = null
+    private var isShowTitleAppBar: Boolean = false
 
     init {
         isFullScreen = true
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun setUpViews() {
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (isShowTitleAppBar){
+                    binding.btnBack.callOnClick()
+                }
+                requireActivity().supportFragmentManager.popBackStack()
+            }
+        })
+
         binding.apply {
             btnSearch.setOnClickListener {
                 findNavController().navigate(R.id.searchFragment)
@@ -45,6 +60,35 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
                 findNavController().navigate(R.id.detailTvShowFragment)
             }
 
+            txtMovies.setOnTouchListener { _, event ->
+                if (event.action == MotionEvent.ACTION_UP) {
+                    setupAppBar(true)
+                    txtTitleAppBar.text = txtMovies.text
+                }
+                false
+            }
+
+            txtTvShows.setOnTouchListener { _, event ->
+                if (event.action == MotionEvent.ACTION_UP) {
+                    setupAppBar(true)
+                    txtTitleAppBar.text = txtTvShows.text
+                }
+                false
+            }
+
+            btnBack.setOnClickListener {
+                setupAppBar(false)
+                subTitleAppBar.transitionToStart()
+            }
+        }
+    }
+
+    private fun setupAppBar(isShow: Boolean){
+        binding.apply {
+            isShowTitleAppBar = isShow
+            txtTitleAppBar.isVisible = isShow
+            btnBack.isVisible = isShow
+            imgIconApp.isVisible = !isShow
         }
     }
 
