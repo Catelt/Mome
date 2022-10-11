@@ -60,5 +60,16 @@
     <string name="title_top_rate">Top rated of all time</string>
     <string name="title_explore">Explore Movies</string>
 
+    <string-array name="speed_dialog">
+        <item>0.5x</item>
+        <item>0.75x</item>
+        <item>1x(Normal)</item>
+        <item>1.25x</item>
+        <item>1.5x</item>
+    </string-array>
+    <string name="negative_option_speed_dialog">Cancel</string>
+    <string name="loading">Loading…</string>
+    <string name="text_title_speed">Speed(%1$s)</string>
+
 
 </resources>

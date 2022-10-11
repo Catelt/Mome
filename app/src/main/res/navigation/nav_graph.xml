@@ -35,7 +35,11 @@
         android:name="com.catelt.mome.ui.detail.DetailTvShowFragment"
         android:label="fragment_detail_tv_show"
         tools:layout="@layout/fragment_detail_tv_show" />
-
+    <fragment
+        android:id="@+id/videoPlayerFragment"
+        android:name="com.catelt.mome.ui.videoplayer.VideoPlayerFragment"
+        android:label="fragment_video_player"
+        tools:layout="@layout/fragment_video_player" />
 
 
 </navigation>

@@ -27,4 +27,12 @@
         <item name="android:textStyle">bold</item>
         <item name="fontFamily">@font/netflix_sans</item>
     </style>
+
+    <style name="DialogTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:background">@color/grey_dark_1</item>
+        <item name="colorAccent">@color/grey</item>
+        <item name="android:textColorAlertDialogListItem">@drawable/dialog_color_text</item>
+        <item name="android:textColorSecondary">@color/grey</item>
+        <item name="android:colorControlActivated">@color/white</item>
+    </style>
 </resources>
