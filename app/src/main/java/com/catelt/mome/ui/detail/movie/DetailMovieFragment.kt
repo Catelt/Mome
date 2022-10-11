@@ -16,6 +16,7 @@ import com.catelt.mome.data.model.movie.MovieDetails
 import com.catelt.mome.data.model.toStringCast
 import com.catelt.mome.databinding.FragmentDetailMovieBinding
 import com.catelt.mome.ui.bottomsheet.MediaDetailsBottomSheet
+import com.catelt.mome.ui.components.CustomPlayerUiController
 import com.catelt.mome.ui.detail.TrailerAdapter
 import com.catelt.mome.utils.extension.getCalendarRelease
 import com.catelt.mome.utils.extension.getRunTime
@@ -23,6 +24,8 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerListener
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.options.IFramePlayerOptions
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
@@ -93,12 +96,28 @@ class DetailMovieFragment : BaseFragment<FragmentDetailMovieBinding>(
                             binding.layoutThumbnail.youtubePlayerView.apply {
                                 lifecycle.addObserver(this)
 
-                                addYouTubePlayerListener(object :
-                                    AbstractYouTubePlayerListener() {
-                                    override fun onReady(youTubePlayer: YouTubePlayer) {
-                                        youTubePlayer.loadVideo(videos[0].key, 0f)
+                                val customPlayerUi =
+                                    inflateCustomPlayerUi(R.layout.view_custom_youtube_player)
+
+                                val listener: YouTubePlayerListener =
+                                    object : AbstractYouTubePlayerListener() {
+                                        override fun onReady(youTubePlayer: YouTubePlayer) {
+                                            val customPlayerUiController = CustomPlayerUiController(
+                                                requireContext(),
+                                                customPlayerUi,
+                                                youTubePlayer,
+                                                this@apply
+                                            )
+                                            youTubePlayer.addListener(customPlayerUiController)
+                                            youTubePlayer.loadVideo(videos[0].key, 0f)
+                                        }
                                     }
-                                })
+
+                                val options: IFramePlayerOptions =
+                                    IFramePlayerOptions.Builder().controls(0).build()
+
+                                initialize(listener, options)
+
                             }
 
                             val trailers = mutableListOf<com.catelt.mome.data.model.Video>()
