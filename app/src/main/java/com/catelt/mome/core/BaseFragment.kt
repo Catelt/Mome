@@ -7,9 +7,11 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
 import com.catelt.mome.R
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 
 typealias Inflate<T> = (LayoutInflater, ViewGroup?, Boolean) -> T
@@ -20,6 +22,8 @@ abstract class BaseFragment<VBinding : ViewBinding>(
     protected lateinit var binding: VBinding
 
     open var isFullScreen: Boolean = false
+
+    open var isHideBottom: Boolean = false
 
     open val viewModel: BaseViewModel? get() = null
 
@@ -50,6 +54,7 @@ abstract class BaseFragment<VBinding : ViewBinding>(
     ): View? {
         binding = inflate(inflater, container, false)
         setUpHomeScreen()
+        hideBottomNavigation()
         return binding.root
     }
 
@@ -75,5 +80,13 @@ abstract class BaseFragment<VBinding : ViewBinding>(
     private fun changeColorStatusBar(color: Int) {
         val window = requireActivity().window
         window.statusBarColor = ContextCompat.getColor(requireContext(), color)
+    }
+
+    private fun hideBottomNavigation(){
+        activity?.let {
+            it.findViewById<BottomNavigationView>(R.id.bottomNavigation)?.let{ bottomNavigationView ->
+                bottomNavigationView.isVisible = !isHideBottom
+            }
+        }
     }
 }
