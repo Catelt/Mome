@@ -199,9 +199,9 @@ internal class CustomPlayerUiController(
         if (isReply){
             btnReply.visibility = View.VISIBLE
             btnAudio.visibility = View.GONE
-            layoutPlayPause.visibility = View.GONE
+            layoutPlayPause.visibility = View.INVISIBLE
             layoutSeekBar.visibility = View.GONE
-            seekBarProgressMini.visibility = View.GONE
+            seekBarProgressMini.visibility = View.INVISIBLE
         }
         else{
             btnReply.visibility = View.GONE
@@ -216,15 +216,9 @@ internal class CustomPlayerUiController(
     }
 
     private fun setVisionControl(isVision: Boolean){
-        if (isVision){
-            layoutPlayPause.visibility = View.VISIBLE
-            layoutSeekBar.visibility = View.VISIBLE
-            seekBarProgressMini.visibility = View.GONE
-        }else{
-            layoutPlayPause.visibility = View.GONE
-            layoutSeekBar.visibility = View.GONE
-            seekBarProgressMini.visibility = View.VISIBLE
-        }
+        layoutPlayPause.isVisible = isVision
+        layoutSeekBar.visibility = if(isVision) View.VISIBLE else View.GONE
+        seekBarProgressMini.isVisible = !isVision
     }
 
     @SuppressLint("SetTextI18n")
@@ -240,14 +234,8 @@ internal class CustomPlayerUiController(
     }
 
     private fun setUIButtonPlayPause(isPlaying: Boolean){
-        if (isPlaying){
-            btnPause.visibility = View.VISIBLE
-            btnPlay.visibility = View.GONE
-        }
-        else{
-            btnPause.visibility = View.GONE
-            btnPlay.visibility = View.VISIBLE
-        }
+        btnPause.isVisible = isPlaying
+        btnPlay.isVisible = !isPlaying
     }
 
     private fun formatCurrentTime(value: Int): String {
