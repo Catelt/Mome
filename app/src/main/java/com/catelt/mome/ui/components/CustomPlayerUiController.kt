@@ -2,6 +2,8 @@ package com.catelt.mome.ui.components
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import android.view.MotionEvent
 import android.view.View
 import android.widget.FrameLayout
@@ -9,12 +11,14 @@ import android.widget.ImageView
 import android.widget.SeekBar
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import com.catelt.mome.R
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants.PlayerState
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.utils.YouTubePlayerTracker
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.ui.utils.FadeViewHelper
 
 
 internal class CustomPlayerUiController(
@@ -29,7 +33,8 @@ internal class CustomPlayerUiController(
     private val youTubePlayer: YouTubePlayer
     private val youTubePlayerView: YouTubePlayerView
     private val playerTracker: YouTubePlayerTracker
-    var isMute: Boolean = true
+    private val handler = Handler(Looper.getMainLooper())
+    private var isMute: Boolean = true
 
     private lateinit var panel: View
     private lateinit var layoutLoading: FrameLayout
@@ -125,10 +130,13 @@ internal class CustomPlayerUiController(
 
         })
         panel.setOnClickListener {
-            setVisionControl(true)
-            setAutoHideController()
+            if (!btnReply.isVisible){
+                setVisionControl(true)
+                setAutoHideController()
+            }
         }
 
+        FadeViewHelper
         setUIButtonAudio()
     }
 
@@ -147,7 +155,6 @@ internal class CustomPlayerUiController(
 
     override fun onStateChange(youTubePlayer: YouTubePlayer, state: PlayerState) {
         setUIButtonPlayPause(state == PlayerState.PLAYING)
-
         when(state) {
             PlayerState.PLAYING -> {
                 layoutLoading.visibility = View.GONE
@@ -172,7 +179,6 @@ internal class CustomPlayerUiController(
                 panel.setBackgroundColor(
                     ContextCompat.getColor(context, R.color.black)
                 )
-                setVisionControl(false)
             }
             else -> {
             }
@@ -205,14 +211,12 @@ internal class CustomPlayerUiController(
     }
 
     private fun setAutoHideController(){
-        panel.handler.removeCallbacks(fadeOut)
-        panel.handler.postDelayed(fadeOut, DEFAULT_TIME_DELAY)
+        handler.removeCallbacks(fadeOut)
+        handler.postDelayed(fadeOut, DEFAULT_TIME_DELAY)
     }
 
     private fun setVisionControl(isVision: Boolean){
         if (isVision){
-            panel.handler.removeCallbacks(fadeOut)
-            panel.handler.removeCallbacksAndMessages(null)
             layoutPlayPause.visibility = View.VISIBLE
             layoutSeekBar.visibility = View.VISIBLE
             seekBarProgressMini.visibility = View.GONE
@@ -267,6 +271,6 @@ internal class CustomPlayerUiController(
 
     companion object{
         private const val DEFAULT_TIME_DELAY = 5000L
-        private const val LIMIT_TIME_END = 10
+        private const val LIMIT_TIME_END = 5
     }
 }
