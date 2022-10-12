@@ -212,6 +212,7 @@ internal class CustomPlayerUiController(
     private fun setVisionControl(isVision: Boolean){
         if (isVision){
             panel.handler.removeCallbacks(fadeOut)
+            panel.handler.removeCallbacksAndMessages(null)
             layoutPlayPause.visibility = View.VISIBLE
             layoutSeekBar.visibility = View.VISIBLE
             seekBarProgressMini.visibility = View.GONE
