@@ -12,6 +12,12 @@
         android:clickable="true"
         android:focusable="true" />
 
+    <ImageView
+        android:id="@+id/imgBackdrop"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitCenter" />
+
     <FrameLayout
         android:id="@+id/layoutLoading"
         android:layout_width="wrap_content"
@@ -94,6 +100,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingHorizontal="5dp"
+            android:visibility="gone"
             android:text="@string/text_18_plus" />
     </androidx.cardview.widget.CardView>
 
@@ -113,6 +120,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingHorizontal="8dp"
+            android:visibility="gone"
             android:text="Trailer" />
 
     </androidx.cardview.widget.CardView>

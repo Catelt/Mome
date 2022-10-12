@@ -2,6 +2,7 @@ package com.catelt.mome.ui.components
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.view.MotionEvent
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -43,6 +44,7 @@ internal class CustomPlayerUiController(
     private lateinit var btnPause: ImageView
     private lateinit var btnReply: ImageView
     private lateinit var btnAudio: ImageView
+    private lateinit var imgBackdrop: ImageView
 
     private var fadeOut: Runnable = Runnable{
         setVisionControl(false)
@@ -72,6 +74,7 @@ internal class CustomPlayerUiController(
         btnPause = view.findViewById(R.id.btnPause)
         btnReply = view.findViewById(R.id.btnReply)
         btnAudio = view.findViewById(R.id.btnAudio)
+        imgBackdrop = view.findViewById(R.id.imgBackdrop)
 
         seekBarProgressMini = view.findViewById(R.id.seekBarProgressMini)
         btnPlay.setOnClickListener {
@@ -91,12 +94,23 @@ internal class CustomPlayerUiController(
             setUIButtonAudio()
         }
 
+        seekBarProgress.setOnTouchListener { _, motionEvent ->
+            if (motionEvent.action == MotionEvent.ACTION_DOWN){
+                setVisionControl(true)
+                youTubePlayer.pause()
+            }
+            false
+        }
+
         seekBarProgress.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener{
             override fun onProgressChanged(p0: SeekBar?, p1: Int, p2: Boolean) {
                 if (p2){
-                    setVisionControl(true)
-                    youTubePlayer.seekTo(p1.toFloat())
-                    youTubePlayer.pause()
+                    if (p1.toFloat() > playerTracker.videoDuration - LIMIT_TIME_END){
+                        youTubePlayer.seekTo(playerTracker.videoDuration - LIMIT_TIME_END)
+                    }
+                    else{
+                        youTubePlayer.seekTo(p1.toFloat())
+                    }
                 }
             }
 
@@ -137,6 +151,7 @@ internal class CustomPlayerUiController(
         when(state) {
             PlayerState.PLAYING -> {
                 layoutLoading.visibility = View.GONE
+                imgBackdrop.visibility = View.GONE
                 panel.setBackgroundColor(
                     ContextCompat.getColor(context, R.color.transparent)
                 )
@@ -151,6 +166,7 @@ internal class CustomPlayerUiController(
                     ContextCompat.getColor(context, R.color.black)
                 )
                 setUIReply(true)
+                imgBackdrop.visibility = View.VISIBLE
             }
             PlayerState.BUFFERING -> {
                 panel.setBackgroundColor(
@@ -250,5 +266,6 @@ internal class CustomPlayerUiController(
 
     companion object{
         private const val DEFAULT_TIME_DELAY = 5000L
+        private const val LIMIT_TIME_END = 10
     }
 }

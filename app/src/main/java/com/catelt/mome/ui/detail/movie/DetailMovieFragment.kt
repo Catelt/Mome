@@ -3,15 +3,20 @@ package com.catelt.mome.ui.detail.movie
 
 import android.os.Bundle
 import android.transition.TransitionInflater
+import android.view.View
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import coil.load
 import com.catelt.mome.R
 import com.catelt.mome.adapter.ListGridAdapter
 import com.catelt.mome.core.BaseFragment
 import com.catelt.mome.data.model.Credits
 import com.catelt.mome.data.model.getDirector
+import com.catelt.mome.data.model.getThumbnailUrl
 import com.catelt.mome.data.model.movie.MovieDetails
 import com.catelt.mome.data.model.toStringCast
 import com.catelt.mome.databinding.FragmentDetailMovieBinding
@@ -93,11 +98,28 @@ class DetailMovieFragment : BaseFragment<FragmentDetailMovieBinding>(
                         }
 
                         it.associatedContent.videos?.let { videos ->
+
+                            val trailers = mutableListOf<com.catelt.mome.data.model.Video>()
+                            videos.forEach { video ->
+                                if (video.type == getString(R.string.trailer)) {
+                                    trailers.add(video)
+                                }
+                            }
+                            trailerAdapter.submitList(trailers)
+
                             binding.layoutThumbnail.youtubePlayerView.apply {
                                 lifecycle.addObserver(this)
 
                                 val customPlayerUi =
                                     inflateCustomPlayerUi(R.layout.view_custom_youtube_player)
+
+                                customPlayerUi.findViewById<ImageView>(R.id.imgBackdrop).apply {
+                                    load(trailers[0].getThumbnailUrl())
+                                }
+                                customPlayerUi.findViewById<TextView>(R.id.txtTypeVideo).apply{
+                                    visibility = View.VISIBLE
+                                    text = trailers[0].type
+                                }
 
                                 val listener: YouTubePlayerListener =
                                     object : AbstractYouTubePlayerListener() {
@@ -106,10 +128,10 @@ class DetailMovieFragment : BaseFragment<FragmentDetailMovieBinding>(
                                                 requireContext(),
                                                 customPlayerUi,
                                                 youTubePlayer,
-                                                this@apply
+                                                binding.layoutThumbnail.youtubePlayerView
                                             )
                                             youTubePlayer.addListener(customPlayerUiController)
-                                            youTubePlayer.loadVideo(videos[0].key, 0f)
+                                            youTubePlayer.loadVideo(trailers[0].key, 0f)
                                         }
                                     }
 
@@ -119,14 +141,6 @@ class DetailMovieFragment : BaseFragment<FragmentDetailMovieBinding>(
                                 initialize(listener, options)
 
                             }
-
-                            val trailers = mutableListOf<com.catelt.mome.data.model.Video>()
-                            videos.forEach { video ->
-                                if (video.type == "Trailer") {
-                                    trailers.add(video)
-                                }
-                            }
-                            trailerAdapter.submitList(trailers)
                         }
 
                         it.associatedContent.credits?.let { credits ->
