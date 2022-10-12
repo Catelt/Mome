@@ -3,19 +3,25 @@ package com.catelt.mome.ui.detail.movie
 
 import android.os.Bundle
 import android.transition.TransitionInflater
+import android.view.View
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import coil.load
 import com.catelt.mome.R
 import com.catelt.mome.adapter.ListGridAdapter
 import com.catelt.mome.core.BaseFragment
 import com.catelt.mome.data.model.Credits
 import com.catelt.mome.data.model.getDirector
+import com.catelt.mome.data.model.getThumbnailUrl
 import com.catelt.mome.data.model.movie.MovieDetails
 import com.catelt.mome.data.model.toStringCast
 import com.catelt.mome.databinding.FragmentDetailMovieBinding
 import com.catelt.mome.ui.bottomsheet.MediaDetailsBottomSheet
+import com.catelt.mome.ui.components.CustomPlayerUiController
 import com.catelt.mome.ui.detail.TrailerAdapter
 import com.catelt.mome.utils.extension.getCalendarRelease
 import com.catelt.mome.utils.extension.getRunTime
@@ -23,6 +29,8 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerListener
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.options.IFramePlayerOptions
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
@@ -90,24 +98,49 @@ class DetailMovieFragment : BaseFragment<FragmentDetailMovieBinding>(
                         }
 
                         it.associatedContent.videos?.let { videos ->
-                            binding.layoutThumbnail.youtubePlayerView.apply {
-                                lifecycle.addObserver(this)
-
-                                addYouTubePlayerListener(object :
-                                    AbstractYouTubePlayerListener() {
-                                    override fun onReady(youTubePlayer: YouTubePlayer) {
-                                        youTubePlayer.loadVideo(videos[0].key, 0f)
-                                    }
-                                })
-                            }
 
                             val trailers = mutableListOf<com.catelt.mome.data.model.Video>()
                             videos.forEach { video ->
-                                if (video.type == "Trailer") {
+                                if (video.type == getString(R.string.trailer)) {
                                     trailers.add(video)
                                 }
                             }
                             trailerAdapter.submitList(trailers)
+
+                            binding.layoutThumbnail.youtubePlayerView.apply {
+                                lifecycle.addObserver(this)
+
+                                val customPlayerUi =
+                                    inflateCustomPlayerUi(R.layout.view_custom_youtube_player)
+
+                                customPlayerUi.findViewById<ImageView>(R.id.imgBackdrop).apply {
+                                    load(trailers[0].getThumbnailUrl())
+                                }
+                                customPlayerUi.findViewById<TextView>(R.id.txtTypeVideo).apply{
+                                    visibility = View.VISIBLE
+                                    text = trailers[0].type
+                                }
+
+                                val listener: YouTubePlayerListener =
+                                    object : AbstractYouTubePlayerListener() {
+                                        override fun onReady(youTubePlayer: YouTubePlayer) {
+                                            val customPlayerUiController = CustomPlayerUiController(
+                                                requireContext(),
+                                                customPlayerUi,
+                                                youTubePlayer,
+                                                binding.layoutThumbnail.youtubePlayerView
+                                            )
+                                            youTubePlayer.addListener(customPlayerUiController)
+                                            youTubePlayer.loadVideo(trailers[0].key, 0f)
+                                        }
+                                    }
+
+                                val options: IFramePlayerOptions =
+                                    IFramePlayerOptions.Builder().controls(0).build()
+
+                                initialize(listener, options)
+
+                            }
                         }
 
                         it.associatedContent.credits?.let { credits ->
