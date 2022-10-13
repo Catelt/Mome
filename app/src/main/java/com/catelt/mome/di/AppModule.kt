@@ -4,6 +4,7 @@ import android.content.Context
 import coil.ImageLoader
 import coil.disk.DiskCache
 import coil.memory.MemoryCache
+import com.catelt.mome.data.model.account.UserManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -47,5 +48,11 @@ object AppModule {
                 OkHttpClient.Builder().build()
             }
             .build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideUserManager(@ApplicationContext context: Context): UserManager {
+        return UserManager.getInstance(context)
     }
 }

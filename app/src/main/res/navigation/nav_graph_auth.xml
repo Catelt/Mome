@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph_auth"
+    app:startDestination="@id/homeAuthFragment">
+
+    <fragment
+        android:id="@+id/homeAuthFragment"
+        android:name="com.catelt.mome.ui.auth.HomeAuthFragment"
+        android:label="HomeAuthFragment" />
+    <fragment
+        android:id="@+id/signInFragment"
+        android:name="com.catelt.mome.ui.auth.SignInFragment"
+        android:label="SignInFragment" />
+    <fragment
+        android:id="@+id/signUpFragment"
+        android:name="com.catelt.mome.ui.auth.SignUpFragment"
+        android:label="SignUpFragment" />
+</navigation>

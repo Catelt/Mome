@@ -14,16 +14,31 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Mome"
         tools:targetApi="31">
+
         <activity
-            android:name=".MainActivity"
-            android:theme="@style/Theme.App.SplashScreen"
-            android:exported="true">
+            android:name=".ui.auth.AuthActivity"
+            android:exported="true"
+            android:theme="@style/Theme.App.SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".MainActivity" />
+
+        <service
+            android:name=".AuthenticatorService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.accounts.AccountAuthenticator" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accounts.AccountAuthenticator"
+                android:resource="@xml/authenticator" />
+        </service>
+
     </application>
 
 </manifest>
