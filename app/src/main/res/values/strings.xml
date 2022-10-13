@@ -73,4 +73,21 @@
 
     <string name="trailer">Trailer</string>
 
+    <string name="sign_in">Sign in</string>
+    <string name="sign_up">Sign up</string>
+    <string name="message_bottom_sign_up">Don\'t have an account?</string>
+    <string name="message_bottom_sign_in">Already have an account?</string>
+    <string name="message_in_divider">or continue with</string>
+    <string name="message_in_divider_2">or</string>
+    <string name="button_sign_in_home_auth">Sign in with password</string>
+    <string name="continue_with_facebook">Continue with Facebook</string>
+    <string name="create_your_account">Create Your Account</string>
+    <string name="login_to_your_account">Login to Your Account</string>
+    <string name="continue_with_google">Continue with Google</string>
+    <string name="let_s_you_in">Let\'s you in</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="message_text_forgot_password">Forgot the password?</string>
+    <string name="message_error_password">Your password must contain between 4 and 60 characters</string>
+
 </resources>

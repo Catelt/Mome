@@ -2,7 +2,6 @@ package com.catelt.mome
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
@@ -16,18 +15,18 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
+    private lateinit var host: NavHostFragment
 
     @Inject
     lateinit var configDataSource: ConfigDataSource
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        installSplashScreen()
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val host: NavHostFragment = supportFragmentManager
+        host = supportFragmentManager
             .findFragmentById(R.id.nav_host_fragment) as NavHostFragment? ?: return
 
         val navController = host.navController
@@ -44,5 +43,12 @@ class MainActivity : AppCompatActivity() {
                 true
             }
         }
+    }
+
+    override fun onBackPressed() {
+        if (host.childFragmentManager.backStackEntryCount == 0){
+            finish()
+        }
+        super.onBackPressed()
     }
 }
