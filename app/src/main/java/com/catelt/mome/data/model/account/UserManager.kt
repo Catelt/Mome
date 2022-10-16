@@ -15,13 +15,12 @@ class UserManager(context: Context) {
             .apply {
                 this.putString(NAME,user.name)
                 this.putString(EMAIL, user.email)
-                this.putString(PASSWORD, user.password)
-                this.putString(SESSION, user.sessionId)
+                this.putString(SESSION, user.id)
                 this.putString(AVATAR, user.avatar)
             }
         val account = Account(user.email, ACCOUNT_TYPE)
-        accountManager.addAccountExplicitly(account, user.sessionId, data)
-        accountManager.setAuthToken(account, AUTH_TOKEN_TYPE, user.sessionId)
+        accountManager.addAccountExplicitly(account, user.id, data)
+        accountManager.setAuthToken(account, AUTH_TOKEN_TYPE, user.id)
     }
 
     private fun getAccount(): Account? {
@@ -36,7 +35,6 @@ class UserManager(context: Context) {
         return User(
             getName(),
             getEmail(),
-            getPassword(),
             getSessionId(),
             getAvatar(),
         )
@@ -68,20 +66,12 @@ class UserManager(context: Context) {
         return accountManager.getUserData(getAccount(), NAME)
     }
 
-    fun getPassword(): String {
-        return accountManager.getUserData(getAccount(), PASSWORD)
-    }
-
     fun getAvatar(): String {
         return accountManager.getUserData(getAccount(), AVATAR) ?: ""
     }
 
     fun setName(name: String) {
         accountManager.setUserData(getAccount(), NAME, name)
-    }
-
-    fun setPassword(password: String) {
-        accountManager.setUserData(getAccount(), PASSWORD, password)
     }
 
     fun setAvatar(avatar: String) {
@@ -95,7 +85,6 @@ class UserManager(context: Context) {
         const val SESSION = "session_id"
         const val NAME = "name"
         const val EMAIL = "email"
-        const val PASSWORD = "password"
         const val AVATAR = "avatar"
 
         @Volatile

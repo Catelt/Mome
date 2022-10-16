@@ -15,3 +15,4 @@
 local.properties
 key.properties
 app/src/main/java/com/catelt/mome/data/remote/api/TmbdKey.kt
+app/src/main/res/values/key.xml

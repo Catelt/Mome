@@ -5,6 +5,8 @@ import com.catelt.mome.data.paging.ConfigDataSource
 import com.catelt.mome.data.remote.api.movie.TmdbMoviesApiHelper
 import com.catelt.mome.data.repository.config.ConfigRepository
 import com.catelt.mome.data.repository.config.ConfigRepositoryImpl
+import com.catelt.mome.data.repository.firebase.FirebaseRepository
+import com.catelt.mome.data.repository.firebase.FirebaseRepositoryImpl
 import com.catelt.mome.data.repository.movie.MovieRepository
 import com.catelt.mome.data.repository.movie.MovieRepositoryImpl
 import dagger.Binds
@@ -44,5 +46,9 @@ object RepositoryModule {
         @Binds
         @Singleton
         fun bindMovieRepository(impl: MovieRepositoryImpl): MovieRepository
+
+        @Binds
+        @Singleton
+        fun bindFirebaseRepository(impl: FirebaseRepositoryImpl): FirebaseRepository
     }
 }

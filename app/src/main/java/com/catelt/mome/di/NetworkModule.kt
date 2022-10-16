@@ -2,6 +2,7 @@ package com.catelt.mome.di
 
 import android.content.Context
 import com.catelt.mome.BuildConfig
+import com.catelt.mome.R
 import com.catelt.mome.data.remote.api.ApiParams
 import com.catelt.mome.data.remote.api.DateJsonAdapter
 import com.catelt.mome.data.remote.api.TMDB_API_KEY
@@ -14,6 +15,13 @@ import com.catelt.mome.data.remote.api.others.TmdbOthersApiHelperImpl
 import com.chuckerteam.chucker.api.ChuckerCollector
 import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.chuckerteam.chucker.api.RetentionManager
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import com.squareup.moshi.Moshi
 import dagger.Module
 import dagger.Provides
@@ -130,4 +138,26 @@ object NetworkModule {
     @Provides
     fun provideTmdbOthersApiHelper(apiHelper: TmdbOthersApiHelperImpl): TmdbOthersApiHelper =
         apiHelper
+
+    @Singleton
+    @Provides
+    fun provideFirebaseFireStore(): FirebaseFirestore {
+        return Firebase.firestore
+    }
+
+    @Singleton
+    @Provides
+    fun provideFirebaseAuth(): FirebaseAuth {
+        return FirebaseAuth.getInstance()
+    }
+
+    @Singleton
+    @Provides
+    fun provideGoogleSignInClient(@ApplicationContext context: Context): GoogleSignInClient {
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(context.getString(R.string.id_token_google))
+            .requestEmail()
+            .build()
+        return GoogleSignIn.getClient(context, gso)
+    }
 }
