@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.viewbinding.ViewBinding
 import coil.load
 import com.catelt.mome.core.BasePagingAdapter
+import com.catelt.mome.data.model.MediaType
 import com.catelt.mome.data.model.movie.Movie
 import com.catelt.mome.databinding.ItemTopMovieBinding
 import com.catelt.mome.utils.ImageUrlParser
@@ -12,7 +13,7 @@ import com.catelt.mome.utils.ImageUrlParser
 
 class TopSearchAdapter : BasePagingAdapter<Movie>(){
     var imageUrlParser: ImageUrlParser? = null
-    var onMovieClicked: ((Int) -> Unit)? = null
+    var onMovieClicked: ((Int, MediaType) -> Unit)? = null
 
     override fun createBinding(parent: ViewGroup, viewType: Int): ViewBinding {
         return ItemTopMovieBinding.inflate(
@@ -35,7 +36,7 @@ class TopSearchAdapter : BasePagingAdapter<Movie>(){
     override fun setOnClickItem(position: Int) {
         val item = getItem(position)
         item?.let {
-            onMovieClicked?.invoke(item.id)
+            onMovieClicked?.invoke(item.id,MediaType.Movie)
         }
     }
 }

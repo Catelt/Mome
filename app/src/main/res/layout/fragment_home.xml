@@ -6,7 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black"
-    android:paddingBottom="@dimen/padding_bottom_follow_size_navigation"
     app:layoutDescription="@xml/fragment_home_scene">
 
     <androidx.core.widget.NestedScrollView
@@ -15,6 +14,7 @@
         android:layout_height="match_parent"
         android:layout_marginTop="-60dp"
         android:overScrollMode="never"
+        android:paddingBottom="110dp"
         android:scrollbars="none"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -33,25 +33,29 @@
                 android:id="@+id/listTrending"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp" />
+                android:layout_marginStart="8dp"
+                android:visibility="gone" />
 
             <com.catelt.mome.ui.components.HorizontalList
                 android:id="@+id/listUpCome"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp" />
+                android:layout_marginStart="8dp"
+                android:visibility="gone" />
 
             <com.catelt.mome.ui.components.HorizontalList
                 android:id="@+id/listPopular"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp" />
+                android:layout_marginStart="8dp"
+                android:visibility="gone" />
 
             <com.catelt.mome.ui.components.HorizontalList
                 android:id="@+id/listExplore"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp" />
+                android:layout_marginStart="8dp"
+                android:visibility="gone" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
