@@ -6,14 +6,14 @@
 
     <fragment
         android:id="@+id/homeAuthFragment"
-        android:name="com.catelt.mome.ui.auth.HomeAuthFragment"
+        android:name="com.catelt.mome.ui.auth.home.HomeAuthFragment"
         android:label="HomeAuthFragment" />
     <fragment
         android:id="@+id/signInFragment"
-        android:name="com.catelt.mome.ui.auth.SignInFragment"
+        android:name="com.catelt.mome.ui.auth.signin.SignInFragment"
         android:label="SignInFragment" />
     <fragment
         android:id="@+id/signUpFragment"
-        android:name="com.catelt.mome.ui.auth.SignUpFragment"
+        android:name="com.catelt.mome.ui.auth.signup.SignUpFragment"
         android:label="SignUpFragment" />
 </navigation>

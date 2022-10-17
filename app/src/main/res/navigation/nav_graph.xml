@@ -40,6 +40,11 @@
         android:name="com.catelt.mome.ui.videoplayer.VideoPlayerFragment"
         android:label="fragment_video_player"
         tools:layout="@layout/fragment_video_player" />
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.catelt.mome.ui.profile.ProfileFragment"
+        android:label="fragment_profile"
+        tools:layout="@layout/fragment_profile" />
 
 
 </navigation>
