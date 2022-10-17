@@ -44,11 +44,4 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
-    override fun onBackPressed() {
-        if (host.childFragmentManager.backStackEntryCount == 0){
-            finish()
-        }
-        super.onBackPressed()
-    }
 }

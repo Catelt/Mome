@@ -12,6 +12,9 @@ import com.catelt.mome.data.remote.api.movie.TmdbMoviesApiHelperImpl
 import com.catelt.mome.data.remote.api.others.TmdbOthersApi
 import com.catelt.mome.data.remote.api.others.TmdbOthersApiHelper
 import com.catelt.mome.data.remote.api.others.TmdbOthersApiHelperImpl
+import com.catelt.mome.data.remote.api.tvshow.TmdbTvShowsApi
+import com.catelt.mome.data.remote.api.tvshow.TmdbTvShowsApiHelper
+import com.catelt.mome.data.remote.api.tvshow.TmdbTvShowsApiHelperImpl
 import com.chuckerteam.chucker.api.ChuckerCollector
 import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.chuckerteam.chucker.api.RetentionManager
@@ -127,6 +130,16 @@ object NetworkModule {
     @Singleton
     @Provides
     fun provideTmdbMoviesApiHelper(apiHelper: TmdbMoviesApiHelperImpl): TmdbMoviesApiHelper =
+        apiHelper
+
+    @Singleton
+    @Provides
+    fun provideTmdbTvShowsApi(retrofit: Retrofit): TmdbTvShowsApi =
+        retrofit.create(TmdbTvShowsApi::class.java)
+
+    @Singleton
+    @Provides
+    fun provideTmdbTvShowsApiHelper(apiHelper: TmdbTvShowsApiHelperImpl): TmdbTvShowsApiHelper =
         apiHelper
 
     @Singleton
