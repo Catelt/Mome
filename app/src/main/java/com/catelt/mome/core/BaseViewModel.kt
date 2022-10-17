@@ -1,5 +1,6 @@
 package com.catelt.mome.core
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.catelt.mome.data.remote.api.ApiResponse
@@ -8,6 +9,9 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 abstract class BaseViewModel : ViewModel() {
+    val isLoading = MutableLiveData(false)
+    val toastMessage = MutableLiveData("")
+
     private val _error: MutableSharedFlow<String?> = MutableSharedFlow(replay = 0)
     val error: StateFlow<String?> = _error.asSharedFlow().stateIn(
         viewModelScope, SharingStarted.WhileSubscribed(10), null

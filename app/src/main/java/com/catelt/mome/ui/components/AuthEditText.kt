@@ -49,6 +49,10 @@ class AuthEditText @JvmOverloads constructor(
         }
     }
 
+    fun getText(): String {
+        return (binding.editText.text ?: "").toString()
+    }
+
     fun setError(string: String?){
         binding.apply {
             layoutError.visibility = if(!string.isNullOrBlank()) View.VISIBLE else View.GONE

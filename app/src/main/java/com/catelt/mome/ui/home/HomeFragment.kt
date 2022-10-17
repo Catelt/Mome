@@ -80,6 +80,10 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
                 setupAppBar(false)
                 subTitleAppBar.transitionToStart()
             }
+
+            btnProfile.setOnClickListener {
+                findNavController().navigate(R.id.profileFragment)
+            }
         }
     }
 

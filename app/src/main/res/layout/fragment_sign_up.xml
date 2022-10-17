@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="ui.auth.SignUpFragment">
+    tools:context=".ui.auth.signup.SignUpFragment">
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -166,5 +166,11 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.core.widget.NestedScrollView>
+
+    <include android:id="@+id/layoutLoading"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="invisible"
+        layout="@layout/fragment_loading"/>
 
 </FrameLayout>
