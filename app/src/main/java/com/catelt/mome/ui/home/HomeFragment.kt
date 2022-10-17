@@ -84,6 +84,10 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
             btnProfile.setOnClickListener {
                 findNavController().navigate(R.id.profileFragment)
             }
+
+            btnSearch.setOnClickListener {
+                findNavController().navigate(R.id.searchFragment)
+            }
         }
     }
 

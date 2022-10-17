@@ -26,11 +26,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="?actionBarSize"
                     android:layout_marginStart="16dp"
+                    android:contentDescription="@string/button"
                     android:src="@drawable/ic_arrow_back"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    android:contentDescription="@string/button" />
+                    app:layout_constraintTop_toTopOf="parent" />
 
 
                 <ImageView
@@ -53,81 +53,104 @@
 
         </com.google.android.material.appbar.AppBarLayout>
 
-        <androidx.core.widget.NestedScrollView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:orientation="vertical"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
+            <ProgressBar
+                android:id="@+id/layoutLoading"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginVertical="24dp"
+                android:indeterminate="true"
+                android:indeterminateTint="@color/Primary"
+                android:indeterminateTintMode="src_atop"
+                android:visibility="gone" />
+
             <LinearLayout
+                android:id="@+id/layoutNoResult"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginVertical="20dp"
+                android:layout_marginHorizontal="20dp"
+                android:visibility="gone"
+                android:gravity="center">
 
-                <LinearLayout
-                    android:id="@+id/layoutWhenEmptySearch"
+                <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:visibility="visible">
+                    android:gravity="left"
+                    android:text="@string/title_message_empty_search"
+                    android:textSize="20sp"
+                    android:textStyle="bold"/>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginHorizontal="8dp"
-                        android:layout_marginVertical="16dp"
-                        android:text="@string/top_searches"
-                        android:textSize="20sp"
-                        android:textStyle="bold" />
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/recyclerListTopSearch"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                        tools:listitem="@layout/item_top_movie" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/layoutWhenSearch"
+                <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:visibility="gone">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginHorizontal="4dp"
-                        android:layout_marginTop="16dp"
-                        android:text="@string/movies_amp_tv"
-                        android:textSize="20sp"
-                        android:textStyle="bold" />
-
-                    <ProgressBar
-                        android:id="@+id/layoutLoading"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginVertical="24dp"
-                        android:indeterminate="true"
-                        android:indeterminateTint="@color/Primary"
-                        android:indeterminateTintMode="src_atop"
-                        android:visibility="gone" />
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/recyclerListResult"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginHorizontal="2dp"
-                        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-                        app:spanCount="3"
-                        tools:itemCount="10"
-                        tools:listitem="@layout/item_media" />
-                </LinearLayout>
+                    android:gravity="left"
+                    android:text="@string/message_empty_search"
+                    android:textSize="16sp"
+                    android:textColor="@color/grey_light_1"
+                    android:textStyle="bold"/>
             </LinearLayout>
 
 
-        </androidx.core.widget.NestedScrollView>
+            <LinearLayout
+                android:id="@+id/layoutWhenEmptySearch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="8dp"
+                    android:layout_marginVertical="10dp"
+                    android:text="@string/top_searches"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerListTopSearch"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:listitem="@layout/item_top_movie" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layoutWhenSearch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="8dp"
+                    android:layout_marginVertical="10dp"
+                    android:text="@string/movies_amp_tv"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerListResult"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginHorizontal="2dp"
+                    app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                    app:spanCount="3"
+                    tools:itemCount="10"
+                    tools:listitem="@layout/item_media" />
+            </LinearLayout>
+        </LinearLayout>
+
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 </FrameLayout>

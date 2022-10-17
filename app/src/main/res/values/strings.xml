@@ -90,4 +90,9 @@
     <string name="message_text_forgot_password">Forgot the password?</string>
     <string name="message_error_password">Your password must contain between 4 and 60 characters</string>
 
+    <string name="error_default_message">Something wrong</string>
+
+    <string name="title_message_empty_search">Oh darn. We don\'t have that</string>
+    <string name="message_empty_search">Try searching for another movie, show, actor, director, or genre.</string>
+
 </resources>
