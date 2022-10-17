@@ -44,6 +44,9 @@ jobs:
         run: echo ${{secrets.KEY_PROPERTIES}} | base64 -d > key.properties
 
       - name: Key Properties
+        run: echo ${{secrets.KEY_FIREBASE}} | base64 -d > app/src/main/res/values/key.xml
+
+      - name: Key Properties
         run: echo ${{secrets.KEY_TMBD}} | base64 -d > app/src/main/java/com/catelt/mome/data/remote/api/TmbdKey.kt
 
       - name: Execute Gradle build
