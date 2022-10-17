@@ -25,7 +25,6 @@ import com.catelt.mome.ui.components.CustomPlayerUiController
 import com.catelt.mome.ui.detail.TrailerAdapter
 import com.catelt.mome.utils.extension.getCalendarRelease
 import com.catelt.mome.utils.extension.getRunTime
-import com.catelt.mome.utils.extension.setAgeTitle
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
@@ -60,7 +59,7 @@ class DetailMovieFragment : BaseFragment<FragmentDetailMovieBinding>(
         binding.apply {
             recyclerViewLikeThis.adapter = likeThisAdapter
             likeThisAdapter.onMovieClicked = { movieId ->
-                MediaDetailsBottomSheet.newInstance(movieId,true)
+                MediaDetailsBottomSheet.newInstance(movieId)
                     .show(requireActivity().supportFragmentManager, movieId.toString())
             }
 
@@ -165,7 +164,11 @@ class DetailMovieFragment : BaseFragment<FragmentDetailMovieBinding>(
                 txtYear.text = movie.getCalendarRelease()?.get(Calendar.YEAR).toString()
                 txtRuntime.text = movie.getRunTime()
                 txtOverview.text = movie.overview
-                txtAge.setAgeTitle(movie.adult)
+                if (movie.adult) {
+                    txtAge.text = getString(R.string.text_18_plus)
+                } else {
+                    txtAge.text = getString(R.string.text_13_plus)
+                }
             }
         }
     }
