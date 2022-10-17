@@ -138,8 +138,8 @@ class ConfigDataSource @Inject constructor(
         val region = locale.country.ifEmpty { DeviceLanguage.default.region }
 
         return DeviceLanguage(
-            languageCode = languageCode,
-            region = region
+            languageCode = DeviceLanguage.default.languageCode,
+            region =  DeviceLanguage.default.region
         )
     }
 

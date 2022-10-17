@@ -1,9 +1,12 @@
 package com.catelt.mome.core
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
@@ -82,11 +85,26 @@ abstract class BaseFragment<VBinding : ViewBinding>(
         window.statusBarColor = ContextCompat.getColor(requireContext(), color)
     }
 
-    private fun hideBottomNavigation(){
+    private fun hideBottomNavigation() {
         activity?.let {
-            it.findViewById<BottomNavigationView>(R.id.bottomNavigation)?.let{ bottomNavigationView ->
-                bottomNavigationView.isVisible = !isHideBottom
-            }
+            it.findViewById<BottomNavigationView>(R.id.bottomNavigation)
+                ?.let { bottomNavigationView ->
+                    bottomNavigationView.isVisible = !isHideBottom
+                }
         }
+    }
+
+    fun setVisionView(isVision: Boolean): Int {
+        return if (isVision) View.VISIBLE else View.GONE
+    }
+
+    open fun showKeyboard(editText: EditText) {
+        val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
+        imm?.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT)
+    }
+
+    open fun closeKeyboard(editText: EditText) {
+        val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
+        imm!!.hideSoftInputFromWindow(editText.windowToken, 0)
     }
 }

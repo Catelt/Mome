@@ -5,6 +5,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.widget.EditText
 import androidx.cardview.widget.CardView
 import androidx.core.view.isVisible
 import com.catelt.mome.databinding.ViewSearchBarBinding
@@ -14,6 +15,7 @@ class SearchEditText @JvmOverloads constructor(
 ) : CardView(context, attrs, defStyleAttr) {
     private val binding = ViewSearchBarBinding.inflate(LayoutInflater.from(context), this, true)
     var handleTextChange: ((CharSequence?) -> Unit)? = null
+    var editText: EditText
 
     init {
         binding.apply {
@@ -36,6 +38,7 @@ class SearchEditText @JvmOverloads constructor(
                 }
             })
 
+            editText = editTextSearch
             btnClear.setOnClickListener {
                 editTextSearch.setText("")
             }

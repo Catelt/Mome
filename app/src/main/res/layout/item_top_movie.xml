@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/content"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="2dp"
@@ -20,9 +20,10 @@
             android:id="@+id/imgBackdrop"
             android:layout_width="150dp"
             android:layout_height="90dp"
-            android:src="@drawable/img_sample"
             android:contentDescription="@string/image"
-            android:scaleType="centerCrop" />
+            android:scaleType="centerCrop"
+            android:background="@color/grey_dark_2"
+            android:src="@drawable/img_sample" />
 
     </androidx.cardview.widget.CardView>
 
@@ -31,8 +32,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:text="Joker"
-        android:layout_weight="1"/>
+        android:layout_weight="1"
+        tools:text="Joker" />
 
     <ImageView
         android:layout_width="28dp"
