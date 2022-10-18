@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginBottom="@dimen/padding_bottom_follow_size_navigation"
-    android:fitsSystemWindows="true"
+    android:background="@color/black"
     tools:context=".ui.detail.DetailTvShowFragment">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
