@@ -1,6 +1,7 @@
 package com.catelt.mome.core
 
 import android.content.Context
+import android.graphics.Rect
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -74,10 +75,13 @@ abstract class BaseFragment<VBinding : ViewBinding>(
                 WindowCompat.setDecorFitsSystemWindows(it.window, false)
                 changeColorStatusBar(R.color.transparent)
             } else {
+                val rectangle = Rect()
+                it.window.decorView.getWindowVisibleDisplayFrame(rectangle)
+                val statusBarHeight: Int = rectangle.top
+                binding.root.setPadding(0, statusBarHeight, 0, 0)
                 changeColorStatusBar(R.color.black)
             }
         }
-
     }
 
     private fun changeColorStatusBar(color: Int) {

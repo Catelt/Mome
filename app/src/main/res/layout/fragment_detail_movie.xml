@@ -4,9 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginBottom="@dimen/padding_bottom_follow_size_navigation"
     android:background="@color/black"
-    android:fitsSystemWindows="true"
     tools:context=".ui.detail.movie.DetailMovieFragment">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
