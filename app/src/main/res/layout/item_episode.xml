@@ -29,6 +29,7 @@
             <androidx.cardview.widget.CardView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:background="@color/grey_dark_2"
                 app:cardCornerRadius="4dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
@@ -39,8 +40,9 @@
                     android:id="@+id/imgBackdrop"
                     android:layout_width="124dp"
                     android:layout_height="69dp"
-                    android:background="@drawable/img_sample_2"
-                    android:scaleType="centerCrop" />
+                    android:background="@color/grey_dark_2"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/img_sample_2" />
 
             </androidx.cardview.widget.CardView>
 
@@ -68,48 +70,49 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/name_text"
+                android:id="@+id/txtTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:lineHeight="20sp"
                 android:maxLines="2"
+                android:text="@string/title_episode"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:text="1. Episode 1" />
+                tools:text="1. Episode 1" />
 
-            <TextView
-                android:id="@+id/txtRuntime"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:textColor="@color/grey_light_1"
-                android:textSize="12sp"
-                android:text="2h 31m" />
+            <!--            <TextView-->
+            <!--                android:id="@+id/txtRuntime"-->
+            <!--                android:layout_width="wrap_content"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:layout_marginTop="2dp"-->
+            <!--                android:textColor="@color/grey_light_1"-->
+            <!--                android:textSize="12sp"-->
+            <!--                android:text="2h 31m" />-->
 
 
         </LinearLayout>
 
-        <ImageView
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_marginEnd="4dp"
-            android:padding="4dp"
-            android:src="@drawable/ic_download"
-            app:tint="@color/white" />
+        <!--        <ImageView-->
+        <!--            android:layout_width="32dp"-->
+        <!--            android:layout_height="32dp"-->
+        <!--            android:layout_marginEnd="4dp"-->
+        <!--            android:padding="4dp"-->
+        <!--            android:src="@drawable/ic_download"-->
+        <!--            app:tint="@color/white" />-->
 
     </LinearLayout>
 
     <TextView
-        android:id="@+id/overview_text"
+        android:id="@+id/txtOverview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:layout_marginEnd="32dp"
+        android:layout_marginEnd="15dp"
         android:ellipsize="end"
         android:lineHeight="18sp"
         android:maxLines="3"
         android:textColor="@color/grey_light_1"
         android:textSize="13sp"
-        android:text="After months of preparation and seclusion, The Professor and his band of eight recruited robbers begin to attack the National Coinage and Stamp Factory of Spain. Everything goes according to plan, until the police shows up and shots are fired. Hostage negotiator inspector Raquel Murillo makes initial contact with The Professor, and it turns out that one of the hostages, Alison Parker, is a crucial part of the thieves' plan." />
+        tools:text="After months of preparation and seclusion, The Professor and his band of eight recruited robbers begin to attack the National Coinage and Stamp Factory of Spain. Everything goes according to plan, until the police shows up and shots are fired. Hostage negotiator inspector Raquel Murillo makes initial contact with The Professor, and it turns out that one of the hostages, Alison Parker, is a crucial part of the thieves' plan." />
 </LinearLayout>

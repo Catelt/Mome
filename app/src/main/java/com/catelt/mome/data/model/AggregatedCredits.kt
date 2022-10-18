@@ -75,3 +75,19 @@ data class Job(
     val episodeCount: Int,
     val job: String
 )
+
+
+fun AggregatedCredits.toStringCast(): String{
+    this.cast.let { list ->
+        var str = ""
+        for (cast in list){
+            if (cast == list.last()){
+                str += cast.name
+            }
+            else{
+                str += "${cast.name}, "
+            }
+        }
+        return str
+    }
+}

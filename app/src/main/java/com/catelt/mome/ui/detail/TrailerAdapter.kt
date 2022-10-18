@@ -10,10 +10,13 @@ import com.catelt.mome.core.BaseAdapter
 import com.catelt.mome.data.model.Video
 import com.catelt.mome.data.model.getThumbnailUrl
 import com.catelt.mome.data.model.movie.MovieDetails
+import com.catelt.mome.data.model.tvshow.TvShowDetails
 import com.catelt.mome.databinding.ItemVideoTrailerBinding
 
 class TrailerAdapter : BaseAdapter<Video>() {
     var movie: MovieDetails? = null
+    var tvShow: TvShowDetails? = null
+
     private lateinit var context: Context
     override fun createBinding(parent: ViewGroup, viewType: Int): ViewBinding {
         context = parent.context
@@ -26,8 +29,14 @@ class TrailerAdapter : BaseAdapter<Video>() {
         val item = getItem(position)
         (binding as ItemVideoTrailerBinding).apply {
             imgBackdrop.load(item.getThumbnailUrl())
-            txtTitle.text =
-                context.getString(R.string.text_title_trailer, position + 1, movie?.title)
+            if (movie != null){
+                txtTitle.text =
+                    context.getString(R.string.text_title_trailer, position + 1, movie?.title)
+            }
+            else{
+                txtTitle.text =
+                    context.getString(R.string.text_title_trailer, position + 1, tvShow?.title)
+            }
         }
     }
 }
