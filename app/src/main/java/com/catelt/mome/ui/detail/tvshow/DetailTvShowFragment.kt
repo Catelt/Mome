@@ -1,5 +1,4 @@
-package com.catelt.mome.ui.detail.movie
-
+package com.catelt.mome.ui.detail.tvshow
 
 import android.os.Bundle
 import android.transition.TransitionInflater
@@ -12,22 +11,18 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import coil.load
 import com.catelt.mome.R
-import com.catelt.mome.adapter.ListGridAdapter
 import com.catelt.mome.core.BaseFragment
-import com.catelt.mome.data.model.Credits
-import com.catelt.mome.data.model.getDirector
+import com.catelt.mome.data.model.AggregatedCredits
 import com.catelt.mome.data.model.getThumbnailUrl
-import com.catelt.mome.data.model.movie.MovieDetails
 import com.catelt.mome.data.model.toStringCast
-import com.catelt.mome.databinding.FragmentDetailMovieBinding
+import com.catelt.mome.data.model.tvshow.TvShowDetails
+import com.catelt.mome.databinding.FragmentDetailTvShowBinding
 import com.catelt.mome.ui.bottomsheet.MediaDetailsBottomSheet
 import com.catelt.mome.ui.components.CustomPlayerUiController
 import com.catelt.mome.ui.detail.TrailerAdapter
 import com.catelt.mome.utils.extension.getCalendarRelease
-import com.catelt.mome.utils.extension.getRunTime
 import com.catelt.mome.utils.extension.setAgeTitle
 import com.google.android.material.tabs.TabLayout
-import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerListener
@@ -41,14 +36,15 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import java.util.*
 
-
 @AndroidEntryPoint
-class DetailMovieFragment : BaseFragment<FragmentDetailMovieBinding>(
-    FragmentDetailMovieBinding::inflate
+class DetailTvShowFragment : BaseFragment<FragmentDetailTvShowBinding>(
+    FragmentDetailTvShowBinding::inflate
 ) {
+    override val viewModel: DetailTvShowViewModel by viewModels()
+
+    private val episodeAdapter = EpisodeAdapter()
     private val trailerAdapter = TrailerAdapter()
-    private val likeThisAdapter = ListGridAdapter()
-    override val viewModel: DetailMovieViewModel by viewModels()
+    private val likeThisAdapter = LikeThisAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,18 +54,21 @@ class DetailMovieFragment : BaseFragment<FragmentDetailMovieBinding>(
 
     override fun setUpViews() {
         binding.apply {
-            recyclerViewLikeThis.adapter = likeThisAdapter
-            likeThisAdapter.onMovieClicked = { movieId ->
-                MediaDetailsBottomSheet.newInstance(movieId,true)
-                    .show(requireActivity().supportFragmentManager, movieId.toString())
+            likeThisAdapter.onMovieClicked = { tvShowID ->
+                MediaDetailsBottomSheet.newInstance(tvShowID, false)
+                    .show(requireActivity().supportFragmentManager, tvShowID.toString())
             }
 
+            recyclerEpisode.adapter = episodeAdapter
+            recyclerViewLikeThis.adapter = likeThisAdapter
             recyclerViewTrailer.adapter = trailerAdapter
-            tabLayout.addOnTabSelectedListener(object : OnTabSelectedListener {
+            tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
                 override fun onTabSelected(tab: TabLayout.Tab?) {
-                    val isTrailerList = tab?.position == 1
-                    recyclerViewLikeThis.isVisible = !isTrailerList
-                    recyclerViewTrailer.isVisible = isTrailerList
+                    val position = tab?.position ?: 0
+                    txtNameTvShow.isVisible = position == EPISODE
+                    recyclerEpisode.isVisible = position == EPISODE
+                    recyclerViewTrailer.isVisible = position == TRAILER
+                    recyclerViewLikeThis.isVisible = position == LIKE_THIS
                 }
 
                 override fun onTabUnselected(tab: TabLayout.Tab?) {
@@ -79,6 +78,8 @@ class DetailMovieFragment : BaseFragment<FragmentDetailMovieBinding>(
                 }
 
             })
+
+            layoutHeader.layoutDirector.visibility = setVisionView(false)
 
             btnBack.setOnClickListener {
                 findNavController().navigateUp()
@@ -90,15 +91,16 @@ class DetailMovieFragment : BaseFragment<FragmentDetailMovieBinding>(
         viewModel.apply {
             lifecycleScope.launch {
                 imageUrlParser.collectLatest { imageParser ->
+                    episodeAdapter.imageUrlParser = imageParser
                     likeThisAdapter.imageUrlParser = imageParser
 
-                    uiState.collectLatest {
-                        it.movieDetails?.let { movieDetails ->
-                            setupMovieDetail(movieDetails)
-                            trailerAdapter.movie = movieDetails
+                    uiState.collectLatest { uiState ->
+                        uiState.tvShowDetails?.let { tvShowDetails ->
+                            setupTvShowDetail(tvShowDetails)
+                            trailerAdapter.tvShow = tvShowDetails
                         }
 
-                        it.associatedContent.videos?.let { videos ->
+                        uiState.associatedContentTvShow.videos?.let { videos ->
 
                             val trailers = mutableListOf<com.catelt.mome.data.model.Video>()
                             videos.forEach { video ->
@@ -142,6 +144,8 @@ class DetailMovieFragment : BaseFragment<FragmentDetailMovieBinding>(
                                                         binding.layoutThumbnail.youtubePlayerView
                                                     )
                                                 youTubePlayer.addListener(customPlayerUiController)
+                                                println("--------")
+                                                println(video.key)
                                                 youTubePlayer.loadVideo(video.key, 0f)
                                             }
                                         }
@@ -153,37 +157,53 @@ class DetailMovieFragment : BaseFragment<FragmentDetailMovieBinding>(
                                 }
                             }
                         }
-
-                        it.associatedContent.credits?.let { credits ->
+                        uiState.associatedContentTvShow.credits?.let { credits ->
                             setupCredit(credits)
                         }
 
-                        it.associatedMovies.similar.flowOn(Dispatchers.IO).onEach { list ->
+                        uiState.associatedTvShow.seasonDetails?.let {
+                            val list = it.episodes.filter { episode ->
+                                episode.isReleased()
+                            }
+                            episodeAdapter.submitList(list)
+                        }
+
+                        uiState.associatedTvShow.similar.flowOn(Dispatchers.IO).onEach { list ->
                             likeThisAdapter.submitData(list)
                         }.launchIn(lifecycleScope)
                     }
-
                 }
             }
         }
     }
 
-    private fun setupMovieDetail(movie: MovieDetails) {
+    private fun setupTvShowDetail(tvShow: TvShowDetails) {
         binding.apply {
             layoutHeader.apply {
-                txtTitle.text = movie.title
-                txtYear.text = movie.getCalendarRelease()?.get(Calendar.YEAR).toString()
-                txtRuntime.text = movie.getRunTime()
-                txtOverview.text = movie.overview
-                txtAge.setAgeTitle(movie.adult)
+                txtTitle.text = tvShow.title
+                txtYear.text = tvShow.getCalendarRelease()?.get(Calendar.YEAR).toString()
+                if (tvShow.numberOfSeasons > 1) {
+                    txtRuntime.text =
+                        getString(R.string.text_run_time_season, tvShow.numberOfSeasons)
+                } else {
+                    txtRuntime.text =
+                        getString(R.string.text_run_time_episodes, tvShow.numberOfEpisodes)
+                }
+                txtOverview.text = tvShow.overview
+                txtAge.setAgeTitle(tvShow.adult ?: false)
             }
         }
     }
 
-    private fun setupCredit(credits: Credits) {
+    private fun setupCredit(credits: AggregatedCredits) {
         binding.layoutHeader.apply {
             txtListStarring.text = credits.toStringCast()
-            txtDirector.text = credits.getDirector()?.name
         }
+    }
+
+    companion object {
+        const val EPISODE = 0
+        const val TRAILER = 1
+        const val LIKE_THIS = 2
     }
 }

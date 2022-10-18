@@ -33,7 +33,7 @@ class TvShowDetailsResponsePagingDataSource(
             )
 
             val currentPage = tvShowResponse.page
-            val totalPages = tvShowResponse.totalPages
+            val totalPages = 1
 
             LoadResult.Page(
                 data = tvShowResponse.tvShows,

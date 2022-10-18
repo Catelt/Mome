@@ -2,9 +2,10 @@
     <string name="app_name">Mome</string>
     <string name="home">Home</string>
     <string name="new_amp_hot"><![CDATA[New & Hot]]></string>
+    <string name="my_list">My List</string>
+
     <string name="downloads">Downloads</string>
     <string name="image">image</string>
-    <string name="my_list">My List</string>
     <string name="play">Play</string>
     <string name="info">Info</string>
     <string name="button">button</string>
@@ -14,13 +15,12 @@
     <string name="tv_shows">TV Shows</string>
     <string name="remind_me">Remind Me</string>
     <string name="reminder_set">Reminder Set</string>
-    <string name="top_searches">Top Searches</string>
-    <string name="search_for_show_movie_genre_etc">Search for show, movie, genre, etc.</string>
-    <string name="movies_amp_tv"><![CDATA[Movies & TV]]></string>
     <string name="download">Download</string>
+
     <string name="episodes">EPISODES</string>
     <string name="trailers_amp_more"><![CDATA[TRAILERS & MORE]]></string>
     <string name="more_like_this">MORE LIKE THIS</string>
+    <string name="title_episode">%1$d. %2$s</string>
 
     <string name="text_run_time">%1$s</string>
     <string name="text_run_time_episodes">%1$d Episodes</string>
@@ -99,6 +99,9 @@
 
     <string name="error_default_message">Something wrong</string>
 
+    <string name="top_searches">Top Searches</string>
+    <string name="search_for_show_movie_genre_etc">Search for show, movie, genre, etc.</string>
+    <string name="movies_amp_tv"><![CDATA[Movies & TV]]></string>
     <string name="title_message_empty_search">Oh darn. We don\'t have that</string>
     <string name="message_empty_search">Try searching for another movie, show, actor, director, or genre.</string>
 

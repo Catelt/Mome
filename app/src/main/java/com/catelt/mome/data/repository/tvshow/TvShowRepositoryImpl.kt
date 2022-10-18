@@ -145,4 +145,28 @@ class TvShowRepositoryImpl @Inject constructor(
     override fun tvShowVideos(tvShowId: Int, isoCode: String): Call<VideosResponse> {
         return apiTvShowHelper.getTvShowVideos(tvShowId, isoCode)
     }
+
+    override fun seasonDetails(
+        tvShowId: Int,
+        seasonNumber: Int,
+        deviceLanguage: DeviceLanguage
+    ): Call<SeasonDetails> {
+        return apiTvShowHelper.getSeasonDetails(tvShowId, seasonNumber, deviceLanguage.languageCode)
+    }
+
+    override fun episodesImage(
+        tvShowId: Int,
+        seasonNumber: Int,
+        episodeNumber: Int
+    ): Call<ImagesResponse> {
+        return apiTvShowHelper.getEpisodeImages(tvShowId, seasonNumber, episodeNumber)
+    }
+
+    override fun seasonCredits(
+        tvShowId: Int,
+        seasonNumber: Int,
+        isoCode: String
+    ): Call<AggregatedCredits> {
+        return apiTvShowHelper.getSeasonCredits(tvShowId, seasonNumber, isoCode)
+    }
 }

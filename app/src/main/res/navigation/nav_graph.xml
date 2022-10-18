@@ -32,7 +32,7 @@
         tools:layout="@layout/fragment_detail_movie" />
     <fragment
         android:id="@+id/detailTvShowFragment"
-        android:name="com.catelt.mome.ui.detail.DetailTvShowFragment"
+        android:name="com.catelt.mome.ui.detail.tvshow.DetailTvShowFragment"
         android:label="fragment_detail_tv_show"
         tools:layout="@layout/fragment_detail_tv_show" />
     <fragment
