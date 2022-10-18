@@ -6,6 +6,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
 import com.catelt.mome.core.BaseFragment
+import com.catelt.mome.data.model.MediaType
 import com.catelt.mome.databinding.FragmentSearchBinding
 import com.catelt.mome.ui.bottomsheet.MediaDetailsBottomSheet
 import com.catelt.mome.ui.search.adapter.ResultSearchAdapter
@@ -25,8 +26,8 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(FragmentSearchBinding
 
     private lateinit var onQueryChanged: (query: String) -> Unit
     private lateinit var onQueryCleared: () -> Unit
-    private val onMovieClicked = { movieId: Int ->
-        MediaDetailsBottomSheet.newInstance(movieId)
+    private val onMovieClicked = { movieId: Int, mediaType: MediaType ->
+        MediaDetailsBottomSheet.newInstance(movieId,mediaType == MediaType.Movie)
             .show(requireActivity().supportFragmentManager, movieId.toString())
     }
 

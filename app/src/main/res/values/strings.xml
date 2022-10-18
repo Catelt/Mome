@@ -22,7 +22,9 @@
     <string name="trailers_amp_more"><![CDATA[TRAILERS & MORE]]></string>
     <string name="more_like_this">MORE LIKE THIS</string>
 
-    <string name="text_run_time">• %1$s</string>
+    <string name="text_run_time">%1$s</string>
+    <string name="text_run_time_episodes">%1$d Episodes</string>
+    <string name="text_run_time_season">%1$d Season</string>
     <string name="text_18_plus">18+</string>
     <string name="text_13_plus">13+</string>
     <string name="text_title_trailer">Trailer %1$d: %2$s</string>
@@ -59,6 +61,11 @@
     <string name="title_popular">Popular</string>
     <string name="title_top_rate">Top rated of all time</string>
     <string name="title_explore">Explore Movies</string>
+
+    <string name="title_trending_tv_show">Trending this month</string>
+    <string name="title_top_rate_tv_show">Top rated of all time</string>
+    <string name="title_airing_today_tv_show">Airing today</string>
+    <string name="title_explore_tv_show">Explore Series</string>
 
     <string-array name="speed_dialog">
         <item>0.5x</item>
