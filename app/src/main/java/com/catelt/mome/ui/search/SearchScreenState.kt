@@ -1,7 +1,7 @@
 package com.catelt.mome.ui.search
 
 import androidx.paging.PagingData
-import com.catelt.mome.data.model.movie.Movie
+import com.catelt.mome.data.model.DetailPresentable
 import com.catelt.mome.data.model.search.SearchResult
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
@@ -29,7 +29,7 @@ sealed class SearchState {
 }
 
 sealed class ResultState {
-    data class Default(val popular: Flow<PagingData<Movie>> = emptyFlow()) : ResultState()
+    data class Default(val popular: Flow<PagingData<DetailPresentable>> = emptyFlow()) : ResultState()
     data class Search(val result: Flow<PagingData<SearchResult>>) : ResultState()
 }
 

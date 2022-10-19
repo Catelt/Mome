@@ -80,8 +80,8 @@ internal class CustomPlayerUiController(
         btnReply = view.findViewById(R.id.btnReply)
         btnAudio = view.findViewById(R.id.btnAudio)
         imgBackdrop = view.findViewById(R.id.imgBackdrop)
-
         seekBarProgressMini = view.findViewById(R.id.seekBarProgressMini)
+
         btnPlay.setOnClickListener {
             handlePlayPause()
         }
@@ -106,6 +106,8 @@ internal class CustomPlayerUiController(
             }
             false
         }
+
+        seekBarProgressMini.isEnabled = false
 
         seekBarProgress.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener{
             override fun onProgressChanged(p0: SeekBar?, p1: Int, p2: Boolean) {

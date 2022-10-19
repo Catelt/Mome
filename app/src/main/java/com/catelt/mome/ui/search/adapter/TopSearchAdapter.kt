@@ -5,13 +5,13 @@ import android.view.ViewGroup
 import androidx.viewbinding.ViewBinding
 import coil.load
 import com.catelt.mome.core.BasePagingAdapter
+import com.catelt.mome.data.model.DetailPresentable
 import com.catelt.mome.data.model.MediaType
-import com.catelt.mome.data.model.movie.Movie
 import com.catelt.mome.databinding.ItemTopMovieBinding
 import com.catelt.mome.utils.ImageUrlParser
 
 
-class TopSearchAdapter : BasePagingAdapter<Movie>(){
+class TopSearchAdapter : BasePagingAdapter<DetailPresentable>(){
     var imageUrlParser: ImageUrlParser? = null
     var onMovieClicked: ((Int, MediaType) -> Unit)? = null
 
