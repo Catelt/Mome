@@ -4,11 +4,19 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
 import com.catelt.mome.core.BaseViewModel
 import com.catelt.mome.data.model.DeviceLanguage
+import com.catelt.mome.data.model.Presentable
+import com.catelt.mome.data.model.movie.Movie
+import com.catelt.mome.data.model.ophim.OphimEpisode
+import com.catelt.mome.data.remote.api.onException
+import com.catelt.mome.data.remote.api.onFailure
+import com.catelt.mome.data.remote.api.onSuccess
 import com.catelt.mome.data.repository.config.ConfigRepository
 import com.catelt.mome.domain.usecase.GetDeviceLanguageUseCaseImpl
+import com.catelt.mome.domain.usecase.GetMediaDetailUserCaseImpl
 import com.catelt.mome.domain.usecase.movie.*
 import com.catelt.mome.domain.usecase.tvshow.*
 import com.catelt.mome.utils.ImageUrlParser
+import com.catelt.mome.utils.SlugUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
@@ -19,22 +27,41 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val getDeviceLanguageUseCase: GetDeviceLanguageUseCaseImpl,
+    private val getMovieDetailsUseCase: GetMovieDetailsUseCaseImpl,
     private val getNowPlayingMoviesUseCase: GetNowPlayingMoviesUseCaseImpl,
     private val getDiscoverAllMoviesUseCase: GetDiscoverAllMoviesUseCaseImpl,
-
     private val getPopularMoviesUseCaseImpl: GetPopularMoviesUseCaseImpl,
     private val getTrendingMoviesUseCase: GetTrendingMoviesUseCaseImpl,
     private val getTopRatedMoviesUseCase: GetTopRatedMoviesUseCaseImpl,
-
+    private val getTvShowDetailsUseCase: GetTvShowDetailsUseCaseImpl,
     private val getOnTheAirTvShowsUseCase: GetOnTheAirTvShowsUseCaseImpl,
     private val getDiscoverAllTvShowsUseCase: GetDiscoverAllTvShowsUseCaseImpl,
     private val getTopRatedTvShowsUseCase: GetTopRatedTvShowsUseCaseImpl,
     private val getTrendingTvShowsUseCase: GetTrendingTvShowsUseCaseImpl,
     private val getAiringTodayTvShowsUseCase: GetAiringTodayTvShowsUseCaseImpl,
+    private val getMediaDetailUserCaseImpl: GetMediaDetailUserCaseImpl,
     private val configRepository: ConfigRepository
 ) : BaseViewModel() {
     private val deviceLanguage: Flow<DeviceLanguage> = getDeviceLanguageUseCase.invoke()
     private val isMovie = MutableStateFlow(true)
+    val media = MutableStateFlow(
+        Movie(
+            id = 0,
+            adult = null,
+            backdropPath = null,
+            popularity = null,
+            posterPath = null,
+            releaseDate = null,
+            overview = "",
+            genreIds = emptyList(),
+            originalTitle = "",
+            originalLanguage = "",
+            title = "",
+            voteCount = 0,
+            video = false,
+            voteAverage = 0F
+        ) as Presentable
+    )
 
     val imageUrlParser: StateFlow<ImageUrlParser?> = configRepository.getImageUrlParser()
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
@@ -64,28 +91,128 @@ class HomeViewModel @Inject constructor(
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(10), TvShowsState.default)
 
+    private val episodes: MutableStateFlow<List<OphimEpisode>?> = MutableStateFlow(null)
+
     val uiState: StateFlow<HomeUIState> = combine(
-        isMovie, moviesState, tvShowsState
-    ) { isMovie, moviesState, tvShowsState ->
-        if (isMovie){
+        isMovie, moviesState, tvShowsState, episodes
+    ) { isMovie, moviesState, tvShowsState, episodes ->
+        if (isMovie) {
             HomeUIState(
-                homeState = HomeState.MovieData(moviesState)
+                homeState = HomeState.MovieData(moviesState),
+                episode = episodes
             )
-        }
-        else{
+        } else {
             HomeUIState(
-                homeState = HomeState.TvShowData(tvShowsState)
+                homeState = HomeState.TvShowData(tvShowsState),
+                episode = episodes
             )
         }
     }.stateIn(viewModelScope, SharingStarted.Eagerly, HomeUIState.default)
 
-    fun setIsMovie(value: Boolean){
+    init {
+        viewModelScope.launch {
+            media.collectLatest { presentable ->
+                episodes.emit(null)
+                isMovie.collectLatest { isMovie ->
+                    if (isMovie) {
+                        launch {
+                            getMovieDetails(presentable.id, DeviceLanguage.default)
+                            getMovieDetails(presentable.id)
+                        }
+                    } else {
+                        launch {
+                            getTvShowDetail(presentable.id, DeviceLanguage.default)
+                            getTvShowDetail(presentable.id)
+                        }
+                    }
+
+                }
+            }
+        }
+    }
+
+    fun setIsMovie(value: Boolean) {
         viewModelScope.launch {
             isMovie.emit(value)
         }
     }
 
-    fun getIsMovie(): Boolean{
+    fun getIsMovie(): Boolean {
         return isMovie.value
+    }
+
+    fun setCurrentMedia(presentable: Presentable) {
+        viewModelScope.launch {
+            media.emit(presentable)
+        }
+    }
+
+    private suspend fun getMovieDetails(
+        movieId: Int,
+        deviceLanguage: DeviceLanguage = DeviceLanguage(
+            region = "VN",
+            languageCode = "vi"
+        )
+    ) {
+        getMovieDetailsUseCase(
+            movieId = movieId,
+            deviceLanguage = deviceLanguage
+        ).onSuccess {
+            viewModelScope.launch {
+                val movieDetails = data
+
+                movieDetails?.title?.let {
+                    getMediaDetail(SlugUtils.slugify(movieDetails.title))
+                }
+            }
+        }.onFailure {
+            onFailure(this)
+        }.onException {
+            onError(this)
+        }
+    }
+
+    private suspend fun getTvShowDetail(
+        tvShowId: Int, deviceLanguage: DeviceLanguage = DeviceLanguage(
+            region = "VN",
+            languageCode = "vi"
+        )
+    ) {
+        getTvShowDetailsUseCase(
+            tvShowId = tvShowId,
+            deviceLanguage = deviceLanguage
+        ).onSuccess {
+            viewModelScope.launch {
+                val tvShowDetails = data
+
+                tvShowDetails?.title?.let {
+                    getMediaDetail(SlugUtils.slugify(tvShowDetails.title))
+                }
+            }
+        }.onFailure {
+            onFailure(this)
+        }.onException {
+            onError(this)
+        }
+    }
+
+    private suspend fun getMediaDetail(
+        slugName: String,
+    ) {
+        getMediaDetailUserCaseImpl(
+            slugName = slugName,
+        ).onSuccess {
+            viewModelScope.launch {
+                if (data?.status == true) {
+                    if (episodes.value == null) {
+                        episodes.emit(data.episodeResponses[0].episodes)
+                    }
+                }
+            }
+        }.onFailure {
+            onFailure(this)
+        }.onException {
+            onError(this)
+        }
     }
 }
