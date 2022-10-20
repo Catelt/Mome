@@ -27,7 +27,7 @@ import java.util.*
 @AndroidEntryPoint
 class MediaDetailsBottomSheet(
     private val movieId: Int,
-    private val isMovie: Boolean
+    private val isMovie: Boolean,
 ) : BottomSheetDialogFragment() {
     lateinit var binding: BottomSheetMediaDetailsBinding
     private val viewModel: MediaDetailsBottomViewModel by viewModels()
@@ -43,6 +43,7 @@ class MediaDetailsBottomSheet(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         setupObserve()
+        binding.shimmerLayout.startShimmer()
     }
 
     private fun setupObserve() {
@@ -72,6 +73,7 @@ class MediaDetailsBottomSheet(
 
     private fun setupUIMovie(data: MovieDetails, imageUrlParser: ImageUrlParser?) {
         binding.apply {
+            shimmerLayout.visibility = View.GONE
             btnClose.setOnClickListener {
                 dismiss()
             }
@@ -87,18 +89,22 @@ class MediaDetailsBottomSheet(
                     ImageUrlParser.ImageType.Poster
                 )
             )
-            btnDetail.setOnClickListener {
+            mainContainer.setOnClickListener {
                 dismiss()
                 findNavController().navigate(
                     R.id.detailMovieFragment,
                     bundleOf(BUNDLE_ID_MEDIA to data.id)
                 )
             }
+            btnDetail.setOnClickListener {
+                mainContainer.callOnClick()
+            }
         }
     }
 
     private fun setupUITvShow(data: TvShowDetails, imageUrlParser: ImageUrlParser?) {
         binding.apply {
+            shimmerLayout.visibility = View.GONE
             btnClose.setOnClickListener {
                 dismiss()
             }
@@ -119,12 +125,15 @@ class MediaDetailsBottomSheet(
                     ImageUrlParser.ImageType.Poster
                 )
             )
-            btnDetail.setOnClickListener {
+            mainContainer.setOnClickListener {
                 dismiss()
                 findNavController().navigate(
                     R.id.detailTvShowFragment,
                     bundleOf(BUNDLE_ID_MEDIA to data.id)
                 )
+            }
+            btnDetail.setOnClickListener {
+                mainContainer.callOnClick()
             }
         }
     }

@@ -134,4 +134,7 @@ dependencies {
     //Chucker
     debugImplementation "com.github.chuckerteam.chucker:library:3.5.2"
     releaseImplementation "com.github.chuckerteam.chucker:library-no-op:3.5.2"
+
+    //Shimmer Effect
+    implementation 'com.facebook.shimmer:shimmer:0.5.0'
 }
