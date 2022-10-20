@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mainContainer"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -9,7 +10,7 @@
         android:id="@+id/layoutEnd"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/black"/>
+        android:background="@color/black" />
 
     <ImageView
         android:id="@+id/btnBack"
@@ -55,11 +56,11 @@
             android:layout_width="110dp"
             android:layout_height="0dp"
             android:layout_weight="1"
+            android:max="100"
             android:paddingVertical="63dp"
             android:paddingStart="0dp"
             android:paddingEnd="0dp"
             android:progress="10"
-            android:max="100"
             android:progressDrawable="@drawable/seekbar_style_bright"
             android:rotation="270"
             android:splitTrack="false"
