@@ -9,6 +9,9 @@ import com.catelt.mome.data.remote.api.TMDB_API_KEY
 import com.catelt.mome.data.remote.api.movie.TmdbMoviesApi
 import com.catelt.mome.data.remote.api.movie.TmdbMoviesApiHelper
 import com.catelt.mome.data.remote.api.movie.TmdbMoviesApiHelperImpl
+import com.catelt.mome.data.remote.api.ophim.OphimApi
+import com.catelt.mome.data.remote.api.ophim.OphimApiHelper
+import com.catelt.mome.data.remote.api.ophim.OphimApiHelperImpl
 import com.catelt.mome.data.remote.api.others.TmdbOthersApi
 import com.catelt.mome.data.remote.api.others.TmdbOthersApiHelper
 import com.catelt.mome.data.remote.api.others.TmdbOthersApiHelperImpl
@@ -150,6 +153,25 @@ object NetworkModule {
     @Singleton
     @Provides
     fun provideTmdbOthersApiHelper(apiHelper: TmdbOthersApiHelperImpl): TmdbOthersApiHelper =
+        apiHelper
+
+    @Singleton
+    @Provides
+    fun provideOphimApi(
+        client: OkHttpClient,
+        moshi: Moshi,
+        retrofit: Retrofit
+    ): OphimApi =
+        Retrofit.Builder()
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
+            .baseUrl(ApiParams.ophimUrl.toHttpUrl())
+            .client(client)
+            .build()
+            .create(OphimApi::class.java)
+
+    @Singleton
+    @Provides
+    fun provideOphimApiHelper(apiHelper: OphimApiHelperImpl): OphimApiHelper =
         apiHelper
 
     @Singleton

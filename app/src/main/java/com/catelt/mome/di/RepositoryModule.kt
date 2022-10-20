@@ -9,6 +9,8 @@ import com.catelt.mome.data.repository.firebase.FirebaseRepository
 import com.catelt.mome.data.repository.firebase.FirebaseRepositoryImpl
 import com.catelt.mome.data.repository.movie.MovieRepository
 import com.catelt.mome.data.repository.movie.MovieRepositoryImpl
+import com.catelt.mome.data.repository.ophim.OphimRepository
+import com.catelt.mome.data.repository.ophim.OphimRepositoryImpl
 import com.catelt.mome.data.repository.search.SearchRepository
 import com.catelt.mome.data.repository.search.SearchRepositoryImpl
 import com.example.CateltMovie.data.repository.tvshow.TvShowRepository
@@ -58,6 +60,10 @@ object RepositoryModule {
         @Binds
         @Singleton
         fun bindSearchRepository(impl: SearchRepositoryImpl): SearchRepository
+
+        @Binds
+        @Singleton
+        fun bindOphimRepository(impl: OphimRepositoryImpl): OphimRepository
 
         @Binds
         @Singleton
