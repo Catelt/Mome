@@ -4,8 +4,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.catelt.mome.core.BaseViewModel
+import com.catelt.mome.data.model.DetailPresentable
 import com.catelt.mome.data.model.DeviceLanguage
-import com.catelt.mome.data.model.movie.Movie
 import com.catelt.mome.data.repository.config.ConfigRepository
 import com.catelt.mome.domain.usecase.GetDeviceLanguageUseCaseImpl
 import com.catelt.mome.domain.usecase.GetMediaMultiSearchUseCaseImpl
@@ -32,7 +32,7 @@ class SearchViewModel @Inject constructor(
     private val queryDelay = 500.milliseconds
 
     @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
-    private val popularMovies: Flow<PagingData<Movie>> =
+    private val popularMovies: Flow<PagingData<DetailPresentable>> =
         deviceLanguage.mapLatest { deviceLanguage ->
             getPopularMoviesUseCase(deviceLanguage)
         }.flattenMerge().cachedIn(viewModelScope)

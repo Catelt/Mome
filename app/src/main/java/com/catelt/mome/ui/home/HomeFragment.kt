@@ -2,12 +2,14 @@ package com.catelt.mome.ui.home
 
 
 import android.annotation.SuppressLint
+import android.os.Bundle
 import android.view.MotionEvent
 import androidx.activity.OnBackPressedCallback
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.paging.PagingData
 import coil.load
 import com.catelt.mome.R
 import com.catelt.mome.core.BaseFragment
@@ -29,12 +31,15 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
     FragmentHomeBinding::inflate
 ) {
     override val viewModel: HomeViewModel by viewModels()
+    private var saveStateMotion: Bundle? = null
+
     private var positionNowPlaying = Random.nextInt(0, 10)
     private val onMovieClicked = { movieId: Int ->
         MediaDetailsBottomSheet.newInstance(movieId,viewModel.getIsMovie())
             .show(requireActivity().supportFragmentManager, movieId.toString())
     }
 
+    private var trailerMedia : List<Presentable> = emptyList()
     private var imageParser: ImageUrlParser? = null
     private var isShowTitleAppBar: Boolean = false
 
@@ -64,36 +69,31 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
             layoutHeaderHome.btnPlay.setOnClickListener {
                 findNavController().navigate(R.id.detailTvShowFragment)
             }
-
             txtMovies.setOnTouchListener { _, event ->
                 if (event.action == MotionEvent.ACTION_UP) {
-                    if (!isShowTitleAppBar){
-                        if (viewModel.getIsMovie()){
-                            viewModel.setIsMovie(false)
-                        }
-                        viewModel.setIsMovie(true)
-                        randomMedia()
-                        setupAppBar(true)
-                        txtTitleAppBar.text = txtMovies.text
-                    }
+                    onClickMovie()
                 }
                 false
             }
 
             txtTvShows.setOnTouchListener { _, event ->
                 if (event.action == MotionEvent.ACTION_UP) {
-                    if (!isShowTitleAppBar){
-                        if (!viewModel.getIsMovie()) {
-                            viewModel.setIsMovie(true)
-                        }
-                        viewModel.setIsMovie(false)
-                        randomMedia()
-                        setupAppBar(true)
-                        txtTitleAppBar.text = txtTvShows.text
-                    }
-
+                    onClickTvShow()
                 }
                 false
+            }
+
+
+            if (isShowTitleAppBar){
+                isShowTitleAppBar = false
+                if (viewModel.getIsMovie()){
+                    txtMovies.callOnClick()
+                    onClickMovie()
+                }
+                else{
+                    txtTvShows.callOnClick()
+                    onClickTvShow()
+                }
             }
 
             btnBack.setOnClickListener {
@@ -121,6 +121,33 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
         }
     }
 
+    private fun onClickMovie(){
+        binding.apply {
+            if (!isShowTitleAppBar){
+                viewModel.setIsMovie(true)
+                setupAppBar(true)
+                txtTitleAppBar.text = getString(R.string.movies)
+                nestScrollView.scrollTo(0,0)
+                randomMedia()
+                setupUIMoviePlaying(trailerMedia[positionNowPlaying])
+            }
+        }
+    }
+
+    private fun onClickTvShow(){
+        binding.apply {
+            if (!isShowTitleAppBar){
+                viewModel.setIsMovie(false)
+                setupAppBar(true)
+                txtTitleAppBar.text = getString(R.string.tv_shows)
+                nestScrollView.scrollTo(0,0)
+                randomMedia()
+                setupUIMoviePlaying(trailerMedia[positionNowPlaying])
+            }
+        }
+    }
+
+    @Suppress("UNCHECKED_CAST")
     override fun setUpViewModel() {
         viewModel.apply {
             lifecycleScope.launch {
@@ -137,6 +164,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
                                         adapter.addLoadStateListener {
                                             adapter.snapshot().items.let { items ->
                                                 if (items.isNotEmpty()) {
+                                                    trailerMedia = items
                                                     setupUIMoviePlaying(items[positionNowPlaying])
                                                 }
                                             }
@@ -171,13 +199,13 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
                                         }
                                     }.launchIn(lifecycleScope)
 
-                                    upcoming.flowOn(Dispatchers.IO).onEach { list ->
+                                    popular.flowOn(Dispatchers.IO).onEach { list ->
                                         binding.listPopular.apply {
                                             init(
                                                 imageParser,
                                                 viewLifecycleOwner,
                                                 onMovieClicked,
-                                                list,
+                                                list as PagingData<Presentable>,
                                                 getString(R.string.title_popular)
                                             )
                                             visibility = setVisionView(true)
@@ -206,6 +234,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
                                         adapter.addLoadStateListener {
                                             adapter.snapshot().items.let { items ->
                                                 if (items.isNotEmpty()) {
+                                                    trailerMedia = items
                                                     setupUIMoviePlaying(items[positionNowPlaying])
                                                 }
                                             }
@@ -289,6 +318,18 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
             btnInfo.setOnClickListener {
                 onMovieClicked(presentable.id)
             }
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        saveStateMotion =  binding.root.transitionState
+    }
+
+    override fun onResume() {
+        super.onResume()
+        saveStateMotion?.let {
+            binding.root.transitionState = saveStateMotion
         }
     }
 

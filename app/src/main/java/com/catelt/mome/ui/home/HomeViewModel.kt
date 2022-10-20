@@ -21,7 +21,8 @@ class HomeViewModel @Inject constructor(
     private val getDeviceLanguageUseCase: GetDeviceLanguageUseCaseImpl,
     private val getNowPlayingMoviesUseCase: GetNowPlayingMoviesUseCaseImpl,
     private val getDiscoverAllMoviesUseCase: GetDiscoverAllMoviesUseCaseImpl,
-    private val getUpcomingMoviesUseCase: GetUpcomingMoviesUseCaseImpl,
+
+    private val getPopularMoviesUseCaseImpl: GetPopularMoviesUseCaseImpl,
     private val getTrendingMoviesUseCase: GetTrendingMoviesUseCaseImpl,
     private val getTopRatedMoviesUseCase: GetTopRatedMoviesUseCaseImpl,
 
@@ -42,7 +43,7 @@ class HomeViewModel @Inject constructor(
         MoviesState(
             nowPlaying = getNowPlayingMoviesUseCase(deviceLanguage, false).cachedIn(viewModelScope),
             discover = getDiscoverAllMoviesUseCase(deviceLanguage).cachedIn(viewModelScope),
-            upcoming = getUpcomingMoviesUseCase(deviceLanguage).cachedIn(viewModelScope),
+            popular = getPopularMoviesUseCaseImpl(deviceLanguage).cachedIn(viewModelScope),
             trending = getTrendingMoviesUseCase(deviceLanguage).cachedIn(viewModelScope),
             topRated = getTopRatedMoviesUseCase(deviceLanguage).cachedIn(viewModelScope)
         )

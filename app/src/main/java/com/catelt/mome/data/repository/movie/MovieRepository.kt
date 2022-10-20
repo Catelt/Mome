@@ -10,7 +10,7 @@ import retrofit2.Call
 interface MovieRepository {
     fun discoverMovies(
         deviceLanguage: DeviceLanguage,
-        sortType: SortType = SortType.Popularity,
+        sortType: SortType = SortType.VoteCount,
         sortOrder: SortOrder = SortOrder.Desc,
         genresParam: GenresParam = GenresParam(genres = emptyList()),
         watchProvidersParam: WatchProvidersParam = WatchProvidersParam(watchProviders = emptyList()),
