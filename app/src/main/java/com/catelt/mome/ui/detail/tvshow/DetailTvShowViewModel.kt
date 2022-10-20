@@ -5,15 +5,18 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
 import com.catelt.mome.core.BaseViewModel
 import com.catelt.mome.data.model.*
+import com.catelt.mome.data.model.ophim.OphimEpisode
 import com.catelt.mome.data.model.tvshow.TvShowDetails
 import com.catelt.mome.data.remote.api.onException
 import com.catelt.mome.data.remote.api.onFailure
 import com.catelt.mome.data.remote.api.onSuccess
 import com.catelt.mome.data.repository.config.ConfigRepository
 import com.catelt.mome.domain.usecase.GetDeviceLanguageUseCaseImpl
+import com.catelt.mome.domain.usecase.GetMediaDetailUserCaseImpl
 import com.catelt.mome.domain.usecase.tvshow.*
 import com.catelt.mome.utils.BUNDLE_ID_MEDIA
 import com.catelt.mome.utils.ImageUrlParser
+import com.catelt.mome.utils.SlugUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -28,6 +31,7 @@ class DetailTvShowViewModel @Inject constructor(
     private val getTvShowVideosUseCase: GetTvShowVideosUseCaseImpl,
     private val getSeasonDetailsUseCase: GetSeasonDetailsUseCaseImpl,
     private val getSeasonCreditsUseCase: GetSeasonCreditsUseCaseImpl,
+    private val getMediaDetailUserCaseImpl: GetMediaDetailUserCaseImpl,
     private val configRepository: ConfigRepository,
     private val savedStateHandle: SavedStateHandle
 ) : BaseViewModel() {
@@ -43,6 +47,7 @@ class DetailTvShowViewModel @Inject constructor(
     private val credits: MutableStateFlow<AggregatedCredits?> = MutableStateFlow(null)
     private val tvShowBackdrops: MutableStateFlow<List<Image>> = MutableStateFlow(emptyList())
     private val videos: MutableStateFlow<List<Video>?> = MutableStateFlow(null)
+    private val episodes: MutableStateFlow<List<OphimEpisode>?> = MutableStateFlow(null)
 
     private val seasonDetails: MutableStateFlow<SeasonDetails?> = MutableStateFlow(null)
 
@@ -66,12 +71,13 @@ class DetailTvShowViewModel @Inject constructor(
 
 
     private val associatedContent: StateFlow<AssociatedContentTvShow> = combine(
-        tvShowBackdrops, videos, credits
-    ) { backdrops, videos, credits ->
+        tvShowBackdrops, videos, credits, episodes
+    ) { backdrops, videos, credits, episodes ->
         AssociatedContentTvShow(
             backdrops = backdrops,
             videos = videos,
-            credits = credits
+            credits = credits,
+            episodes = episodes
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(10), AssociatedContentTvShow.default)
 
@@ -128,18 +134,34 @@ class DetailTvShowViewModel @Inject constructor(
                         deviceLanguage = deviceLanguage
                     )
                 }
+                launch {
+                    getTvShowDetails(
+                        tvShowId = tvShowId
+                    )
+                }
             }
         }
     }
 
-    private suspend fun getTvShowDetails(tvShowId: Int, deviceLanguage: DeviceLanguage) {
+    private suspend fun getTvShowDetails(
+        tvShowId: Int, deviceLanguage: DeviceLanguage = DeviceLanguage(
+            region = "VN",
+            languageCode = "vi"
+        )
+    ) {
         getTvShowDetailsUseCase(
             tvShowId = tvShowId,
             deviceLanguage = deviceLanguage
         ).onSuccess {
             viewModelScope.launch {
                 val tvShowDetails = data
-                _tvShowDetails.emit(tvShowDetails)
+                if (deviceLanguage.languageCode != "vi"){
+                    _tvShowDetails.emit(tvShowDetails)
+                }
+
+                tvShowDetails?.title?.let {
+                    getMediaDetail(SlugUtils.slugify(tvShowDetails.title))
+                }
             }
         }.onFailure {
             onFailure(this)
@@ -200,6 +222,26 @@ class DetailTvShowViewModel @Inject constructor(
         ).onSuccess {
             viewModelScope.launch {
                 credits.emit(data)
+            }
+        }.onFailure {
+            onFailure(this)
+        }.onException {
+            onError(this)
+        }
+    }
+
+    private suspend fun getMediaDetail(
+        slugName: String
+    ) {
+        getMediaDetailUserCaseImpl(
+            slugName = slugName,
+        ).onSuccess {
+            viewModelScope.launch {
+                if (data?.status == true) {
+                    if (episodes.value == null) {
+                        episodes.emit(data.episodeResponses[0].episodes)
+                    }
+                }
             }
         }.onFailure {
             onFailure(this)

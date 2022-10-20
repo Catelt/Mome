@@ -5,6 +5,7 @@ import android.transition.TransitionInflater
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -13,6 +14,7 @@ import coil.load
 import com.catelt.mome.R
 import com.catelt.mome.core.BaseFragment
 import com.catelt.mome.data.model.AggregatedCredits
+import com.catelt.mome.data.model.Video
 import com.catelt.mome.data.model.getThumbnailUrl
 import com.catelt.mome.data.model.toStringCast
 import com.catelt.mome.data.model.tvshow.TvShowDetails
@@ -20,6 +22,8 @@ import com.catelt.mome.databinding.FragmentDetailTvShowBinding
 import com.catelt.mome.ui.bottomsheet.MediaDetailsBottomSheet
 import com.catelt.mome.ui.components.CustomPlayerUiController
 import com.catelt.mome.ui.detail.TrailerAdapter
+import com.catelt.mome.utils.BUNDLE_TITLE_MEDIA
+import com.catelt.mome.utils.BUNDLE_URL_MEDIA
 import com.catelt.mome.utils.extension.getCalendarRelease
 import com.catelt.mome.utils.extension.setAgeTitle
 import com.google.android.material.tabs.TabLayout
@@ -42,6 +46,7 @@ class DetailTvShowFragment : BaseFragment<FragmentDetailTvShowBinding>(
 ) {
     override val viewModel: DetailTvShowViewModel by viewModels()
 
+    private var listener: YouTubePlayerListener? = null
     private val episodeAdapter = EpisodeAdapter()
     private val trailerAdapter = TrailerAdapter()
     private val likeThisAdapter = LikeThisAdapter()
@@ -57,6 +62,21 @@ class DetailTvShowFragment : BaseFragment<FragmentDetailTvShowBinding>(
             likeThisAdapter.onMovieClicked = { tvShowID ->
                 MediaDetailsBottomSheet.newInstance(tvShowID, false)
                     .show(requireActivity().supportFragmentManager, tvShowID.toString())
+            }
+            
+            episodeAdapter.onMovieClicked = { episodeNumber, name ->
+                viewModel.uiState.value.associatedContentTvShow.episodes?.let { list ->
+                    if (list.size > episodeNumber) {
+                        val newTitle = "${binding.layoutHeader.txtTitle.text} \"$name\""
+                        findNavController().navigate(
+                            R.id.videoPlayerFragment,
+                            bundleOf(
+                                BUNDLE_TITLE_MEDIA to newTitle,
+                                BUNDLE_URL_MEDIA to list[0].url
+                            )
+                        )
+                    }
+                }
             }
 
             recyclerEpisode.adapter = episodeAdapter
@@ -102,7 +122,7 @@ class DetailTvShowFragment : BaseFragment<FragmentDetailTvShowBinding>(
 
                         uiState.associatedContentTvShow.videos?.let { videos ->
 
-                            val trailers = mutableListOf<com.catelt.mome.data.model.Video>()
+                            val trailers = mutableListOf<Video>()
                             videos.forEach { video ->
                                 if (video.type == getString(R.string.trailer)) {
                                     trailers.add(video)
@@ -111,30 +131,32 @@ class DetailTvShowFragment : BaseFragment<FragmentDetailTvShowBinding>(
                             trailerAdapter.submitList(trailers)
 
                             binding.layoutThumbnail.youtubePlayerView.apply {
-                                lifecycle.addObserver(this)
+                                if (listener == null) {
+                                    lifecycle.addObserver(this)
 
-                                val customPlayerUi =
-                                    inflateCustomPlayerUi(R.layout.view_custom_youtube_player)
-                                val video = if (trailers.isEmpty()) {
-                                    if (videos.isNotEmpty()) {
-                                        videos.last()
+                                    val customPlayerUi =
+                                        inflateCustomPlayerUi(R.layout.view_custom_youtube_player)
+                                    val video = if (trailers.isEmpty()) {
+                                        if (videos.isNotEmpty()) {
+                                            videos.last()
+                                        } else {
+                                            null
+                                        }
                                     } else {
-                                        null
+                                        trailers.last()
                                     }
-                                } else {
-                                    trailers.last()
-                                }
-                                video?.let {
-                                    customPlayerUi.findViewById<ImageView>(R.id.imgBackdrop).apply {
-                                        load(video.getThumbnailUrl())
-                                    }
-                                    customPlayerUi.findViewById<TextView>(R.id.txtTypeVideo).apply {
-                                        visibility = View.VISIBLE
-                                        text = video.type
-                                    }
+                                    video?.let {
+                                        customPlayerUi.findViewById<ImageView>(R.id.imgBackdrop)
+                                            .apply {
+                                                load(video.getThumbnailUrl())
+                                            }
+                                        customPlayerUi.findViewById<TextView>(R.id.txtTypeVideo)
+                                            .apply {
+                                                visibility = View.VISIBLE
+                                                text = video.type
+                                            }
 
-                                    val listener: YouTubePlayerListener =
-                                        object : AbstractYouTubePlayerListener() {
+                                        listener = object : AbstractYouTubePlayerListener() {
                                             override fun onReady(youTubePlayer: YouTubePlayer) {
                                                 val customPlayerUiController =
                                                     CustomPlayerUiController(
@@ -143,17 +165,20 @@ class DetailTvShowFragment : BaseFragment<FragmentDetailTvShowBinding>(
                                                         youTubePlayer,
                                                         binding.layoutThumbnail.youtubePlayerView
                                                     )
-                                                youTubePlayer.addListener(customPlayerUiController)
-                                                println("--------")
-                                                println(video.key)
+                                                youTubePlayer.addListener(
+                                                    customPlayerUiController
+                                                )
                                                 youTubePlayer.loadVideo(video.key, 0f)
                                             }
                                         }
 
-                                    val options: IFramePlayerOptions =
-                                        IFramePlayerOptions.Builder().controls(0).build()
+                                        val options: IFramePlayerOptions =
+                                            IFramePlayerOptions.Builder().controls(0).build()
 
-                                    initialize(listener, options)
+                                        listener?.let {
+                                            initialize(it, options)
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -171,6 +196,22 @@ class DetailTvShowFragment : BaseFragment<FragmentDetailTvShowBinding>(
                         uiState.associatedTvShow.similar.flowOn(Dispatchers.IO).onEach { list ->
                             likeThisAdapter.submitData(list)
                         }.launchIn(lifecycleScope)
+
+                        binding.layoutHeader.btnPlay.apply {
+                            setEnable(uiState.associatedContentTvShow.episodes != null)
+                            uiState.associatedContentTvShow.episodes?.let { list ->
+                                setOnClickListener {
+                                    findNavController().navigate(
+                                        R.id.videoPlayerFragment,
+                                        bundleOf(
+                                            BUNDLE_TITLE_MEDIA to binding.layoutHeader.txtTitle.text,
+                                            BUNDLE_URL_MEDIA to list[0].url
+                                        )
+                                    )
+                                }
+                            }
+
+                        }
                     }
                 }
             }
@@ -199,6 +240,16 @@ class DetailTvShowFragment : BaseFragment<FragmentDetailTvShowBinding>(
         binding.layoutHeader.apply {
             txtListStarring.text = credits.toStringCast()
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        listener = null
+    }
+
+    override fun onStop() {
+        super.onStop()
+        listener = null
     }
 
     companion object {

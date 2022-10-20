@@ -8,30 +8,50 @@
     app:cardElevation="0dp">
 
     <LinearLayout
+        android:id="@+id/mainContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
         android:orientation="horizontal"
         tools:ignore="UseCompoundDrawables">
 
-        <ImageView
-            android:layout_width="18dp"
-            android:layout_height="18dp"
-            android:contentDescription="@string/image"
-            android:src="@drawable/ic_play" />
-
-        <TextView
-            android:id="@+id/txtTopic"
+        <LinearLayout
+            android:id="@+id/layoutButton"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:gravity="center"
-            android:text="@string/play"
-            android:textColor="@color/black"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            tools:letterSpacing="0.07" />
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:contentDescription="@string/image"
+                android:src="@drawable/ic_play" />
+
+            <TextView
+                android:id="@+id/txtTopic"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:gravity="center"
+                android:text="@string/play"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                tools:letterSpacing="0.07" />
+
+        </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/layoutLoading"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            android:layout_marginVertical="24dp"
+            android:indeterminate="true"
+            android:visibility="gone"
+            android:indeterminateTint="@color/Primary"
+            android:indeterminateTintMode="src_atop" />
     </LinearLayout>
+
 </androidx.cardview.widget.CardView>
 
 

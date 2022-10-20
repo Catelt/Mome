@@ -7,14 +7,17 @@ import com.catelt.mome.core.BaseViewModel
 import com.catelt.mome.data.model.*
 import com.catelt.mome.data.model.movie.MovieCollection
 import com.catelt.mome.data.model.movie.MovieDetails
+import com.catelt.mome.data.model.ophim.OphimEpisode
 import com.catelt.mome.data.remote.api.onException
 import com.catelt.mome.data.remote.api.onFailure
 import com.catelt.mome.data.remote.api.onSuccess
 import com.catelt.mome.data.repository.config.ConfigRepository
 import com.catelt.mome.domain.usecase.GetDeviceLanguageUseCaseImpl
+import com.catelt.mome.domain.usecase.GetMediaDetailUserCaseImpl
 import com.catelt.mome.domain.usecase.movie.*
 import com.catelt.mome.utils.BUNDLE_ID_MEDIA
 import com.catelt.mome.utils.ImageUrlParser
+import com.catelt.mome.utils.SlugUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
@@ -35,6 +38,7 @@ class DetailMovieViewModel @Inject constructor(
     private val getMovieBackdropsUseCase: GetMovieBackdropsUseCaseImpl,
     private val getMovieCollectionUseCase: GetMovieCollectionUseCaseImpl,
     private val getOtherDirectorMoviesUseCase: GetOtherDirectorMoviesUseCaseImpl,
+    private val getMediaDetailUserCaseImpl: GetMediaDetailUserCaseImpl,
     private val configRepository: ConfigRepository,
     private val savedStateHandle: SavedStateHandle
 ) : BaseViewModel() {
@@ -53,6 +57,7 @@ class DetailMovieViewModel @Inject constructor(
     )
 
     private val videos: MutableStateFlow<List<Video>?> = MutableStateFlow(null)
+    private val episodes: MutableStateFlow<List<OphimEpisode>?> = MutableStateFlow(null)
 
     val imageUrlParser: StateFlow<ImageUrlParser?> = configRepository.getImageUrlParser()
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
@@ -78,12 +83,13 @@ class DetailMovieViewModel @Inject constructor(
 
 
     private val associatedContent: StateFlow<AssociatedContent> = combine(
-        movieBackdrops, videos, credits
-    ) { backdrops, videos, credits ->
+        movieBackdrops, videos, credits, episodes
+    ) { backdrops, videos, credits, episodes ->
         AssociatedContent(
             backdrops = backdrops,
             videos = videos,
-            credits = credits
+            credits = credits,
+            episodes = episodes
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(10), AssociatedContent.default)
 
@@ -124,6 +130,9 @@ class DetailMovieViewModel @Inject constructor(
                 launch {
                     getMovieVideos(movieId, deviceLanguage)
                 }
+                launch {
+                    getMovieDetails(movieId)
+                }
             }
         }
 
@@ -155,14 +164,25 @@ class DetailMovieViewModel @Inject constructor(
         }
     }
 
-    private suspend fun getMovieDetails(movieId: Int, deviceLanguage: DeviceLanguage) {
+    private suspend fun getMovieDetails(
+        movieId: Int, deviceLanguage: DeviceLanguage = DeviceLanguage(
+            region = "VN",
+            languageCode = "vi"
+        )
+    ) {
         getMovieDetailsUseCase(
             movieId = movieId,
             deviceLanguage = deviceLanguage
         ).onSuccess {
             viewModelScope.launch {
                 val movieDetails = data
-                _movieDetails.emit(movieDetails)
+                if (deviceLanguage.languageCode != "vi") {
+                    _movieDetails.emit(movieDetails)
+                }
+
+                movieDetails?.title?.let {
+                    getMediaDetail(SlugUtils.slugify(movieDetails.title))
+                }
 
                 data?.collection?.id?.let { collectionId ->
                     getMovieCollection(
@@ -259,5 +279,25 @@ class DetailMovieViewModel @Inject constructor(
         )
 
         otherDirectorMovies.emit(directorMovies)
+    }
+
+    private suspend fun getMediaDetail(
+        slugName: String
+    ) {
+        getMediaDetailUserCaseImpl(
+            slugName = slugName,
+        ).onSuccess {
+            viewModelScope.launch {
+                if (data?.status == true) {
+                    if (episodes.value == null) {
+                        episodes.emit(data.episodeResponses[0].episodes)
+                    }
+                }
+            }
+        }.onFailure {
+            onFailure(this)
+        }.onException {
+            onError(this)
+        }
     }
 }

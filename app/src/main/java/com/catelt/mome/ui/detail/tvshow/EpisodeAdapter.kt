@@ -12,7 +12,7 @@ import com.catelt.mome.utils.ImageUrlParser
 
 class EpisodeAdapter : BaseAdapter<Episode>() {
     var imageUrlParser: ImageUrlParser? = null
-    var onMovieClicked: ((Int) -> Unit)? = null
+    var onMovieClicked: ((Int, String) -> Unit)? = null
 
     override fun createBinding(parent: ViewGroup, viewType: Int): ViewBinding {
         return ItemEpisodeBinding.inflate(
@@ -36,7 +36,7 @@ class EpisodeAdapter : BaseAdapter<Episode>() {
     override fun setOnClickItem(position: Int) {
         val item = getItem(position)
         item?.let {
-            onMovieClicked?.invoke(item.episodeNumber)
+            onMovieClicked?.invoke(item.episodeNumber,item.name)
         }
     }
 }

@@ -6,6 +6,7 @@ import android.transition.TransitionInflater
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -23,6 +24,8 @@ import com.catelt.mome.databinding.FragmentDetailMovieBinding
 import com.catelt.mome.ui.bottomsheet.MediaDetailsBottomSheet
 import com.catelt.mome.ui.components.CustomPlayerUiController
 import com.catelt.mome.ui.detail.TrailerAdapter
+import com.catelt.mome.utils.BUNDLE_TITLE_MEDIA
+import com.catelt.mome.utils.BUNDLE_URL_MEDIA
 import com.catelt.mome.utils.extension.getCalendarRelease
 import com.catelt.mome.utils.extension.getRunTime
 import com.catelt.mome.utils.extension.setAgeTitle
@@ -46,9 +49,11 @@ import java.util.*
 class DetailMovieFragment : BaseFragment<FragmentDetailMovieBinding>(
     FragmentDetailMovieBinding::inflate
 ) {
+    override val viewModel: DetailMovieViewModel by viewModels()
+    private var listener: YouTubePlayerListener? = null
+
     private val trailerAdapter = TrailerAdapter()
     private val likeThisAdapter = ListGridAdapter()
-    override val viewModel: DetailMovieViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,7 +65,7 @@ class DetailMovieFragment : BaseFragment<FragmentDetailMovieBinding>(
         binding.apply {
             recyclerViewLikeThis.adapter = likeThisAdapter
             likeThisAdapter.onMovieClicked = { movieId ->
-                MediaDetailsBottomSheet.newInstance(movieId,true)
+                MediaDetailsBottomSheet.newInstance(movieId, true)
                     .show(requireActivity().supportFragmentManager, movieId.toString())
             }
 
@@ -92,13 +97,13 @@ class DetailMovieFragment : BaseFragment<FragmentDetailMovieBinding>(
                 imageUrlParser.collectLatest { imageParser ->
                     likeThisAdapter.imageUrlParser = imageParser
 
-                    uiState.collectLatest {
-                        it.movieDetails?.let { movieDetails ->
+                    uiState.collectLatest { movieDetailSate ->
+                        movieDetailSate.movieDetails?.let { movieDetails ->
                             setupMovieDetail(movieDetails)
                             trailerAdapter.movie = movieDetails
                         }
 
-                        it.associatedContent.videos?.let { videos ->
+                        movieDetailSate.associatedContent.videos?.let { videos ->
 
                             val trailers = mutableListOf<com.catelt.mome.data.model.Video>()
                             videos.forEach { video ->
@@ -109,30 +114,33 @@ class DetailMovieFragment : BaseFragment<FragmentDetailMovieBinding>(
                             trailerAdapter.submitList(trailers)
 
                             binding.layoutThumbnail.youtubePlayerView.apply {
-                                lifecycle.addObserver(this)
 
-                                val customPlayerUi =
-                                    inflateCustomPlayerUi(R.layout.view_custom_youtube_player)
-                                val video = if (trailers.isEmpty()) {
-                                    if (videos.isNotEmpty()) {
-                                        videos.last()
+                                if (listener == null) {
+                                    lifecycle.addObserver(this)
+
+                                    val customPlayerUi =
+                                        inflateCustomPlayerUi(R.layout.view_custom_youtube_player)
+                                    val video = if (trailers.isEmpty()) {
+                                        if (videos.isNotEmpty()) {
+                                            videos.last()
+                                        } else {
+                                            null
+                                        }
                                     } else {
-                                        null
+                                        trailers.last()
                                     }
-                                } else {
-                                    trailers.last()
-                                }
-                                video?.let {
-                                    customPlayerUi.findViewById<ImageView>(R.id.imgBackdrop).apply {
-                                        load(video.getThumbnailUrl())
-                                    }
-                                    customPlayerUi.findViewById<TextView>(R.id.txtTypeVideo).apply {
-                                        visibility = View.VISIBLE
-                                        text = video.type
-                                    }
+                                    video?.let {
+                                        customPlayerUi.findViewById<ImageView>(R.id.imgBackdrop)
+                                            .apply {
+                                                load(video.getThumbnailUrl())
+                                            }
+                                        customPlayerUi.findViewById<TextView>(R.id.txtTypeVideo)
+                                            .apply {
+                                                visibility = View.VISIBLE
+                                                text = video.type
+                                            }
 
-                                    val listener: YouTubePlayerListener =
-                                        object : AbstractYouTubePlayerListener() {
+                                        listener = object : AbstractYouTubePlayerListener() {
                                             override fun onReady(youTubePlayer: YouTubePlayer) {
                                                 val customPlayerUiController =
                                                     CustomPlayerUiController(
@@ -141,26 +149,47 @@ class DetailMovieFragment : BaseFragment<FragmentDetailMovieBinding>(
                                                         youTubePlayer,
                                                         binding.layoutThumbnail.youtubePlayerView
                                                     )
-                                                youTubePlayer.addListener(customPlayerUiController)
+                                                youTubePlayer.addListener(
+                                                    customPlayerUiController
+                                                )
                                                 youTubePlayer.loadVideo(video.key, 0f)
                                             }
                                         }
 
-                                    val options: IFramePlayerOptions =
-                                        IFramePlayerOptions.Builder().controls(0).build()
+                                        val options: IFramePlayerOptions =
+                                            IFramePlayerOptions.Builder().controls(0).build()
 
-                                    initialize(listener, options)
+                                        listener?.let{
+                                            initialize(it, options)
+                                        }
+                                    }
                                 }
                             }
                         }
 
-                        it.associatedContent.credits?.let { credits ->
+                        movieDetailSate.associatedContent.credits?.let { credits ->
                             setupCredit(credits)
                         }
 
-                        it.associatedMovies.similar.flowOn(Dispatchers.IO).onEach { list ->
-                            likeThisAdapter.submitData(list)
-                        }.launchIn(lifecycleScope)
+                        movieDetailSate.associatedMovies.similar.flowOn(Dispatchers.IO)
+                            .onEach { list ->
+                                likeThisAdapter.submitData(list)
+                            }.launchIn(lifecycleScope)
+
+                        binding.layoutHeader.btnPlay.apply {
+                            setEnable(movieDetailSate.associatedContent.episodes != null)
+                            movieDetailSate.associatedContent.episodes?.let { list ->
+                                setOnClickListener {
+                                    findNavController().navigate(
+                                        R.id.videoPlayerFragment,
+                                        bundleOf(
+                                            BUNDLE_TITLE_MEDIA to binding.layoutHeader.txtTitle.text,
+                                            BUNDLE_URL_MEDIA to list[0].url
+                                        )
+                                    )
+                                }
+                            }
+                        }
                     }
 
                 }
@@ -185,5 +214,10 @@ class DetailMovieFragment : BaseFragment<FragmentDetailMovieBinding>(
             txtListStarring.text = credits.toStringCast()
             txtDirector.text = credits.getDirector()?.name
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        listener = null
     }
 }
