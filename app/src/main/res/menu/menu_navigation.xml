@@ -5,7 +5,7 @@
         android:icon="@drawable/ic_home"
         android:title="@string/home" />
     <item
-        android:id="@+id/newHotFragment"
+        android:id="@+id/upcomingFragment"
         android:icon="@drawable/ic_play_stacked"
         android:title="@string/new_amp_hot" />
     <item

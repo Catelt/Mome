@@ -105,4 +105,6 @@
     <string name="title_message_empty_search">Oh darn. We don\'t have that</string>
     <string name="message_empty_search">Try searching for another movie, show, actor, director, or genre.</string>
 
+    <string name="text_arrival_date">Coming %1$s</string>
+
 </resources>

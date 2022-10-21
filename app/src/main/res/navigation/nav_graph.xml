@@ -11,10 +11,10 @@
         android:label="fragment_home"
         tools:layout="@layout/fragment_home" />
     <fragment
-        android:id="@+id/newHotFragment"
-        android:name="com.catelt.mome.ui.new.NewHotFragment"
-        android:label="fragment_new_hot"
-        tools:layout="@layout/fragment_new_hot" />
+        android:id="@+id/upcomingFragment"
+        android:name="com.catelt.mome.ui.upcoming.UpcomingFragment"
+        android:label="fragment_upcoming"
+        tools:layout="@layout/fragment_upcoming" />
     <fragment
         android:id="@+id/myListFragment"
         android:name="com.catelt.mome.ui.mylist.MyListFragment"

@@ -41,8 +41,7 @@
                     android:layout_width="124dp"
                     android:layout_height="69dp"
                     android:background="@color/grey_dark_2"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/img_sample_2" />
+                    android:scaleType="centerCrop" />
 
             </androidx.cardview.widget.CardView>
 
