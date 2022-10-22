@@ -3,11 +3,11 @@ package com.catelt.mome.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.viewbinding.ViewBinding
-import coil.load
 import com.catelt.mome.core.BasePagingAdapter
 import com.catelt.mome.data.model.movie.Movie
 import com.catelt.mome.databinding.ItemMediaBinding
 import com.catelt.mome.utils.ImageUrlParser
+import com.catelt.mome.utils.extension.loadDefault
 
 class ListGridAdapter : BasePagingAdapter<Movie>() {
     var imageUrlParser: ImageUrlParser? = null
@@ -23,9 +23,7 @@ class ListGridAdapter : BasePagingAdapter<Movie>() {
         val item = getItem(position)
         (binding as ItemMediaBinding).apply {
             item?.let {
-                imgPoster.load(imageUrlParser?.getImageUrl(it.posterPath,ImageUrlParser.ImageType.Poster)){
-                    crossfade(true)
-                }
+                imgPoster.loadDefault(imageUrlParser?.getImageUrl(it.posterPath,ImageUrlParser.ImageType.Poster))
                 imgPoster.setOnClickListener {
                     onMovieClicked?.invoke(item.id)
                 }

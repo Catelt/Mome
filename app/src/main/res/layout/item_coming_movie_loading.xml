@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/black"
@@ -17,27 +16,31 @@
             android:id="@+id/txtMonth"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="2dp"
+            android:background="@drawable/background_shimmer"
             android:ellipsize="end"
             android:includeFontPadding="false"
             android:lineSpacingExtra="0dp"
             android:maxLines="1"
             android:text="APR"
-            android:textColor="@color/grey_light_2"
-            android:textSize="14sp"
+            android:textColor="@color/grey_light_1"
+            android:textSize="12sp"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/txtDay"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="2dp"
+            android:background="@drawable/background_shimmer"
             android:ellipsize="end"
             android:includeFontPadding="false"
             android:lineSpacingExtra="0dp"
             android:maxLines="1"
             android:paddingBottom="0dp"
             android:text="20"
-            android:textColor="@color/text_color"
-            android:textSize="38sp"
+            android:textColor="@color/grey_light_1"
+            android:textSize="36sp"
             android:textStyle="bold" />
 
     </LinearLayout>
@@ -60,8 +63,8 @@
                 android:id="@+id/imgBackdrop"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/grey_dark_1"
-                android:scaleType="fitXY"/>
+                android:background="@color/grey_light_1"
+                android:scaleType="fitXY" />
 
         </androidx.cardview.widget.CardView>
 
@@ -82,44 +85,44 @@
 
                 <TextView
                     android:id="@+id/txtTitle"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="@drawable/background_shimmer"
                     android:ellipsize="end"
                     android:maxLines="2"
-                    android:textColor="@color/text_color"
                     android:textSize="20sp"
-                    android:textStyle="bold"
-                    tools:text="Joker" />
+                    android:textStyle="bold" />
 
             </LinearLayout>
 
-            <com.catelt.mome.ui.components.RemindButton
-                android:id="@+id/btnRemind"
-                android:layout_width="80dp"
-                android:layout_height="wrap_content"
-                android:background="?android:selectableItemBackground" />
-
             <LinearLayout
-                android:id="@+id/btnInfo"
                 android:layout_width="80dp"
                 android:layout_height="wrap_content"
-                android:background="?android:selectableItemBackground"
                 android:gravity="center"
                 android:orientation="vertical"
                 android:paddingVertical="12dp">
 
                 <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_info" />
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:background="@drawable/background_shimmer"
+                    />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:text="@string/info"
-                    android:textColor="@color/grey"
-                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:paddingVertical="12dp">
+
+                <ImageView
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:background="@drawable/background_shimmer"
+                    />
+
             </LinearLayout>
         </LinearLayout>
 
@@ -130,8 +133,9 @@
             android:layout_marginEnd="8dp"
             android:ellipsize="end"
             android:maxLines="1"
-            android:text="Coming on"
-            android:textColor="@color/text_color"
+            android:text="Coming on November 20"
+            android:textColor="@color/grey_light_1"
+            android:background="@drawable/background_shimmer"
             android:textSize="16sp"
             android:textStyle="bold" />
 
@@ -143,8 +147,9 @@
             android:layout_marginEnd="8dp"
             android:ellipsize="end"
             android:maxLines="4"
+            android:textColor="@color/grey_light_1"
+            android:background="@drawable/background_shimmer"
             android:text="After months of preparation and seclusion, The Professor and his band of eight recruited robbers begin to attack the National Coinage and Stamp Factory of Spain. Everything goes according to plan, until the police shows up and shots are fired. Hostage negotiator inspector Raquel Murillo makes initial contact with The Professor, and it turns out that one of the hostages, Alison Parker, is a crucial part of the thieves' plan."
-            android:textColor="@color/grey"
             android:textSize="14sp" />
 
         <TextView
@@ -154,8 +159,9 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:maxLines="2"
+            android:background="@drawable/background_shimmer"
             android:text="Action • Explosive • Suspenseful • Exciting • Adventure"
-            android:textColor="@color/text_color"
+            android:textColor="@color/grey_light_1"
             android:textSize="12sp" />
     </LinearLayout>
 
