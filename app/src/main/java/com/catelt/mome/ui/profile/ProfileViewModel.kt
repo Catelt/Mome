@@ -19,6 +19,10 @@ class ProfileViewModel @Inject constructor(
 ) : BaseViewModel() {
     val isLogged = MutableStateFlow(userManager.isLogged())
 
+    fun getName(): String {
+        return userManager.getName()
+    }
+
     fun logOut() {
         firebaseAuth.signOut()
         userManager.logOut()

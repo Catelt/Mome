@@ -98,6 +98,7 @@
     <string name="message_error_password">Your password must contain between 4 and 60 characters</string>
 
     <string name="error_default_message">Something wrong</string>
+    <string name="message_feature_coming_soon">Feature coming soon</string>
 
     <string name="top_searches">Top Searches</string>
     <string name="search_for_show_movie_genre_etc">Search for show, movie, genre, etc.</string>
@@ -106,5 +107,12 @@
     <string name="message_empty_search">Try searching for another movie, show, actor, director, or genre.</string>
 
     <string name="text_arrival_date">Coming %1$s</string>
+
+    <string name="profile">Profile</string>
+    <string name="name_default">Mome member</string>
+    <string name="app_setting">App settings</string>
+    <string name="account">Account</string>
+    <string name="help">Help</string>
+    <string name="sign_out">Sign Out</string>
 
 </resources>
