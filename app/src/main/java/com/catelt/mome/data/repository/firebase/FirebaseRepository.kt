@@ -1,5 +1,7 @@
 package com.catelt.mome.data.repository.firebase
 
+import androidx.paging.PagingData
+import com.catelt.mome.data.model.account.Media
 import com.catelt.mome.data.remote.firebase.FirebaseResponse
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseUser
@@ -41,4 +43,23 @@ interface FirebaseRepository {
         collectionId: String,
         documentId: String
     ): Flow<FirebaseResponse<String?>>
+
+    fun getMyList(
+        userId: String,
+    ): Flow<PagingData<Media>>
+
+    fun addMediaMyList(
+        userId: String,
+        media: Media
+    ): Flow<FirebaseResponse<String?>>
+
+    fun removeMediaMyList(
+        userId: String,
+        mediaId: Int,
+    ): Flow<FirebaseResponse<String?>>
+
+    fun checkMediaInMyList(
+        userId: String,
+        mediaId: Int,
+    ): Flow<FirebaseResponse<Boolean>>
 }

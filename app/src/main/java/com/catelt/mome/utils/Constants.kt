@@ -8,3 +8,6 @@ const val BUNDLE_TITLE_MEDIA = "title_media"
 const val BUNDLE_URL_MEDIA = "url_media"
 
 const val USER_FIREBASE = "user"
+const val MY_LIST_FIREBASE = "my_list"
+
+const val FIELD_ID_MEDIA = "id"

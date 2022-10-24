@@ -1,6 +1,15 @@
 package com.catelt.mome.data.repository.firebase
 
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import com.catelt.mome.data.model.account.Media
+import com.catelt.mome.data.paging.firebase.FirebasePagingDataSource
 import com.catelt.mome.data.remote.firebase.FirebaseResponse
+import com.catelt.mome.utils.FIELD_ID_MEDIA
+import com.catelt.mome.utils.MY_LIST_FIREBASE
+import com.catelt.mome.utils.SIZE_PAGE
+import com.catelt.mome.utils.USER_FIREBASE
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -160,6 +169,79 @@ class FirebaseRepositoryImpl @Inject constructor(
             .delete()
             .addOnSuccessListener {
                 trySend(FirebaseResponse.Success(""))
+            }
+            .addOnFailureListener {
+                trySend(FirebaseResponse.Error(it))
+            }
+        awaitClose {
+            channel.close()
+        }
+    }.flowOn(defaultDispatcher)
+
+    override fun getMyList(userId: String): Flow<PagingData<Media>> = Pager(
+        PagingConfig(pageSize = SIZE_PAGE)
+    ) {
+        FirebasePagingDataSource(
+            query = db.collection(USER_FIREBASE).document(userId).collection(MY_LIST_FIREBASE)
+                .orderBy(FIELD_ID_MEDIA),
+        )
+    }.flow.flowOn(defaultDispatcher)
+
+    override fun addMediaMyList(
+        userId: String,
+        media: Media
+    ): Flow<FirebaseResponse<String?>> = callbackFlow {
+        db.collection(USER_FIREBASE)
+            .document(userId)
+            .collection(MY_LIST_FIREBASE)
+            .document(media.id.toString())
+            .set(media)
+            .addOnSuccessListener {
+                trySend(FirebaseResponse.Success("Added to My List"))
+            }
+            .addOnFailureListener {
+                trySend(FirebaseResponse.Error(it))
+            }
+        awaitClose {
+            channel.close()
+        }
+    }.flowOn(defaultDispatcher)
+
+    override fun removeMediaMyList(
+        userId: String,
+        mediaId: Int
+    ): Flow<FirebaseResponse<String?>> = callbackFlow {
+        db.collection(USER_FIREBASE)
+            .document(userId)
+            .collection(MY_LIST_FIREBASE)
+            .document(mediaId.toString())
+            .delete()
+            .addOnSuccessListener {
+                trySend(FirebaseResponse.Success("Remove from My List"))
+            }
+            .addOnFailureListener {
+                trySend(FirebaseResponse.Error(it))
+            }
+        awaitClose {
+            channel.close()
+        }
+    }.flowOn(defaultDispatcher)
+
+    override fun checkMediaInMyList(
+        userId: String,
+        mediaId: Int
+    ): Flow<FirebaseResponse<Boolean>>  = callbackFlow {
+        db.collection(USER_FIREBASE)
+            .document(userId)
+            .collection(MY_LIST_FIREBASE)
+            .document(mediaId.toString())
+            .get()
+            .addOnSuccessListener {
+                if (it.exists() && it.data != null) {
+                    trySend(FirebaseResponse.Success(true))
+                } else {
+                    trySend(FirebaseResponse.Success(false))
+                }
             }
             .addOnFailureListener {
                 trySend(FirebaseResponse.Error(it))

@@ -138,4 +138,7 @@ dependencies {
 
     //Shimmer Effect
     implementation 'com.facebook.shimmer:shimmer:0.5.0'
+
+    //Coroutines Firebase
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.6.4"
 }
