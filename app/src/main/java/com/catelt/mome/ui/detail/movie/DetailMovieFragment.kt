@@ -85,6 +85,10 @@ class DetailMovieFragment : BaseFragment<FragmentDetailMovieBinding>(
 
             })
 
+            btnProfile.setOnClickListener {
+                findNavController().navigate(R.id.profileFragment)
+            }
+
             btnBack.setOnClickListener {
                 findNavController().navigateUp()
             }

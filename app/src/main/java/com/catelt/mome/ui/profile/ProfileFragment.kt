@@ -3,6 +3,7 @@ package com.catelt.mome.ui.profile
 import android.content.Intent
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.catelt.mome.core.BaseFragment
 import com.catelt.mome.databinding.FragmentProfileBinding
 import com.catelt.mome.ui.auth.AuthActivity
@@ -19,6 +20,14 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>(
 
     override fun setUpViews() {
         binding.apply {
+            btnBack.setOnClickListener {
+                findNavController().navigateUp()
+            }
+
+            if(viewModel.getName().isNotBlank()){
+                txtName.text = viewModel.getName()
+            }
+
             txtLogout.setOnClickListener {
                 viewModel.logOut()
             }

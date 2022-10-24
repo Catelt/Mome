@@ -101,6 +101,10 @@ class DetailTvShowFragment : BaseFragment<FragmentDetailTvShowBinding>(
 
             layoutHeader.layoutDirector.visibility = setVisionView(false)
 
+            btnProfile.setOnClickListener {
+                findNavController().navigate(R.id.profileFragment)
+            }
+
             btnBack.setOnClickListener {
                 findNavController().navigateUp()
             }
