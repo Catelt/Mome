@@ -292,11 +292,22 @@
                 android:orientation="vertical">
 
                 <ImageView
+                    android:id="@+id/imgAdd"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:background="@drawable/background_icon"
                     android:padding="5dp"
                     android:src="@drawable/ic_add"
+                    app:tint="@color/white" />
+
+                <ImageView
+                    android:id="@+id/imgTick"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:background="@drawable/background_icon"
+                    android:padding="5dp"
+                    android:visibility="gone"
+                    android:src="@drawable/ic_tick"
                     app:tint="@color/white" />
 
                 <TextView

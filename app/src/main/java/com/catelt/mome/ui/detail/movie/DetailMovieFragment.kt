@@ -26,8 +26,10 @@ import com.catelt.mome.ui.components.CustomPlayerUiController
 import com.catelt.mome.ui.detail.TrailerAdapter
 import com.catelt.mome.utils.BUNDLE_TITLE_MEDIA
 import com.catelt.mome.utils.BUNDLE_URL_MEDIA
+import com.catelt.mome.utils.ImageUrlParser
 import com.catelt.mome.utils.extension.getCalendarRelease
 import com.catelt.mome.utils.extension.getRunTime
+import com.catelt.mome.utils.extension.loadDefault
 import com.catelt.mome.utils.extension.setAgeTitle
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
@@ -97,7 +99,20 @@ class DetailMovieFragment : BaseFragment<FragmentDetailMovieBinding>(
 
     override fun setUpViewModel() {
         viewModel.apply {
+            toastMessage.observe(viewLifecycleOwner){
+                if (it.isNotBlank()){
+                    toast(it)
+                    toastMessage.postValue("")
+                }
+            }
+
             lifecycleScope.launch {
+                launch {
+                    isMyList.collectLatest {
+                        binding.layoutHeader.btnList.setUI(it)
+                    }
+                }
+
                 imageUrlParser.collectLatest { imageParser ->
                     likeThisAdapter.imageUrlParser = imageParser
 
@@ -167,6 +182,9 @@ class DetailMovieFragment : BaseFragment<FragmentDetailMovieBinding>(
                                             initialize(it, options)
                                         }
                                     }
+                                    binding.layoutThumbnail.youtubePlayerView.visibility = setVisionView(video != null)
+                                    binding.layoutThumbnail.imgBackdrop.visibility = setVisionView(video == null)
+
                                 }
                             }
                         }
@@ -209,7 +227,28 @@ class DetailMovieFragment : BaseFragment<FragmentDetailMovieBinding>(
                 txtRuntime.text = movie.getRunTime()
                 txtOverview.text = movie.overview
                 txtAge.setAgeTitle(movie.adult)
+
+                btnList.apply {
+                    setOnClickListener {
+                        if (isExisted){
+                            viewModel.onRemoveClick(movie)
+                        }
+                        else{
+                            viewModel.onAddMediaClick(movie)
+                        }
+                        setUI(!isExisted)
+                    }
+                }
+
+                btnRate.setOnClickListener {
+                    toast(getString(R.string.message_feature_coming_soon))
+                }
+
+                btnShare.setOnClickListener {
+                    toast(getString(R.string.message_feature_coming_soon))
+                }
             }
+            layoutThumbnail.imgBackdrop.loadDefault(likeThisAdapter.imageUrlParser?.getImageUrl(movie.backdropPath, ImageUrlParser.ImageType.Backdrop))
         }
     }
 

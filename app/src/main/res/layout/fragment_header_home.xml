@@ -48,34 +48,14 @@
             android:layout_marginTop="15dp"
             app:layout_constraintTop_toBottomOf="@+id/txtMovieGenres">
 
-            <LinearLayout
+            <com.catelt.mome.ui.components.MyListButton
                 android:id="@+id/btnList"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginStart="64dp"
                 android:gravity="center"
                 android:orientation="vertical"
-                app:layout_constraintStart_toStartOf="parent"
-                tools:ignore="UseCompoundDrawables">
-
-                <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:layout_marginBottom="5dp"
-                    android:contentDescription="@string/image"
-                    app:srcCompat="@drawable/ic_add" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/netflix_sans_light"
-                    android:gravity="center"
-                    android:text="@string/my_list"
-                    android:textColor="@color/text_color"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
-
-            </LinearLayout>
+                app:layout_constraintStart_toStartOf="parent"/>
 
             <com.catelt.mome.ui.components.PlayButton
                 android:id="@+id/btnPlay"

@@ -31,7 +31,7 @@ class MediaDetailsBottomSheet(
 ) : BottomSheetDialogFragment() {
     lateinit var binding: BottomSheetMediaDetailsBinding
     private val viewModel: MediaDetailsBottomViewModel by viewModels()
-
+    private var isExisted = false
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -49,22 +49,36 @@ class MediaDetailsBottomSheet(
     private fun setupObserve() {
         viewModel.apply {
             lifecycleScope.launch {
-                imageUrlParser.collectLatest { imageParser ->
-                    movieDetails.observe(viewLifecycleOwner) {
-                        if (it != null) {
-                            setupUIMovie(it, imageParser)
+                launch {
+                    isMyList.collectLatest {
+                        setUI(it)
+                    }
+                }
+
+                launch {
+                    imageUrlParser.collectLatest { imageParser ->
+                        movieDetails.observe(viewLifecycleOwner) {
+                            if (it != null) {
+                                setupUIMovie(it, imageParser)
+                                launch {
+                                    checkMediaInMyList(it)
+                                }
+                            }
                         }
-                    }
-                    tvShowsDetails.observe(viewLifecycleOwner){
-                        if (it != null) {
-                            setupUITvShow(it, imageParser)
+                        tvShowsDetails.observe(viewLifecycleOwner){
+                            if (it != null) {
+                                setupUITvShow(it, imageParser)
+                                launch {
+                                    checkMediaInMyList(it)
+                                }
+                            }
                         }
-                    }
-                    if (isMovie){
-                        viewModel.getMovieDetail(movieId)
-                    }
-                    else{
-                        viewModel.getTvshowDetail(movieId)
+                        if (isMovie){
+                            viewModel.getMovieDetail(movieId)
+                        }
+                        else{
+                            viewModel.getTvshowDetail(movieId)
+                        }
                     }
                 }
             }
@@ -89,6 +103,19 @@ class MediaDetailsBottomSheet(
                     ImageUrlParser.ImageType.Poster
                 )
             )
+
+            btnList.apply {
+                setOnClickListener {
+                    if (isExisted){
+                        viewModel.onRemoveClick(data)
+                    }
+                    else{
+                        viewModel.onAddMediaClick(data,true)
+                    }
+                    setUI(!isExisted)
+                }
+            }
+
             mainContainer.setOnClickListener {
                 dismiss()
                 findNavController().navigate(
@@ -125,6 +152,19 @@ class MediaDetailsBottomSheet(
                     ImageUrlParser.ImageType.Poster
                 )
             )
+
+            btnList.apply {
+                setOnClickListener {
+                    if (isExisted){
+                        viewModel.onRemoveClick(data)
+                    }
+                    else{
+                        viewModel.onAddMediaClick(data,false)
+                    }
+                    setUI(!isExisted)
+                }
+            }
+
             mainContainer.setOnClickListener {
                 dismiss()
                 findNavController().navigate(
@@ -136,6 +176,19 @@ class MediaDetailsBottomSheet(
                 mainContainer.callOnClick()
             }
         }
+    }
+
+    fun setUI(isExisted: Boolean = false) {
+        binding.apply {
+            if (isExisted) {
+                imgAdd.visibility = View.GONE
+                imgTick.visibility = View.VISIBLE
+            } else {
+                imgAdd.visibility = View.VISIBLE
+                imgTick.visibility = View.GONE
+            }
+        }
+        this.isExisted = isExisted
     }
 
     companion object {

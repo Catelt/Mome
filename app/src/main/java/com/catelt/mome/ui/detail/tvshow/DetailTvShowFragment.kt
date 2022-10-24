@@ -24,7 +24,9 @@ import com.catelt.mome.ui.components.CustomPlayerUiController
 import com.catelt.mome.ui.detail.TrailerAdapter
 import com.catelt.mome.utils.BUNDLE_TITLE_MEDIA
 import com.catelt.mome.utils.BUNDLE_URL_MEDIA
+import com.catelt.mome.utils.ImageUrlParser
 import com.catelt.mome.utils.extension.getCalendarRelease
+import com.catelt.mome.utils.extension.loadDefault
 import com.catelt.mome.utils.extension.setAgeTitle
 import com.google.android.material.tabs.TabLayout
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
@@ -113,7 +115,20 @@ class DetailTvShowFragment : BaseFragment<FragmentDetailTvShowBinding>(
 
     override fun setUpViewModel() {
         viewModel.apply {
+            toastMessage.observe(viewLifecycleOwner){
+                if (it.isNotBlank()){
+                    toast(it)
+                    toastMessage.postValue("")
+                }
+            }
+
             lifecycleScope.launch {
+                launch {
+                    isMyList.collectLatest {
+                        binding.layoutHeader.btnList.setUI(it)
+                    }
+                }
+
                 imageUrlParser.collectLatest { imageParser ->
                     episodeAdapter.imageUrlParser = imageParser
                     likeThisAdapter.imageUrlParser = imageParser
@@ -183,6 +198,8 @@ class DetailTvShowFragment : BaseFragment<FragmentDetailTvShowBinding>(
                                             initialize(it, options)
                                         }
                                     }
+                                    binding.layoutThumbnail.youtubePlayerView.visibility = setVisionView(video != null)
+                                    binding.layoutThumbnail.imgBackdrop.visibility = setVisionView(video == null)
                                 }
                             }
                         }
@@ -236,7 +253,29 @@ class DetailTvShowFragment : BaseFragment<FragmentDetailTvShowBinding>(
                 }
                 txtOverview.text = tvShow.overview
                 txtAge.setAgeTitle(tvShow.adult ?: false)
+
+                btnList.apply {
+                    setOnClickListener {
+                        if (isExisted){
+                            viewModel.onRemoveClick(tvShow)
+                        }
+                        else{
+                            viewModel.onAddMediaClick(tvShow)
+                        }
+                        setUI(!isExisted)
+                    }
+                }
+
+                btnRate.setOnClickListener {
+                    toast(getString(R.string.message_feature_coming_soon))
+                }
+
+                btnShare.setOnClickListener {
+                    toast(getString(R.string.message_feature_coming_soon))
+                }
             }
+            txtNameTvShow.text = tvShow.name
+            layoutThumbnail.imgBackdrop.loadDefault(likeThisAdapter.imageUrlParser?.getImageUrl(tvShow.backdropPath, ImageUrlParser.ImageType.Backdrop))
         }
     }
 

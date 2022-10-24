@@ -36,7 +36,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
     override val viewModel: HomeViewModel by viewModels()
     private var saveStateMotion: Bundle? = null
 
-    private var positionNowPlaying = 0
+    private var positionNowPlaying = Random.nextInt(0, 15)
     private val onMovieClicked = { movieId: Int ->
         MediaDetailsBottomSheet.newInstance(movieId, viewModel.getIsMovie())
             .show(requireActivity().supportFragmentManager, movieId.toString())
@@ -96,6 +96,19 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
                 }
             }
 
+            layoutHeaderHome.btnList.apply {
+                isHome = true
+                setOnClickListener {
+                    if (isExisted){
+                        viewModel.onRemoveClick(trailerMedia[positionNowPlaying])
+                    }
+                    else{
+                        viewModel.onAddMediaClick(trailerMedia[positionNowPlaying])
+                    }
+                    setUI(!isExisted)
+                }
+            }
+
             btnBack.setOnClickListener {
                 viewModel.setIsMovie(!viewModel.getIsMovie())
                 setupAppBar(false)
@@ -108,6 +121,14 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
 
             btnSearch.setOnClickListener {
                 findNavController().navigate(R.id.searchFragment)
+            }
+
+            txtCategories.setOnClickListener {
+                toast(getString(R.string.message_feature_coming_soon))
+            }
+
+            txtAllCategories.setOnClickListener {
+                toast(getString(R.string.message_feature_coming_soon))
             }
         }
     }
@@ -148,6 +169,13 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
     @Suppress("UNCHECKED_CAST")
     override fun setUpViewModel() {
         viewModel.apply {
+            toastMessage.observe(viewLifecycleOwner){
+                if (it.isNotBlank()){
+                    toast(it)
+                    toastMessage.postValue("")
+                }
+            }
+
             lifecycleScope.launch {
                 imageUrlParser.collectLatest { imageParser ->
                     this@HomeFragment.imageParser = imageParser
@@ -158,165 +186,173 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
                             }
                         }
                     }
+
+                    launch {
+                        isMyList.collectLatest {
+                            binding.layoutHeaderHome.btnList.setUI(it)
+                        }
+                    }
                     launch {
                         uiState.collectLatest { homeUIState ->
-                            when (homeUIState.homeState) {
-                                is HomeState.MovieData -> {
-                                    homeUIState.homeState.moviesState.apply {
-                                        nowPlaying.flowOn(Dispatchers.IO).onEach { list ->
-                                            val adapter = HorizontalAdapter()
+                            if(view != null){
+                                when (homeUIState.homeState) {
+                                    is HomeState.MovieData -> {
+                                        homeUIState.homeState.moviesState.apply {
+                                            nowPlaying.flowOn(Dispatchers.IO).onEach { list ->
+                                                val adapter = HorizontalAdapter()
 
-                                            adapter.addLoadStateListener {
-                                                adapter.snapshot().items.let { items ->
-                                                    if (items.isNotEmpty()) {
-                                                        trailerMedia = items
-                                                        randomMedia(false)
+                                                adapter.addLoadStateListener {
+                                                    adapter.snapshot().items.let { items ->
+                                                        if (items.isNotEmpty()) {
+                                                            trailerMedia = items
+                                                            randomMedia(false)
+                                                        }
                                                     }
                                                 }
-                                            }
-                                            adapter.submitData(list)
+                                                adapter.submitData(list)
 
-                                        }.launchIn(lifecycleScope)
+                                            }.launchIn(lifecycleScope)
 
-                                        trending.flowOn(Dispatchers.IO).onEach { list ->
-                                            binding.listTrending.apply {
-                                                init(
-                                                    imageParser,
-                                                    viewLifecycleOwner,
-                                                    onMovieClicked,
-                                                    list,
-                                                    getString(R.string.title_trending)
-                                                )
-                                                visibility = setVisionView(true)
-                                            }
-                                        }.launchIn(lifecycleScope)
+                                            trending.flowOn(Dispatchers.IO).onEach { list ->
+                                                binding.listTrending.apply {
+                                                    init(
+                                                        imageParser,
+                                                        viewLifecycleOwner,
+                                                        onMovieClicked,
+                                                        list,
+                                                        getString(R.string.title_trending)
+                                                    )
+                                                    visibility = setVisionView(true)
+                                                }
+                                            }.launchIn(lifecycleScope)
 
-                                        topRated.flowOn(Dispatchers.IO).onEach { list ->
-                                            binding.listUpCome.apply {
-                                                init(
-                                                    imageParser,
-                                                    viewLifecycleOwner,
-                                                    onMovieClicked,
-                                                    list,
-                                                    getString(R.string.title_top_rate)
-                                                )
-                                                visibility = setVisionView(true)
-                                            }
-                                        }.launchIn(lifecycleScope)
+                                            topRated.flowOn(Dispatchers.IO).onEach { list ->
+                                                binding.listUpCome.apply {
+                                                    init(
+                                                        imageParser,
+                                                        viewLifecycleOwner,
+                                                        onMovieClicked,
+                                                        list,
+                                                        getString(R.string.title_top_rate)
+                                                    )
+                                                    visibility = setVisionView(true)
+                                                }
+                                            }.launchIn(lifecycleScope)
 
-                                        popular.flowOn(Dispatchers.IO).onEach { list ->
-                                            binding.listPopular.apply {
-                                                init(
-                                                    imageParser,
-                                                    viewLifecycleOwner,
-                                                    onMovieClicked,
-                                                    list as PagingData<Presentable>,
-                                                    getString(R.string.title_popular)
-                                                )
-                                                visibility = setVisionView(true)
-                                            }
-                                        }.launchIn(lifecycleScope)
+                                            popular.flowOn(Dispatchers.IO).onEach { list ->
+                                                binding.listPopular.apply {
+                                                    init(
+                                                        imageParser,
+                                                        viewLifecycleOwner,
+                                                        onMovieClicked,
+                                                        list as PagingData<Presentable>,
+                                                        getString(R.string.title_popular)
+                                                    )
+                                                    visibility = setVisionView(true)
+                                                }
+                                            }.launchIn(lifecycleScope)
 
-                                        discover.flowOn(Dispatchers.IO).onEach { list ->
-                                            binding.listExplore.apply {
-                                                init(
-                                                    imageParser,
-                                                    viewLifecycleOwner,
-                                                    onMovieClicked,
-                                                    list,
-                                                    getString(R.string.title_explore)
-                                                )
-                                                visibility = setVisionView(true)
-                                            }
-                                        }.launchIn(lifecycleScope)
+                                            discover.flowOn(Dispatchers.IO).onEach { list ->
+                                                binding.listExplore.apply {
+                                                    init(
+                                                        imageParser,
+                                                        viewLifecycleOwner,
+                                                        onMovieClicked,
+                                                        list,
+                                                        getString(R.string.title_explore)
+                                                    )
+                                                    visibility = setVisionView(true)
+                                                }
+                                            }.launchIn(lifecycleScope)
+                                        }
                                     }
-                                }
-                                is HomeState.TvShowData -> {
-                                    homeUIState.homeState.tvShowsState.apply {
-                                        onTheAir.flowOn(Dispatchers.IO).onEach { list ->
-                                            val adapter = HorizontalAdapter()
+                                    is HomeState.TvShowData -> {
+                                        homeUIState.homeState.tvShowsState.apply {
+                                            onTheAir.flowOn(Dispatchers.IO).onEach { list ->
+                                                val adapter = HorizontalAdapter()
 
-                                            adapter.addLoadStateListener {
-                                                adapter.snapshot().items.let { items ->
-                                                    if (items.isNotEmpty()) {
-                                                        trailerMedia = items
-                                                        randomMedia(false)
+                                                adapter.addLoadStateListener {
+                                                    adapter.snapshot().items.let { items ->
+                                                        if (items.isNotEmpty()) {
+                                                            trailerMedia = items
+                                                            randomMedia(false)
+                                                        }
                                                     }
                                                 }
-                                            }
-                                            adapter.submitData(list)
+                                                adapter.submitData(list)
 
-                                        }.launchIn(lifecycleScope)
+                                            }.launchIn(lifecycleScope)
 
-                                        trending.flowOn(Dispatchers.IO).onEach { list ->
-                                            binding.listTrending.apply {
-                                                init(
-                                                    imageParser,
-                                                    viewLifecycleOwner,
-                                                    onMovieClicked,
-                                                    list,
-                                                    getString(R.string.title_trending_tv_show)
-                                                )
-                                                visibility = setVisionView(true)
-                                            }
-                                        }.launchIn(lifecycleScope)
+                                            trending.flowOn(Dispatchers.IO).onEach { list ->
+                                                binding.listTrending.apply {
+                                                    init(
+                                                        imageParser,
+                                                        viewLifecycleOwner,
+                                                        onMovieClicked,
+                                                        list,
+                                                        getString(R.string.title_trending_tv_show)
+                                                    )
+                                                    visibility = setVisionView(true)
+                                                }
+                                            }.launchIn(lifecycleScope)
 
-                                        topRated.flowOn(Dispatchers.IO).onEach { list ->
-                                            binding.listUpCome.apply {
-                                                init(
-                                                    imageParser,
-                                                    viewLifecycleOwner,
-                                                    onMovieClicked,
-                                                    list,
-                                                    getString(R.string.title_top_rate_tv_show)
-                                                )
-                                                visibility = setVisionView(true)
-                                            }
-                                        }.launchIn(lifecycleScope)
+                                            topRated.flowOn(Dispatchers.IO).onEach { list ->
+                                                binding.listUpCome.apply {
+                                                    init(
+                                                        imageParser,
+                                                        viewLifecycleOwner,
+                                                        onMovieClicked,
+                                                        list,
+                                                        getString(R.string.title_top_rate_tv_show)
+                                                    )
+                                                    visibility = setVisionView(true)
+                                                }
+                                            }.launchIn(lifecycleScope)
 
-                                        airingToday.flowOn(Dispatchers.IO).onEach { list ->
-                                            binding.listPopular.apply {
-                                                init(
-                                                    imageParser,
-                                                    viewLifecycleOwner,
-                                                    onMovieClicked,
-                                                    list,
-                                                    getString(R.string.title_airing_today_tv_show)
-                                                )
-                                                visibility = setVisionView(true)
-                                            }
-                                        }.launchIn(lifecycleScope)
+                                            airingToday.flowOn(Dispatchers.IO).onEach { list ->
+                                                binding.listPopular.apply {
+                                                    init(
+                                                        imageParser,
+                                                        viewLifecycleOwner,
+                                                        onMovieClicked,
+                                                        list,
+                                                        getString(R.string.title_airing_today_tv_show)
+                                                    )
+                                                    visibility = setVisionView(true)
+                                                }
+                                            }.launchIn(lifecycleScope)
 
-                                        discover.flowOn(Dispatchers.IO).onEach { list ->
-                                            binding.listExplore.apply {
-                                                init(
-                                                    imageParser,
-                                                    viewLifecycleOwner,
-                                                    onMovieClicked,
-                                                    list,
-                                                    getString(R.string.title_explore_tv_show)
-                                                )
-                                                visibility = setVisionView(true)
-                                            }
-                                        }.launchIn(lifecycleScope)
+                                            discover.flowOn(Dispatchers.IO).onEach { list ->
+                                                binding.listExplore.apply {
+                                                    init(
+                                                        imageParser,
+                                                        viewLifecycleOwner,
+                                                        onMovieClicked,
+                                                        list,
+                                                        getString(R.string.title_explore_tv_show)
+                                                    )
+                                                    visibility = setVisionView(true)
+                                                }
+                                            }.launchIn(lifecycleScope)
+                                        }
                                     }
                                 }
-                            }
 
-                            binding.layoutHeaderHome.btnPlay.setEnable(false)
+                                binding.layoutHeaderHome.btnPlay.setEnable(false)
 
-                            homeUIState.episode?.let { list ->
-                                binding.layoutHeaderHome.btnPlay.apply {
-                                    if (list.isNotEmpty()) {
-                                        binding.layoutHeaderHome.btnPlay.setEnable(true)
-                                        setOnClickListener {
-                                            findNavController().navigate(
-                                                R.id.videoPlayerFragment,
-                                                bundleOf(
-                                                    BUNDLE_TITLE_MEDIA to viewModel.media.value.title,
-                                                    BUNDLE_URL_MEDIA to list[0].url
+                                homeUIState.episode?.let { list ->
+                                    binding.layoutHeaderHome.btnPlay.apply {
+                                        if (list.isNotEmpty()) {
+                                            binding.layoutHeaderHome.btnPlay.setEnable(true)
+                                            setOnClickListener {
+                                                findNavController().navigate(
+                                                    R.id.videoPlayerFragment,
+                                                    bundleOf(
+                                                        BUNDLE_TITLE_MEDIA to viewModel.media.value.title,
+                                                        BUNDLE_URL_MEDIA to list[0].url
+                                                    )
                                                 )
-                                            )
+                                            }
                                         }
                                     }
                                 }

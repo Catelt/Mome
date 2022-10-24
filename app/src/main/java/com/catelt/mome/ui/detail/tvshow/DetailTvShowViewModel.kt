@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
 import com.catelt.mome.core.BaseViewModel
 import com.catelt.mome.data.model.*
+import com.catelt.mome.data.model.account.Media
 import com.catelt.mome.data.model.ophim.OphimEpisode
 import com.catelt.mome.data.model.tvshow.TvShowDetails
 import com.catelt.mome.data.remote.api.onException
@@ -13,6 +14,9 @@ import com.catelt.mome.data.remote.api.onSuccess
 import com.catelt.mome.data.repository.config.ConfigRepository
 import com.catelt.mome.domain.usecase.GetDeviceLanguageUseCaseImpl
 import com.catelt.mome.domain.usecase.GetMediaDetailUserCaseImpl
+import com.catelt.mome.domain.usecase.firebase.AddMediaMyListUseCaseImpl
+import com.catelt.mome.domain.usecase.firebase.CheckMediaInMyListUseCaseImpl
+import com.catelt.mome.domain.usecase.firebase.RemoveMediaMyListUseCaseImpl
 import com.catelt.mome.domain.usecase.tvshow.*
 import com.catelt.mome.utils.BUNDLE_ID_MEDIA
 import com.catelt.mome.utils.ImageUrlParser
@@ -32,6 +36,9 @@ class DetailTvShowViewModel @Inject constructor(
     private val getSeasonDetailsUseCase: GetSeasonDetailsUseCaseImpl,
     private val getSeasonCreditsUseCase: GetSeasonCreditsUseCaseImpl,
     private val getMediaDetailUserCaseImpl: GetMediaDetailUserCaseImpl,
+    private val addMediaMyListUseCase: AddMediaMyListUseCaseImpl,
+    private val removeMediaMyListUseCase: RemoveMediaMyListUseCaseImpl,
+    private val checkMediaInMyListUseCase: CheckMediaInMyListUseCaseImpl,
     private val configRepository: ConfigRepository,
     private val savedStateHandle: SavedStateHandle
 ) : BaseViewModel() {
@@ -39,6 +46,7 @@ class DetailTvShowViewModel @Inject constructor(
     private val deviceLanguage: Flow<DeviceLanguage> = getDeviceLanguageUseCase()
     val imageUrlParser: StateFlow<ImageUrlParser?> = configRepository.getImageUrlParser()
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
+    val isMyList = MutableStateFlow(false)
 
     private val _tvShowDetails: MutableStateFlow<TvShowDetails?> = MutableStateFlow(null)
     private val tvShowDetails: StateFlow<TvShowDetails?> =
@@ -155,12 +163,17 @@ class DetailTvShowViewModel @Inject constructor(
         ).onSuccess {
             viewModelScope.launch {
                 val tvShowDetails = data
-                if (deviceLanguage.languageCode != "vi"){
-                    _tvShowDetails.emit(tvShowDetails)
-                }
+                if (deviceLanguage.languageCode != "vi") {
+                   _tvShowDetails.emit(tvShowDetails)
 
-                tvShowDetails?.title?.let {
-                    getMediaDetail(SlugUtils.slugify(tvShowDetails.title))
+                    launch {
+                        tvShowDetails?.let {
+                            checkMediaInMyList(it)
+                        }
+                    }
+                }
+                tvShowDetails?.name?.let {
+                    getMediaDetail(SlugUtils.slugify(tvShowDetails.name))
                 }
             }
         }.onFailure {
@@ -247,6 +260,52 @@ class DetailTvShowViewModel @Inject constructor(
             onFailure(this)
         }.onException {
             onError(this)
+        }
+    }
+
+    fun onAddMediaClick(presentable: Presentable) {
+        val data = Media(
+            id = presentable.id,
+            title = presentable.title,
+            posterPath = presentable.posterPath,
+            type = MediaType.Tv
+        )
+        viewModelScope.launch {
+            addMediaMyListUseCase.invoke(data).collectLatest {
+                it.handle(
+                    success = { data ->
+                        data?.let {
+                            toastMessage.postValue(data)
+                        }
+                    }
+                )
+            }
+        }
+    }
+
+    fun onRemoveClick(presentable: Presentable) {
+        viewModelScope.launch {
+            removeMediaMyListUseCase(presentable.id).collectLatest {
+                it.handle(
+                    success = { data ->
+                        data?.let {
+                            toastMessage.postValue(data)
+                        }
+                    }
+                )
+            }
+        }
+    }
+
+    private suspend fun checkMediaInMyList(presentable: Presentable) {
+        checkMediaInMyListUseCase(presentable.id).collectLatest {
+            it.handle(
+                success = { isExisted ->
+                    viewModelScope.launch {
+                        isMyList.emit(isExisted)
+                    }
+                }
+            )
         }
     }
 }
