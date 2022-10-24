@@ -40,8 +40,13 @@ abstract class BaseFragment<VBinding : ViewBinding>(
     open fun setUpArgument(bundle: Bundle) {}
 
 
+    private var toast : Toast? = null
     fun toast(message: String) {
-        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        if (toast != null){
+            toast?.cancel()
+        }
+        toast = Toast.makeText(context, message, Toast.LENGTH_SHORT)
+        toast?.show()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

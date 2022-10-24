@@ -105,6 +105,10 @@
     <string name="movies_amp_tv"><![CDATA[Movies & TV]]></string>
     <string name="title_message_empty_search">Oh darn. We don\'t have that</string>
     <string name="message_empty_search">Try searching for another movie, show, actor, director, or genre.</string>
+    <string name="message_empty_my_list"><![CDATA[Add movies & TV shows to your list so you can easily find them later]]></string>
+    <string name="button_my_list">find something to watch</string>
+    <string name="message_add_list">Added to My List</string>
+    <string name="message_remove_my_list">Remove from My List</string>
 
     <string name="text_arrival_date">Coming %1$s</string>
 
