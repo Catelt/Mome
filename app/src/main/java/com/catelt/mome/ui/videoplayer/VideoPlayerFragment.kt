@@ -1,5 +1,6 @@
 package com.catelt.mome.ui.videoplayer
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.app.PendingIntent
 import android.app.PictureInPictureParams
@@ -14,17 +15,20 @@ import android.graphics.drawable.Icon
 import android.os.Build
 import android.os.Bundle
 import android.util.Rational
+import android.view.ScaleGestureDetector
 import android.view.View
 import android.widget.*
 import androidx.core.net.toUri
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.WindowInsetsControllerCompat
-import androidx.core.view.doOnLayout
+import androidx.core.view.*
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.RecyclerView
 import com.catelt.mome.R
 import com.catelt.mome.core.BaseFragment
+import com.catelt.mome.data.model.tvshow.TvShowParcelable
 import com.catelt.mome.databinding.FragmentVideoPlayerBinding
+import com.catelt.mome.utils.BUNDLE_LIST_MEDIA
 import com.catelt.mome.utils.BUNDLE_TITLE_MEDIA
 import com.catelt.mome.utils.BUNDLE_URL_MEDIA
 import com.catelt.mome.utils.brightness.BrightnessUtils
@@ -35,7 +39,12 @@ import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
+
+@AndroidEntryPoint
 class VideoPlayerFragment : BaseFragment<FragmentVideoPlayerBinding>(
     FragmentVideoPlayerBinding::inflate
 ) {
@@ -50,8 +59,15 @@ class VideoPlayerFragment : BaseFragment<FragmentVideoPlayerBinding>(
 
     private var titleMedia: String = ""
     private var urlMedia: String = ""
+    private var movies: List<TvShowParcelable>? = null
 
     private var optionSpeed: Int = 2
+
+    private var currentPosition = 0
+    private val adapter = EpisodeVideoPlayerAdapter()
+    override val viewModel: VideoPlayerViewModel by viewModels()
+
+    private var scaleGestureDetector: ScaleGestureDetector? = null
 
     //Argument custom control view
     private lateinit var mainContainer: View
@@ -66,14 +82,55 @@ class VideoPlayerFragment : BaseFragment<FragmentVideoPlayerBinding>(
     private lateinit var btnPause: View
     private lateinit var btnRewind: View
     private lateinit var btnForward: View
+    private lateinit var btnLock: View
+    private lateinit var btnAudioSubtitle: View
+
+    private lateinit var layoutEpisode: View
+    private lateinit var layoutNextEp: View
+    private lateinit var btnEpisode: View
+    private lateinit var btnNextEp: View
+    private lateinit var recycleView: RecyclerView
 
     override fun setUpArgument(bundle: Bundle) {
         bundle.apply {
             titleMedia = getString(BUNDLE_TITLE_MEDIA, "")
             urlMedia = getString(BUNDLE_URL_MEDIA, "")
+            movies = if (Build.VERSION.SDK_INT >= 33) {
+                getParcelableArrayList(BUNDLE_LIST_MEDIA, TvShowParcelable::class.java)
+            } else {
+                getParcelableArrayList(BUNDLE_LIST_MEDIA)
+            }
         }
     }
 
+    override fun setUpAdapter() {
+        adapter.onMovieClicked = {
+            movies?.let { list ->
+                currentPosition = it
+                val title = setupEpisodeTitle(list[it].title ?: "", list[it].numberEpisode)
+                setupVideo(list[it].url ?: "", title)
+                layoutNextEp.visibility = setVisionView(currentPosition < list.size - 1)
+            }
+            btnBack.callOnClick()
+        }
+
+        adapter.submitList(movies)
+    }
+
+    override fun setUpViewModel() {
+        viewModel.apply {
+            lifecycleScope.launch {
+                launch {
+                    imageUrlParser.collectLatest {
+                        adapter.imageUrlParser = it
+                    }
+                }
+            }
+        }
+    }
+
+
+    @SuppressLint("ClickableViewAccessibility")
     override fun setUpViews() {
         exoPlayer = ExoPlayer.Builder(requireContext())
             .setSeekBackIncrementMs(10000)
@@ -82,6 +139,9 @@ class VideoPlayerFragment : BaseFragment<FragmentVideoPlayerBinding>(
             .also {
                 binding.playView.player = it
             }
+        scaleGestureDetector =
+            ScaleGestureDetector(requireContext(), CustomOnScaleGestureListener(binding.playView))
+
         brightnessUtils = BrightnessUtils.init(requireContext())
         binding.root.apply {
             mainContainer = findViewById(R.id.mainContainer)
@@ -96,6 +156,19 @@ class VideoPlayerFragment : BaseFragment<FragmentVideoPlayerBinding>(
             btnPause = findViewById(com.google.android.exoplayer2.R.id.exo_pause)
             btnForward = findViewById(com.google.android.exoplayer2.R.id.exo_ffwd)
             btnRewind = findViewById(com.google.android.exoplayer2.R.id.exo_rew)
+            btnLock = findViewById(R.id.btnLock)
+            btnAudioSubtitle = findViewById(R.id.btnAudioSubtitles)
+
+            layoutEpisode = findViewById(R.id.layoutEpisodes)
+            layoutNextEp = findViewById(R.id.layoutNextEp)
+            btnEpisode = findViewById(R.id.btnEpisodes)
+            btnNextEp = findViewById(R.id.btnNextEp)
+            recycleView = findViewById(R.id.recyclerViewHorizontal)
+        }
+
+        mainContainer.setOnTouchListener { _, event ->
+            scaleGestureDetector?.onTouchEvent(event)
+            true
         }
 
         seekBarBrightness.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
@@ -111,6 +184,12 @@ class VideoPlayerFragment : BaseFragment<FragmentVideoPlayerBinding>(
 
         })
 
+        binding.playView.setControllerVisibilityListener {
+            if (it != 0 && recycleView.isVisible) {
+                binding.playView.showController()
+            }
+        }
+
         binding.playView.doOnLayout {
             updatePictureInPictureParams()
         }
@@ -123,12 +202,16 @@ class VideoPlayerFragment : BaseFragment<FragmentVideoPlayerBinding>(
 
         exoPlayer.setAudioAttributes(audioAttributes, true)
 
-        txtTitle.text = titleMedia
         txtTitleSpeed.text =
             getString(R.string.text_title_speed, optionDialogSpeed[2].split("(")[0])
 
         btnBack.setOnClickListener {
-            findNavController().navigateUp()
+            if (recycleView.isVisible) {
+                recycleView.visibility = setVisionView(false)
+                exoPlayer.play()
+            } else {
+                findNavController().navigateUp()
+            }
         }
 
         btnSpeed.setOnClickListener {
@@ -169,15 +252,39 @@ class VideoPlayerFragment : BaseFragment<FragmentVideoPlayerBinding>(
             alertDialog.create().show()
         }
 
+        btnLock.setOnClickListener {
+            toast(getString(R.string.message_feature_coming_soon))
+        }
+
+        btnAudioSubtitle.setOnClickListener {
+            toast(getString(R.string.message_feature_coming_soon))
+        }
+
+        btnEpisode.setOnClickListener {
+            recycleView.visibility = setVisionView(true)
+            recycleView.scrollToPosition(currentPosition)
+            exoPlayer.pause()
+        }
+
+        btnNextEp.setOnClickListener {
+            movies?.let { list ->
+                if (currentPosition < list.size - 1) {
+                    currentPosition++
+                    val title = setupEpisodeTitle(
+                        list[currentPosition].title ?: "",
+                        list[currentPosition].numberEpisode
+                    )
+                    setupVideo(list[currentPosition].url ?: "", title)
+                }
+            }
+        }
+
         if (saveBright < 0.01) {
             seekBarBrightness.progress = 100
         } else {
             saveBright = getCurrentBright()
             seekBarBrightness.progress = (saveBright * 100).toInt()
         }
-
-
-        val mediaItem = MediaItem.fromUri(urlMedia.toUri())
 
         exoPlayer.addListener(object : Player.Listener {
             override fun onPlaybackStateChanged(playbackState: Int) {
@@ -204,8 +311,49 @@ class VideoPlayerFragment : BaseFragment<FragmentVideoPlayerBinding>(
             }
         })
         binding.playView.doOnLayout { updatePictureInPictureParams() }
+
+
+        if (movies?.isNotEmpty() == true) {
+            setupUITvShow()
+        } else {
+            setupVideo(urlMedia, titleMedia)
+        }
+    }
+
+    private fun setupVideo(urlMedia: String, titleMedia: String) {
+        if (urlMedia.isBlank() || titleMedia.isBlank()) return
+
+        txtTitle.text = titleMedia
+
+        val mediaItem = MediaItem.fromUri(urlMedia.toUri())
+        if (exoPlayer.mediaItemCount > 0) {
+            exoPlayer.clearMediaItems()
+        }
         exoPlayer.setMediaItem(mediaItem)
         exoPlayer.prepare()
+    }
+
+    private fun setupUITvShow() {
+        movies?.forEachIndexed { index, tvShowParcelable ->
+            if (urlMedia == tvShowParcelable.url) {
+                currentPosition = index
+            }
+        }
+
+        setupVideo(urlMedia, titleMedia)
+
+        layoutEpisode.visibility = setVisionView(true)
+        movies?.let {
+            layoutNextEp.visibility = setVisionView(currentPosition < it.size - 1)
+        }
+
+        recycleView.adapter = adapter
+
+    }
+
+    private fun setupEpisodeTitle(title: String, numberEpisode: Int): String {
+        if (title.isBlank()) return ""
+        return "E$numberEpisode \"$title\""
     }
 
     private fun setTitleSpeed(option: Int) {
@@ -372,10 +520,15 @@ class VideoPlayerFragment : BaseFragment<FragmentVideoPlayerBinding>(
     }
 
     companion object {
-        fun newInstance(titleMedia: String, urlMedia: String) = VideoPlayerFragment().apply {
+        fun newInstance(
+            titleMedia: String,
+            urlMedia: String,
+            movies: ArrayList<TvShowParcelable>? = null
+        ) = VideoPlayerFragment().apply {
             arguments = Bundle().apply {
                 putString(BUNDLE_TITLE_MEDIA, titleMedia)
                 putString(BUNDLE_URL_MEDIA, urlMedia)
+                putParcelableArrayList(BUNDLE_LIST_MEDIA, movies)
             }
         }
 

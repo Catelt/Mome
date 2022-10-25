@@ -18,10 +18,14 @@ import com.catelt.mome.data.model.Video
 import com.catelt.mome.data.model.getThumbnailUrl
 import com.catelt.mome.data.model.toStringCast
 import com.catelt.mome.data.model.tvshow.TvShowDetails
+import com.catelt.mome.data.model.tvshow.TvShowParcelable
 import com.catelt.mome.databinding.FragmentDetailTvShowBinding
 import com.catelt.mome.ui.bottomsheet.MediaDetailsBottomSheet
 import com.catelt.mome.ui.components.CustomPlayerUiController
 import com.catelt.mome.ui.detail.TrailerAdapter
+import com.catelt.mome.ui.detail.tvshow.adapter.EpisodeAdapter
+import com.catelt.mome.ui.detail.tvshow.adapter.LikeThisAdapter
+import com.catelt.mome.utils.BUNDLE_LIST_MEDIA
 import com.catelt.mome.utils.BUNDLE_TITLE_MEDIA
 import com.catelt.mome.utils.BUNDLE_URL_MEDIA
 import com.catelt.mome.utils.ImageUrlParser
@@ -53,6 +57,8 @@ class DetailTvShowFragment : BaseFragment<FragmentDetailTvShowBinding>(
     private val trailerAdapter = TrailerAdapter()
     private val likeThisAdapter = LikeThisAdapter()
 
+    private val movies = mutableListOf<TvShowParcelable>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val inflater = TransitionInflater.from(requireContext())
@@ -68,13 +74,14 @@ class DetailTvShowFragment : BaseFragment<FragmentDetailTvShowBinding>(
             
             episodeAdapter.onMovieClicked = { episodeNumber, name ->
                 viewModel.uiState.value.associatedContentTvShow.episodes?.let { list ->
-                    if (list.size > episodeNumber) {
-                        val newTitle = "${binding.layoutHeader.txtTitle.text} \"$name\""
+                    if (list.size >= episodeNumber) {
+                        val newTitle = "E$episodeNumber \"$name\""
                         findNavController().navigate(
                             R.id.videoPlayerFragment,
                             bundleOf(
                                 BUNDLE_TITLE_MEDIA to newTitle,
-                                BUNDLE_URL_MEDIA to list[0].url
+                                BUNDLE_URL_MEDIA to list[episodeNumber - 1].url,
+                                BUNDLE_LIST_MEDIA to movies
                             )
                         )
                     }
@@ -209,9 +216,19 @@ class DetailTvShowFragment : BaseFragment<FragmentDetailTvShowBinding>(
 
                         uiState.associatedTvShow.seasonDetails?.let {
                             val list = it.episodes.filter { episode ->
-                                episode.isReleased()
+                                episode.isReleased() && episode.overview.isNotBlank()
                             }
                             episodeAdapter.submitList(list)
+                            uiState.associatedContentTvShow.episodes?.forEachIndexed { index, ophimEpisode ->
+                                val tvShowParcelable = TvShowParcelable(
+                                    numberEpisode = index + 1,
+                                    title = list[index].name,
+                                    stillPath = list[index].stillPath,
+                                    url = ophimEpisode.url,
+                                    overview = list[index].overview
+                                )
+                                movies.add(tvShowParcelable)
+                            }
                         }
 
                         uiState.associatedTvShow.similar.flowOn(Dispatchers.IO).onEach { list ->
@@ -226,12 +243,12 @@ class DetailTvShowFragment : BaseFragment<FragmentDetailTvShowBinding>(
                                         R.id.videoPlayerFragment,
                                         bundleOf(
                                             BUNDLE_TITLE_MEDIA to binding.layoutHeader.txtTitle.text,
-                                            BUNDLE_URL_MEDIA to list[0].url
+                                            BUNDLE_URL_MEDIA to list[0].url,
+                                            BUNDLE_LIST_MEDIA to movies
                                         )
                                     )
                                 }
                             }
-
                         }
                     }
                 }

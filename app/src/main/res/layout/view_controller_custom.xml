@@ -12,6 +12,18 @@
         android:layout_height="match_parent"
         android:background="@color/black" />
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:background="@drawable/gradient_top"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:background="@drawable/gradient_bottom"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
     <ImageView
         android:id="@+id/btnBack"
         android:layout_width="28dp"
@@ -217,6 +229,7 @@
             android:layout_weight="1">
 
             <LinearLayout
+                android:id="@+id/btnLock"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="?android:selectableItemBackgroundBorderless"
@@ -236,7 +249,43 @@
                     android:layout_height="match_parent"
                     android:layout_marginStart="7dp"
                     android:gravity="center_vertical"
-                    android:text="Lock"
+                    android:text="@string/button_lock"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layoutEpisodes"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:id="@+id/btnEpisodes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?android:selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="21dp"
+                    android:layout_height="21dp"
+                    android:src="@drawable/ic_video_library"
+                    app:tint="@color/white" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="7dp"
+                    android:gravity="center_vertical"
+                    android:text="@string/button_episodes"
                     android:textSize="12sp" />
 
             </LinearLayout>
@@ -251,6 +300,7 @@
             android:layout_weight="1">
 
             <LinearLayout
+                android:id="@+id/btnAudioSubtitles"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="?android:selectableItemBackgroundBorderless"
@@ -270,14 +320,67 @@
                     android:layout_height="match_parent"
                     android:layout_marginStart="7dp"
                     android:gravity="center_vertical"
-                    android:text="Audio &amp; Subtitles"
+                    android:text="@string/button_audio_subtitles"
                     android:textSize="12sp" />
 
             </LinearLayout>
 
         </LinearLayout>
 
+        <LinearLayout
+            android:id="@+id/layoutNextEp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:id="@+id/btnNextEp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?android:selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="21dp"
+                    android:layout_height="21dp"
+                    android:src="@drawable/ic_baseline_skip_next"
+                    app:tint="@color/white" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="7dp"
+                    android:gravity="center_vertical"
+                    android:text="@string/button_next_ep"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+
+        </LinearLayout>
 
     </LinearLayout>
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="5dp"
+        android:background="@color/black"
+        android:nestedScrollingEnabled="false"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btnBack"
+        app:layout_constraintVertical_bias="1"
+        tools:itemCount="2"
+        tools:listitem="@layout/item_episode_video_view" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
