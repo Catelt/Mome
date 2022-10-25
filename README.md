@@ -2,7 +2,7 @@
 
 # Mome
 Mome is movie application with MVVM (Model, View, ViewModel), LiveData, Navigation Component(NavGraph, BottomNav) consuming [TMDB API](https://www.themoviedb.org/documentation/api) to help users to have current information of the trending, popular, upcoming many other films.
-Application support on [Mobile](https://play.google.com/store/apps/details?id=com.goldenowl.ecommerceapp)
+Application support on [Mobile](https://play.google.com/store/apps/details?id=com.catelt.mome)
 
 # Screenshot
 |        Home Screen        |        New Screen        |       My List Screen        |
