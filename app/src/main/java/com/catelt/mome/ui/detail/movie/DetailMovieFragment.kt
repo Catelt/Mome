@@ -24,9 +24,7 @@ import com.catelt.mome.databinding.FragmentDetailMovieBinding
 import com.catelt.mome.ui.bottomsheet.MediaDetailsBottomSheet
 import com.catelt.mome.ui.components.CustomPlayerUiController
 import com.catelt.mome.ui.detail.TrailerAdapter
-import com.catelt.mome.utils.BUNDLE_TITLE_MEDIA
-import com.catelt.mome.utils.BUNDLE_URL_MEDIA
-import com.catelt.mome.utils.ImageUrlParser
+import com.catelt.mome.utils.*
 import com.catelt.mome.utils.extension.getCalendarRelease
 import com.catelt.mome.utils.extension.getRunTime
 import com.catelt.mome.utils.extension.loadDefault
@@ -199,22 +197,30 @@ class DetailMovieFragment : BaseFragment<FragmentDetailMovieBinding>(
                             }.launchIn(lifecycleScope)
 
                         binding.layoutHeader.btnPlay.apply {
-                            setEnable(movieDetailSate.associatedContent.episodes != null)
-                            movieDetailSate.associatedContent.episodes?.let { list ->
-                                setOnClickListener {
-                                    findNavController().navigate(
-                                        R.id.videoPlayerFragment,
-                                        bundleOf(
-                                            BUNDLE_TITLE_MEDIA to binding.layoutHeader.txtTitle.text,
-                                            BUNDLE_URL_MEDIA to list[0].url
-                                        )
-                                    )
-                                }
+                            setEnable(movieDetailSate.associatedContent.ophim?.status == true)
+                            setOnClickListener {
+                                setOnClickPlayVideo()
                             }
                         }
                     }
 
                 }
+            }
+        }
+    }
+
+    private fun setOnClickPlayVideo(position: Int = 0) {
+        viewModel.uiState.value.apply {
+            associatedContent.ophim?.apply {
+                findNavController().navigate(
+                    R.id.videoPlayerFragment,
+                    bundleOf(
+                        BUNDLE_TITLE_MEDIA to binding.layoutHeader.txtTitle.text,
+                        BUNDLE_ID_MEDIA to movieDetails?.id,
+                        BUNDLE_SLUG_MEDIA to movie.slug,
+                        BUNDLE_CURRENT_EPISODE to position,
+                    )
+                )
             }
         }
     }

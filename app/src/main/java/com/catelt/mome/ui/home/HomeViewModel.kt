@@ -9,6 +9,7 @@ import com.catelt.mome.data.model.Presentable
 import com.catelt.mome.data.model.account.Media
 import com.catelt.mome.data.model.movie.Movie
 import com.catelt.mome.data.model.ophim.OphimEpisode
+import com.catelt.mome.data.model.ophim.OphimResponse
 import com.catelt.mome.data.remote.api.onException
 import com.catelt.mome.data.remote.api.onFailure
 import com.catelt.mome.data.remote.api.onSuccess
@@ -101,20 +102,20 @@ class HomeViewModel @Inject constructor(
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(10), TvShowsState.default)
 
-    private val episodes: MutableStateFlow<List<OphimEpisode>?> = MutableStateFlow(null)
+    private val ophim: MutableStateFlow<OphimResponse?> = MutableStateFlow(null)
 
     val uiState: StateFlow<HomeUIState> = combine(
-        isMovie, moviesState, tvShowsState, episodes
-    ) { isMovie, moviesState, tvShowsState, episodes ->
+        isMovie, moviesState, tvShowsState, ophim
+    ) { isMovie, moviesState, tvShowsState, ophim ->
         if (isMovie) {
             HomeUIState(
                 homeState = HomeState.MovieData(moviesState),
-                episode = episodes
+                ophim = ophim
             )
         } else {
             HomeUIState(
                 homeState = HomeState.TvShowData(tvShowsState),
-                episode = episodes
+                ophim = ophim
             )
         }
     }.stateIn(viewModelScope, SharingStarted.Eagerly, HomeUIState.default)
@@ -122,7 +123,7 @@ class HomeViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             media.collectLatest { presentable ->
-                episodes.emit(null)
+                ophim.emit(null)
                 isMyList.emit(false)
                 checkMediaInMyList(presentable)
                 isMovie.collectLatest { isMovie ->
@@ -216,8 +217,8 @@ class HomeViewModel @Inject constructor(
         ).onSuccess {
             viewModelScope.launch {
                 if (data?.status == true) {
-                    if (episodes.value == null) {
-                        episodes.emit(data.episodeResponses[0].episodes)
+                    if (ophim.value == null) {
+                        ophim.emit(data)
                     }
                 }
             }

@@ -8,7 +8,7 @@ import com.catelt.mome.data.model.*
 import com.catelt.mome.data.model.account.Media
 import com.catelt.mome.data.model.movie.MovieCollection
 import com.catelt.mome.data.model.movie.MovieDetails
-import com.catelt.mome.data.model.ophim.OphimEpisode
+import com.catelt.mome.data.model.ophim.OphimResponse
 import com.catelt.mome.data.remote.api.onException
 import com.catelt.mome.data.remote.api.onFailure
 import com.catelt.mome.data.remote.api.onSuccess
@@ -65,7 +65,7 @@ class DetailMovieViewModel @Inject constructor(
     )
 
     private val videos: MutableStateFlow<List<Video>?> = MutableStateFlow(null)
-    private val episodes: MutableStateFlow<List<OphimEpisode>?> = MutableStateFlow(null)
+    private val ophim: MutableStateFlow<OphimResponse?> = MutableStateFlow(null)
 
     val imageUrlParser: StateFlow<ImageUrlParser?> = configRepository.getImageUrlParser()
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
@@ -91,13 +91,13 @@ class DetailMovieViewModel @Inject constructor(
 
 
     private val associatedContent: StateFlow<AssociatedContent> = combine(
-        movieBackdrops, videos, credits, episodes
-    ) { backdrops, videos, credits, episodes ->
+        movieBackdrops, videos, credits, ophim
+    ) { backdrops, videos, credits, ophim ->
         AssociatedContent(
             backdrops = backdrops,
             videos = videos,
             credits = credits,
-            episodes = episodes
+            ophim = ophim
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(10), AssociatedContent.default)
 
@@ -302,8 +302,8 @@ class DetailMovieViewModel @Inject constructor(
         ).onSuccess {
             viewModelScope.launch {
                 if (data?.status == true) {
-                    if (episodes.value == null) {
-                        episodes.emit(data.episodeResponses[0].episodes)
+                    if (ophim.value == null) {
+                        ophim.emit(data)
                     }
                 }
             }

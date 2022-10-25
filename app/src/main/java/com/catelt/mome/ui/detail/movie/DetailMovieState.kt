@@ -7,7 +7,7 @@ import com.catelt.mome.data.model.Video
 import com.catelt.mome.data.model.movie.Movie
 import com.catelt.mome.data.model.movie.MovieCollection
 import com.catelt.mome.data.model.movie.MovieDetails
-import com.catelt.mome.data.model.ophim.OphimEpisode
+import com.catelt.mome.data.model.ophim.OphimResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 
@@ -61,14 +61,14 @@ data class AssociatedContent(
     val backdrops: List<Image>,
     val videos: List<Video>?,
     val credits: Credits?,
-    val episodes: List<OphimEpisode>?,
+    val ophim: OphimResponse?,
 ) {
     companion object {
         val default: AssociatedContent = AssociatedContent(
             backdrops = emptyList(),
             videos = null,
             credits = null,
-            episodes = null
+            ophim = null
         )
     }
 }

@@ -5,7 +5,7 @@ import com.catelt.mome.data.model.AggregatedCredits
 import com.catelt.mome.data.model.Image
 import com.catelt.mome.data.model.SeasonDetails
 import com.catelt.mome.data.model.Video
-import com.catelt.mome.data.model.ophim.OphimEpisode
+import com.catelt.mome.data.model.ophim.OphimResponse
 import com.catelt.mome.data.model.tvshow.TvShow
 import com.catelt.mome.data.model.tvshow.TvShowDetails
 import kotlinx.coroutines.flow.Flow
@@ -34,14 +34,14 @@ data class AssociatedContentTvShow(
     val backdrops: List<Image>,
     val videos: List<Video>?,
     val credits: AggregatedCredits?,
-    val episodes: List<OphimEpisode>?
+    val ophim: OphimResponse?
 ) {
     companion object {
         val default: AssociatedContentTvShow = AssociatedContentTvShow(
             backdrops = emptyList(),
             videos = null,
             credits = null,
-            episodes = null
+            ophim = null
         )
     }
 }

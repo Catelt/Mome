@@ -26,11 +26,8 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.catelt.mome.R
 import com.catelt.mome.core.BaseFragment
-import com.catelt.mome.data.model.tvshow.TvShowParcelable
 import com.catelt.mome.databinding.FragmentVideoPlayerBinding
-import com.catelt.mome.utils.BUNDLE_LIST_MEDIA
-import com.catelt.mome.utils.BUNDLE_TITLE_MEDIA
-import com.catelt.mome.utils.BUNDLE_URL_MEDIA
+import com.catelt.mome.utils.*
 import com.catelt.mome.utils.brightness.BrightnessUtils
 import com.catelt.mome.utils.brightness.changeAppScreenBrightnessValue
 import com.catelt.mome.utils.brightness.changeBrightnessToDefault
@@ -57,12 +54,9 @@ class VideoPlayerFragment : BaseFragment<FragmentVideoPlayerBinding>(
     override var isHideBottom = true
     override var isFullScreen = true
 
-    private var titleMedia: String = ""
-    private var urlMedia: String = ""
-    private var movies: List<TvShowParcelable>? = null
+    private var isMovie = true
 
     private var optionSpeed: Int = 2
-
     private var currentPosition = 0
     private val adapter = EpisodeVideoPlayerAdapter()
     override val viewModel: VideoPlayerViewModel by viewModels()
@@ -93,28 +87,20 @@ class VideoPlayerFragment : BaseFragment<FragmentVideoPlayerBinding>(
 
     override fun setUpArgument(bundle: Bundle) {
         bundle.apply {
-            titleMedia = getString(BUNDLE_TITLE_MEDIA, "")
-            urlMedia = getString(BUNDLE_URL_MEDIA, "")
-            movies = if (Build.VERSION.SDK_INT >= 33) {
-                getParcelableArrayList(BUNDLE_LIST_MEDIA, TvShowParcelable::class.java)
-            } else {
-                getParcelableArrayList(BUNDLE_LIST_MEDIA)
-            }
+            currentPosition = getInt(BUNDLE_CURRENT_EPISODE, 0)
         }
     }
 
     override fun setUpAdapter() {
         adapter.onMovieClicked = {
-            movies?.let { list ->
+            viewModel.movies.value.let { list ->
                 currentPosition = it
-                val title = setupEpisodeTitle(list[it].title ?: "", list[it].numberEpisode)
-                setupVideo(list[it].url ?: "", title)
+                setupVideo()
                 layoutNextEp.visibility = setVisionView(currentPosition < list.size - 1)
             }
             btnBack.callOnClick()
+            binding.playView.hideController()
         }
-
-        adapter.submitList(movies)
     }
 
     override fun setUpViewModel() {
@@ -125,24 +111,28 @@ class VideoPlayerFragment : BaseFragment<FragmentVideoPlayerBinding>(
                         adapter.imageUrlParser = it
                     }
                 }
+                launch {
+                    movies.collectLatest {
+                        if (it.isNotEmpty()){
+                            adapter.submitList(it)
+                            isMovie = (it.size == 1 && it[0].stillPath?.isBlank() == true)
+
+                            setupVideo()
+
+                            if (!isMovie){
+                                layoutEpisode.visibility = setVisionView(true)
+                                recycleView.adapter = adapter
+                                layoutNextEp.visibility = setVisionView(currentPosition < it.size - 1)
+                            }
+                        }
+                    }
+                }
             }
         }
     }
 
-
     @SuppressLint("ClickableViewAccessibility")
     override fun setUpViews() {
-        exoPlayer = ExoPlayer.Builder(requireContext())
-            .setSeekBackIncrementMs(10000)
-            .setSeekForwardIncrementMs(10000)
-            .build()
-            .also {
-                binding.playView.player = it
-            }
-        scaleGestureDetector =
-            ScaleGestureDetector(requireContext(), CustomOnScaleGestureListener(binding.playView))
-
-        brightnessUtils = BrightnessUtils.init(requireContext())
         binding.root.apply {
             mainContainer = findViewById(R.id.mainContainer)
             seekBarBrightness = findViewById(R.id.seekBarBrightness)
@@ -165,6 +155,18 @@ class VideoPlayerFragment : BaseFragment<FragmentVideoPlayerBinding>(
             btnNextEp = findViewById(R.id.btnNextEp)
             recycleView = findViewById(R.id.recyclerViewHorizontal)
         }
+
+        exoPlayer = ExoPlayer.Builder(requireContext())
+            .setSeekBackIncrementMs(10000)
+            .setSeekForwardIncrementMs(10000)
+            .build()
+            .also {
+                binding.playView.player = it
+            }
+        scaleGestureDetector =
+            ScaleGestureDetector(requireContext(), CustomOnScaleGestureListener(binding.playView))
+
+        brightnessUtils = BrightnessUtils.init(requireContext())
 
         mainContainer.setOnTouchListener { _, event ->
             scaleGestureDetector?.onTouchEvent(event)
@@ -267,14 +269,10 @@ class VideoPlayerFragment : BaseFragment<FragmentVideoPlayerBinding>(
         }
 
         btnNextEp.setOnClickListener {
-            movies?.let { list ->
+            viewModel.movies.value.let { list ->
                 if (currentPosition < list.size - 1) {
                     currentPosition++
-                    val title = setupEpisodeTitle(
-                        list[currentPosition].title ?: "",
-                        list[currentPosition].numberEpisode
-                    )
-                    setupVideo(list[currentPosition].url ?: "", title)
+                    setupVideo()
                 }
             }
         }
@@ -311,49 +309,26 @@ class VideoPlayerFragment : BaseFragment<FragmentVideoPlayerBinding>(
             }
         })
         binding.playView.doOnLayout { updatePictureInPictureParams() }
-
-
-        if (movies?.isNotEmpty() == true) {
-            setupUITvShow()
-        } else {
-            setupVideo(urlMedia, titleMedia)
-        }
     }
 
-    private fun setupVideo(urlMedia: String, titleMedia: String) {
-        if (urlMedia.isBlank() || titleMedia.isBlank()) return
+    private fun setupVideo() {
+        viewModel.movies.value.let { list ->
+            list[currentPosition].apply {
+                if (isMovie) {
+                    txtTitle.text = title
+                } else {
+                    val newTitle = "E$numberEpisode \"$title\""
+                    txtTitle.text = newTitle
+                }
 
-        txtTitle.text = titleMedia
-
-        val mediaItem = MediaItem.fromUri(urlMedia.toUri())
-        if (exoPlayer.mediaItemCount > 0) {
-            exoPlayer.clearMediaItems()
-        }
-        exoPlayer.setMediaItem(mediaItem)
-        exoPlayer.prepare()
-    }
-
-    private fun setupUITvShow() {
-        movies?.forEachIndexed { index, tvShowParcelable ->
-            if (urlMedia == tvShowParcelable.url) {
-                currentPosition = index
+                val mediaItem = MediaItem.fromUri((url ?: "").toUri())
+                if (exoPlayer.mediaItemCount > 0) {
+                    exoPlayer.clearMediaItems()
+                }
+                exoPlayer.setMediaItem(mediaItem)
+                exoPlayer.prepare()
             }
         }
-
-        setupVideo(urlMedia, titleMedia)
-
-        layoutEpisode.visibility = setVisionView(true)
-        movies?.let {
-            layoutNextEp.visibility = setVisionView(currentPosition < it.size - 1)
-        }
-
-        recycleView.adapter = adapter
-
-    }
-
-    private fun setupEpisodeTitle(title: String, numberEpisode: Int): String {
-        if (title.isBlank()) return ""
-        return "E$numberEpisode \"$title\""
     }
 
     private fun setTitleSpeed(option: Int) {
@@ -521,14 +496,16 @@ class VideoPlayerFragment : BaseFragment<FragmentVideoPlayerBinding>(
 
     companion object {
         fun newInstance(
-            titleMedia: String,
-            urlMedia: String,
-            movies: ArrayList<TvShowParcelable>? = null
+            mediaId: Int,
+            mediaSlug: String,
+            currentPosition: Int = 0,
+            mediaTitle: String? = null,
         ) = VideoPlayerFragment().apply {
             arguments = Bundle().apply {
-                putString(BUNDLE_TITLE_MEDIA, titleMedia)
-                putString(BUNDLE_URL_MEDIA, urlMedia)
-                putParcelableArrayList(BUNDLE_LIST_MEDIA, movies)
+                putInt(BUNDLE_ID_MEDIA, mediaId)
+                putString(BUNDLE_SLUG_MEDIA, mediaSlug)
+                putInt(BUNDLE_CURRENT_EPISODE, currentPosition)
+                putString(BUNDLE_TITLE_MEDIA, mediaTitle)
             }
         }
 
