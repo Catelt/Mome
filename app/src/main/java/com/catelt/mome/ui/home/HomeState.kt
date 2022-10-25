@@ -10,12 +10,14 @@ import kotlinx.coroutines.flow.emptyFlow
 
 data class HomeUIState(
     val homeState: HomeState,
-    val ophim: OphimResponse?
+    val ophim: OphimResponse?,
+    val isMyList: Boolean
 ) {
     companion object {
         val default: HomeUIState = HomeUIState(
             homeState = HomeState.MovieData(),
-            ophim = null
+            ophim = null,
+            isMyList = false
         )
     }
 }

@@ -36,10 +36,10 @@ class PlayButton @JvmOverloads constructor(
         binding.apply {
             root.isEnabled = isEnable
             if (isEnable){
-                mainContainer.background = ContextCompat.getDrawable(context, R.color.white)
+                root.background = ContextCompat.getDrawable(context, R.color.white)
             }
             else{
-                mainContainer.background = ContextCompat.getDrawable(context, R.color.grey_light_1)
+                root.background = ContextCompat.getDrawable(context, R.color.grey_light_1)
                 setDefault()
             }
         }

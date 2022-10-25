@@ -8,7 +8,6 @@ import com.catelt.mome.data.model.MediaType
 import com.catelt.mome.data.model.Presentable
 import com.catelt.mome.data.model.account.Media
 import com.catelt.mome.data.model.movie.Movie
-import com.catelt.mome.data.model.ophim.OphimEpisode
 import com.catelt.mome.data.model.ophim.OphimResponse
 import com.catelt.mome.data.remote.api.onException
 import com.catelt.mome.data.remote.api.onFailure
@@ -54,7 +53,7 @@ class HomeViewModel @Inject constructor(
     private val deviceLanguage: Flow<DeviceLanguage> = getDeviceLanguageUseCase.invoke()
     private val isMovie = MutableStateFlow(true)
 
-    val isMyList = MutableStateFlow(false)
+    private val isMyList = MutableStateFlow(false)
     val media = MutableStateFlow(
         Movie(
             id = 0,
@@ -105,17 +104,19 @@ class HomeViewModel @Inject constructor(
     private val ophim: MutableStateFlow<OphimResponse?> = MutableStateFlow(null)
 
     val uiState: StateFlow<HomeUIState> = combine(
-        isMovie, moviesState, tvShowsState, ophim
-    ) { isMovie, moviesState, tvShowsState, ophim ->
+        isMovie, moviesState, tvShowsState, ophim, isMyList
+    ) { isMovie, moviesState, tvShowsState, ophim, mylist ->
         if (isMovie) {
             HomeUIState(
                 homeState = HomeState.MovieData(moviesState),
-                ophim = ophim
+                ophim = ophim,
+                isMyList = mylist
             )
         } else {
             HomeUIState(
                 homeState = HomeState.TvShowData(tvShowsState),
-                ophim = ophim
+                ophim = ophim,
+                isMyList = mylist
             )
         }
     }.stateIn(viewModelScope, SharingStarted.Eagerly, HomeUIState.default)
@@ -125,17 +126,26 @@ class HomeViewModel @Inject constructor(
             media.collectLatest { presentable ->
                 ophim.emit(null)
                 isMyList.emit(false)
-                checkMediaInMyList(presentable)
-                isMovie.collectLatest { isMovie ->
-                    if (isMovie) {
-                        launch {
-                            getMovieDetails(presentable.id, DeviceLanguage.default)
-                            getMovieDetails(presentable.id)
-                        }
-                    } else {
-                        launch {
-                            getTvShowDetail(presentable.id, DeviceLanguage.default)
-                            getTvShowDetail(presentable.id)
+                launch {
+                    checkMediaInMyList(presentable)
+                }
+                launch {
+                    isMovie.collectLatest { isMovie ->
+                        println(isMovie)
+                        if (isMovie) {
+                            launch {
+                                getMovieDetails(presentable.id)
+                            }
+                            launch {
+                                getMovieDetails(presentable.id, DeviceLanguage.default)
+                            }
+                        } else {
+                            launch {
+                                getTvShowDetail(presentable.id)
+                            }
+                            launch {
+                                getTvShowDetail(presentable.id, DeviceLanguage.default)
+                            }
                         }
                     }
 

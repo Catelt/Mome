@@ -111,6 +111,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
                 viewModel.setIsMovie(!viewModel.getIsMovie())
                 setupAppBar(false)
                 subTitleAppBar.transitionToStart()
+                nestScrollView.scrollTo(0, 0)
             }
 
             btnProfile.setOnClickListener {
@@ -185,14 +186,16 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
                         }
                     }
 
-                    launch {
-                        isMyList.collectLatest {
-                            binding.layoutHeaderHome.btnList.setUI(it)
-                        }
-                    }
+
                     launch {
                         uiState.collectLatest { homeUIState ->
                             if (view != null) {
+                                launch {
+                                    homeUIState.isMyList.let {
+                                        binding.layoutHeaderHome.btnList.setUI(it)
+                                    }
+                                }
+
                                 when (homeUIState.homeState) {
                                     is HomeState.MovieData -> {
                                         homeUIState.homeState.moviesState.apply {

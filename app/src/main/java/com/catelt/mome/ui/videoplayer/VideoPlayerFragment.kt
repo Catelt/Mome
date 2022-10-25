@@ -14,7 +14,6 @@ import android.graphics.Rect
 import android.graphics.drawable.Icon
 import android.os.Build
 import android.os.Bundle
-import android.util.Rational
 import android.view.ScaleGestureDetector
 import android.view.View
 import android.widget.*
@@ -170,7 +169,11 @@ class VideoPlayerFragment : BaseFragment<FragmentVideoPlayerBinding>(
 
         mainContainer.setOnTouchListener { _, event ->
             scaleGestureDetector?.onTouchEvent(event)
-            true
+            false
+        }
+
+        mainContainer.setOnClickListener {
+            if (binding.playView.isControllerVisible) binding.playView.hideController()
         }
 
         seekBarBrightness.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
@@ -429,7 +432,6 @@ class VideoPlayerFragment : BaseFragment<FragmentVideoPlayerBinding>(
     }
 
     private fun updatePictureInPictureParams(isPlaying: Boolean = true): PictureInPictureParams {
-        val aspectRatio = Rational(binding.playView.width, binding.playView.height)
         val sourceRectHint = Rect()
         val actions = ArrayList<RemoteAction>()
 
@@ -442,13 +444,11 @@ class VideoPlayerFragment : BaseFragment<FragmentVideoPlayerBinding>(
         val params = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             PictureInPictureParams.Builder()
                 .setAutoEnterEnabled(true)
-                .setAspectRatio(aspectRatio)
                 .setSourceRectHint(sourceRectHint)
                 .setActions(actions)
                 .build()
         } else {
             PictureInPictureParams.Builder()
-                .setAspectRatio(aspectRatio)
                 .setSourceRectHint(sourceRectHint)
                 .setActions(actions)
                 .build()
