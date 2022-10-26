@@ -17,9 +17,7 @@ import com.catelt.mome.core.BaseFragment
 import com.catelt.mome.data.model.Presentable
 import com.catelt.mome.databinding.FragmentHomeBinding
 import com.catelt.mome.ui.bottomsheet.MediaDetailsBottomSheet
-import com.catelt.mome.utils.BUNDLE_TITLE_MEDIA
-import com.catelt.mome.utils.BUNDLE_URL_MEDIA
-import com.catelt.mome.utils.ImageUrlParser
+import com.catelt.mome.utils.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
@@ -45,6 +43,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
     private var trailerMedia: List<Presentable> = emptyList()
     private var imageParser: ImageUrlParser? = null
     private var isShowTitleAppBar: Boolean = false
+
     init {
         isFullScreen = true
     }
@@ -69,7 +68,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
                 findNavController().navigate(R.id.searchFragment)
             }
 
-            layoutHeaderHome.btnPlay.setEnable(viewModel.uiState.value.episode?.isNotEmpty() ?: false)
+            layoutHeaderHome.btnPlay.setEnable(viewModel.uiState.value.ophim?.status == true)
             txtMovies.setOnTouchListener { _, event ->
                 if (event.action == MotionEvent.ACTION_UP) {
                     onClickMovie()
@@ -99,10 +98,9 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
             layoutHeaderHome.btnList.apply {
                 isHome = true
                 setOnClickListener {
-                    if (isExisted){
+                    if (isExisted) {
                         viewModel.onRemoveClick(trailerMedia[positionNowPlaying])
-                    }
-                    else{
+                    } else {
                         viewModel.onAddMediaClick(trailerMedia[positionNowPlaying])
                     }
                     setUI(!isExisted)
@@ -113,6 +111,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
                 viewModel.setIsMovie(!viewModel.getIsMovie())
                 setupAppBar(false)
                 subTitleAppBar.transitionToStart()
+                nestScrollView.scrollTo(0, 0)
             }
 
             btnProfile.setOnClickListener {
@@ -169,8 +168,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
     @Suppress("UNCHECKED_CAST")
     override fun setUpViewModel() {
         viewModel.apply {
-            toastMessage.observe(viewLifecycleOwner){
-                if (it.isNotBlank()){
+            toastMessage.observe(viewLifecycleOwner) {
+                if (it.isNotBlank()) {
                     toast(it)
                     toastMessage.postValue("")
                 }
@@ -187,14 +186,16 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
                         }
                     }
 
-                    launch {
-                        isMyList.collectLatest {
-                            binding.layoutHeaderHome.btnList.setUI(it)
-                        }
-                    }
+
                     launch {
                         uiState.collectLatest { homeUIState ->
-                            if(view != null){
+                            if (view != null) {
+                                launch {
+                                    homeUIState.isMyList.let {
+                                        binding.layoutHeaderHome.btnList.setUI(it)
+                                    }
+                                }
+
                                 when (homeUIState.homeState) {
                                     is HomeState.MovieData -> {
                                         homeUIState.homeState.moviesState.apply {
@@ -340,19 +341,11 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
 
                                 binding.layoutHeaderHome.btnPlay.setEnable(false)
 
-                                homeUIState.episode?.let { list ->
+                                homeUIState.ophim?.let { data ->
                                     binding.layoutHeaderHome.btnPlay.apply {
-                                        if (list.isNotEmpty()) {
-                                            binding.layoutHeaderHome.btnPlay.setEnable(true)
-                                            setOnClickListener {
-                                                findNavController().navigate(
-                                                    R.id.videoPlayerFragment,
-                                                    bundleOf(
-                                                        BUNDLE_TITLE_MEDIA to viewModel.media.value.title,
-                                                        BUNDLE_URL_MEDIA to list[0].url
-                                                    )
-                                                )
-                                            }
+                                        setEnable(data.status)
+                                        setOnClickListener {
+                                            setOnClickPlayVideo()
                                         }
                                     }
                                 }
@@ -360,6 +353,22 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
                         }
                     }
                 }
+            }
+        }
+    }
+
+    private fun setOnClickPlayVideo(position: Int = 0) {
+        viewModel.uiState.value.apply {
+            ophim?.apply {
+                findNavController().navigate(
+                    R.id.videoPlayerFragment,
+                    bundleOf(
+                        BUNDLE_TITLE_MEDIA to if (viewModel.getIsMovie()) viewModel.media.value.title else null,
+                        BUNDLE_ID_MEDIA to viewModel.media.value.id,
+                        BUNDLE_SLUG_MEDIA to movie.slug,
+                        BUNDLE_CURRENT_EPISODE to position,
+                    )
+                )
             }
         }
     }
@@ -394,8 +403,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
         }
     }
 
-    private fun randomMedia(isRandom : Boolean = true) {
-        if (isRandom){
+    private fun randomMedia(isRandom: Boolean = true) {
+        if (isRandom) {
             positionNowPlaying = Random.nextInt(0, 15)
         }
         if (trailerMedia.isNotEmpty()) {

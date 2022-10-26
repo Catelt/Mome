@@ -1,14 +1,14 @@
-package com.catelt.mome.ui.detail.tvshow
+package com.catelt.mome.ui.detail.tvshow.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.viewbinding.ViewBinding
-import coil.load
 import com.catelt.mome.R
 import com.catelt.mome.core.BaseAdapter
 import com.catelt.mome.data.model.Episode
 import com.catelt.mome.databinding.ItemEpisodeBinding
 import com.catelt.mome.utils.ImageUrlParser
+import com.catelt.mome.utils.extension.loadDefault
 
 class EpisodeAdapter : BaseAdapter<Episode>() {
     var imageUrlParser: ImageUrlParser? = null
@@ -24,9 +24,7 @@ class EpisodeAdapter : BaseAdapter<Episode>() {
         val item = getItem(position)
         (binding as ItemEpisodeBinding).apply {
             item?.let { tvshow ->
-                imgBackdrop.load(imageUrlParser?.getImageUrl(tvshow.stillPath,ImageUrlParser.ImageType.Backdrop)){
-                    crossfade(true)
-                }
+                imgBackdrop.loadDefault(imageUrlParser?.getImageUrl(tvshow.stillPath,ImageUrlParser.ImageType.Backdrop))
                 txtOverview.text = tvshow.overview
                 txtTitle.text = root.context.getString(R.string.title_episode,tvshow.episodeNumber,tvshow.name)
             }

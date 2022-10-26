@@ -6,5 +6,6 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 data class OphimResponse(
     val status: Boolean = true,
+    val movie: OphimMovie,
     @Json(name = "episodes") val episodeResponses: List<OphimEpisodeResponse>
 )

@@ -1,13 +1,13 @@
-package com.catelt.mome.ui.detail.tvshow
+package com.catelt.mome.ui.detail.tvshow.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.viewbinding.ViewBinding
-import coil.load
 import com.catelt.mome.core.BasePagingAdapter
 import com.catelt.mome.data.model.tvshow.TvShow
 import com.catelt.mome.databinding.ItemMediaBinding
 import com.catelt.mome.utils.ImageUrlParser
+import com.catelt.mome.utils.extension.loadDefault
 
 class LikeThisAdapter: BasePagingAdapter<TvShow>() {
     var imageUrlParser: ImageUrlParser? = null
@@ -23,9 +23,7 @@ class LikeThisAdapter: BasePagingAdapter<TvShow>() {
         val item = getItem(position)
         (binding as ItemMediaBinding).apply {
             item?.let {
-                imgPoster.load(imageUrlParser?.getImageUrl(it.posterPath, ImageUrlParser.ImageType.Poster)){
-                    crossfade(true)
-                }
+                imgPoster.loadDefault(imageUrlParser?.getImageUrl(it.posterPath, ImageUrlParser.ImageType.Poster))
                 imgPoster.setOnClickListener {
                     onMovieClicked?.invoke(item.id)
                 }

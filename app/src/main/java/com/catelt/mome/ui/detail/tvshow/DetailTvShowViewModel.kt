@@ -6,7 +6,7 @@ import androidx.paging.cachedIn
 import com.catelt.mome.core.BaseViewModel
 import com.catelt.mome.data.model.*
 import com.catelt.mome.data.model.account.Media
-import com.catelt.mome.data.model.ophim.OphimEpisode
+import com.catelt.mome.data.model.ophim.OphimResponse
 import com.catelt.mome.data.model.tvshow.TvShowDetails
 import com.catelt.mome.data.remote.api.onException
 import com.catelt.mome.data.remote.api.onFailure
@@ -55,7 +55,7 @@ class DetailTvShowViewModel @Inject constructor(
     private val credits: MutableStateFlow<AggregatedCredits?> = MutableStateFlow(null)
     private val tvShowBackdrops: MutableStateFlow<List<Image>> = MutableStateFlow(emptyList())
     private val videos: MutableStateFlow<List<Video>?> = MutableStateFlow(null)
-    private val episodes: MutableStateFlow<List<OphimEpisode>?> = MutableStateFlow(null)
+    private val ophim: MutableStateFlow<OphimResponse?> = MutableStateFlow(null)
 
     private val seasonDetails: MutableStateFlow<SeasonDetails?> = MutableStateFlow(null)
 
@@ -79,13 +79,13 @@ class DetailTvShowViewModel @Inject constructor(
 
 
     private val associatedContent: StateFlow<AssociatedContentTvShow> = combine(
-        tvShowBackdrops, videos, credits, episodes
+        tvShowBackdrops, videos, credits, ophim
     ) { backdrops, videos, credits, episodes ->
         AssociatedContentTvShow(
             backdrops = backdrops,
             videos = videos,
             credits = credits,
-            episodes = episodes
+            ophim = episodes
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(10), AssociatedContentTvShow.default)
 
@@ -251,8 +251,8 @@ class DetailTvShowViewModel @Inject constructor(
         ).onSuccess {
             viewModelScope.launch {
                 if (data?.status == true) {
-                    if (episodes.value == null) {
-                        episodes.emit(data.episodeResponses[0].episodes)
+                    if (ophim.value == null) {
+                        ophim.emit(data)
                     }
                 }
             }

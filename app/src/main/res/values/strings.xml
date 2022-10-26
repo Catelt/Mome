@@ -119,4 +119,9 @@
     <string name="help">Help</string>
     <string name="sign_out">Sign Out</string>
 
+    <string name="button_lock">Lock</string>
+    <string name="button_episodes">Episodes</string>
+    <string name="button_next_ep">Next Ep.</string>
+    <string name="button_audio_subtitles"><![CDATA[Audio & Subtitles]]></string>
+
 </resources>

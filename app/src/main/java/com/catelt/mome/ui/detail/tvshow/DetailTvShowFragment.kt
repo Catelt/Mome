@@ -16,14 +16,18 @@ import com.catelt.mome.core.BaseFragment
 import com.catelt.mome.data.model.AggregatedCredits
 import com.catelt.mome.data.model.Video
 import com.catelt.mome.data.model.getThumbnailUrl
+import com.catelt.mome.data.model.ophim.Media
 import com.catelt.mome.data.model.toStringCast
 import com.catelt.mome.data.model.tvshow.TvShowDetails
 import com.catelt.mome.databinding.FragmentDetailTvShowBinding
 import com.catelt.mome.ui.bottomsheet.MediaDetailsBottomSheet
 import com.catelt.mome.ui.components.CustomPlayerUiController
 import com.catelt.mome.ui.detail.TrailerAdapter
-import com.catelt.mome.utils.BUNDLE_TITLE_MEDIA
-import com.catelt.mome.utils.BUNDLE_URL_MEDIA
+import com.catelt.mome.ui.detail.tvshow.adapter.EpisodeAdapter
+import com.catelt.mome.ui.detail.tvshow.adapter.LikeThisAdapter
+import com.catelt.mome.utils.BUNDLE_CURRENT_EPISODE
+import com.catelt.mome.utils.BUNDLE_ID_MEDIA
+import com.catelt.mome.utils.BUNDLE_SLUG_MEDIA
 import com.catelt.mome.utils.ImageUrlParser
 import com.catelt.mome.utils.extension.getCalendarRelease
 import com.catelt.mome.utils.extension.loadDefault
@@ -53,6 +57,8 @@ class DetailTvShowFragment : BaseFragment<FragmentDetailTvShowBinding>(
     private val trailerAdapter = TrailerAdapter()
     private val likeThisAdapter = LikeThisAdapter()
 
+    private val movies = mutableListOf<Media>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val inflater = TransitionInflater.from(requireContext())
@@ -65,18 +71,15 @@ class DetailTvShowFragment : BaseFragment<FragmentDetailTvShowBinding>(
                 MediaDetailsBottomSheet.newInstance(tvShowID, false)
                     .show(requireActivity().supportFragmentManager, tvShowID.toString())
             }
-            
+
             episodeAdapter.onMovieClicked = { episodeNumber, name ->
-                viewModel.uiState.value.associatedContentTvShow.episodes?.let { list ->
-                    if (list.size > episodeNumber) {
-                        val newTitle = "${binding.layoutHeader.txtTitle.text} \"$name\""
-                        findNavController().navigate(
-                            R.id.videoPlayerFragment,
-                            bundleOf(
-                                BUNDLE_TITLE_MEDIA to newTitle,
-                                BUNDLE_URL_MEDIA to list[0].url
-                            )
-                        )
+                viewModel.uiState.value.associatedContentTvShow.ophim?.apply {
+                    episodeResponses[0].let {
+                        it.episodes.let { list ->
+                            if (list.size >= episodeNumber) {
+                                setOnClickPlayVideo(episodeNumber - 1)
+                            }
+                        }
                     }
                 }
             }
@@ -115,8 +118,8 @@ class DetailTvShowFragment : BaseFragment<FragmentDetailTvShowBinding>(
 
     override fun setUpViewModel() {
         viewModel.apply {
-            toastMessage.observe(viewLifecycleOwner){
-                if (it.isNotBlank()){
+            toastMessage.observe(viewLifecycleOwner) {
+                if (it.isNotBlank()) {
                     toast(it)
                     toastMessage.postValue("")
                 }
@@ -198,8 +201,10 @@ class DetailTvShowFragment : BaseFragment<FragmentDetailTvShowBinding>(
                                             initialize(it, options)
                                         }
                                     }
-                                    binding.layoutThumbnail.youtubePlayerView.visibility = setVisionView(video != null)
-                                    binding.layoutThumbnail.imgBackdrop.visibility = setVisionView(video == null)
+                                    binding.layoutThumbnail.youtubePlayerView.visibility =
+                                        setVisionView(video != null)
+                                    binding.layoutThumbnail.imgBackdrop.visibility =
+                                        setVisionView(video == null)
                                 }
                             }
                         }
@@ -209,7 +214,7 @@ class DetailTvShowFragment : BaseFragment<FragmentDetailTvShowBinding>(
 
                         uiState.associatedTvShow.seasonDetails?.let {
                             val list = it.episodes.filter { episode ->
-                                episode.isReleased()
+                                episode.isReleased() && episode.overview.isNotBlank()
                             }
                             episodeAdapter.submitList(list)
                         }
@@ -219,22 +224,28 @@ class DetailTvShowFragment : BaseFragment<FragmentDetailTvShowBinding>(
                         }.launchIn(lifecycleScope)
 
                         binding.layoutHeader.btnPlay.apply {
-                            setEnable(uiState.associatedContentTvShow.episodes != null)
-                            uiState.associatedContentTvShow.episodes?.let { list ->
-                                setOnClickListener {
-                                    findNavController().navigate(
-                                        R.id.videoPlayerFragment,
-                                        bundleOf(
-                                            BUNDLE_TITLE_MEDIA to binding.layoutHeader.txtTitle.text,
-                                            BUNDLE_URL_MEDIA to list[0].url
-                                        )
-                                    )
-                                }
+                            setEnable(uiState.associatedContentTvShow.ophim?.status == true)
+                            setOnClickListener {
+                                setOnClickPlayVideo()
                             }
-
                         }
                     }
                 }
+            }
+        }
+    }
+
+    private fun setOnClickPlayVideo(position: Int = 0) {
+        viewModel.uiState.value.apply {
+            associatedContentTvShow.ophim?.apply {
+                findNavController().navigate(
+                    R.id.videoPlayerFragment,
+                    bundleOf(
+                        BUNDLE_ID_MEDIA to tvShowDetails?.id,
+                        BUNDLE_SLUG_MEDIA to movie.slug,
+                        BUNDLE_CURRENT_EPISODE to position,
+                    )
+                )
             }
         }
     }
@@ -256,10 +267,9 @@ class DetailTvShowFragment : BaseFragment<FragmentDetailTvShowBinding>(
 
                 btnList.apply {
                     setOnClickListener {
-                        if (isExisted){
+                        if (isExisted) {
                             viewModel.onRemoveClick(tvShow)
-                        }
-                        else{
+                        } else {
                             viewModel.onAddMediaClick(tvShow)
                         }
                         setUI(!isExisted)
@@ -275,7 +285,12 @@ class DetailTvShowFragment : BaseFragment<FragmentDetailTvShowBinding>(
                 }
             }
             txtNameTvShow.text = tvShow.name
-            layoutThumbnail.imgBackdrop.loadDefault(likeThisAdapter.imageUrlParser?.getImageUrl(tvShow.backdropPath, ImageUrlParser.ImageType.Backdrop))
+            layoutThumbnail.imgBackdrop.loadDefault(
+                likeThisAdapter.imageUrlParser?.getImageUrl(
+                    tvShow.backdropPath,
+                    ImageUrlParser.ImageType.Backdrop
+                )
+            )
         }
     }
 
