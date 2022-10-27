@@ -39,6 +39,7 @@ abstract class BaseFragment<VBinding : ViewBinding>(
 
     open fun setUpArgument(bundle: Bundle) {}
 
+    private var statusBarHeight = 0
 
     private var toast : Toast? = null
     fun toast(message: String) {
@@ -80,9 +81,11 @@ abstract class BaseFragment<VBinding : ViewBinding>(
                 WindowCompat.setDecorFitsSystemWindows(it.window, false)
                 changeColorStatusBar(R.color.transparent)
             } else {
-                val rectangle = Rect()
-                it.window.decorView.getWindowVisibleDisplayFrame(rectangle)
-                val statusBarHeight: Int = rectangle.top
+                if (statusBarHeight == 0){
+                    val rectangle = Rect()
+                    it.window.decorView.getWindowVisibleDisplayFrame(rectangle)
+                    statusBarHeight = rectangle.top
+                }
                 binding.root.setPadding(0, statusBarHeight, 0, 0)
                 changeColorStatusBar(R.color.black)
             }
