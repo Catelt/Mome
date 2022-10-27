@@ -17,6 +17,7 @@ import android.os.Bundle
 import android.view.ScaleGestureDetector
 import android.view.View
 import android.widget.*
+import androidx.activity.OnBackPressedCallback
 import androidx.core.net.toUri
 import androidx.core.view.*
 import androidx.fragment.app.viewModels
@@ -132,6 +133,15 @@ class VideoPlayerFragment : BaseFragment<FragmentVideoPlayerBinding>(
 
     @SuppressLint("ClickableViewAccessibility")
     override fun setUpViews() {
+
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    btnBack.callOnClick()
+                }
+            })
+
         binding.root.apply {
             mainContainer = findViewById(R.id.mainContainer)
             seekBarBrightness = findViewById(R.id.seekBarBrightness)
@@ -351,7 +361,6 @@ class VideoPlayerFragment : BaseFragment<FragmentVideoPlayerBinding>(
 
     private fun hideSystemUI() {
         activity?.window?.let {
-            WindowCompat.setDecorFitsSystemWindows(it, false)
             WindowInsetsControllerCompat(it, binding.root).let { controller ->
                 controller.hide(WindowInsetsCompat.Type.systemBars())
                 controller.systemBarsBehavior =
@@ -362,7 +371,6 @@ class VideoPlayerFragment : BaseFragment<FragmentVideoPlayerBinding>(
 
     private fun showSystemUI() {
         activity?.window?.let {
-            WindowCompat.setDecorFitsSystemWindows(it, true)
             WindowInsetsControllerCompat(
                 it,
                 binding.root
@@ -395,9 +403,10 @@ class VideoPlayerFragment : BaseFragment<FragmentVideoPlayerBinding>(
         exoPlayer.pause()
     }
 
+    @SuppressLint("SourceLockedOrientationActivity")
     override fun onDestroy() {
         activity?.let {
-            it.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+            it.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
             showSystemUI()
             it.window.changeBrightnessToDefault()
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {

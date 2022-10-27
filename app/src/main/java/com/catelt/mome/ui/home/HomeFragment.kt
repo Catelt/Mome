@@ -168,6 +168,14 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
     @Suppress("UNCHECKED_CAST")
     override fun setUpViewModel() {
         viewModel.apply {
+            if (trailerMedia.isNotEmpty()) {
+                lifecycleScope.launch {
+                    checkMediaInMyList(
+                        trailerMedia[positionNowPlaying]
+                    )
+                }
+            }
+
             toastMessage.observe(viewLifecycleOwner) {
                 if (it.isNotBlank()) {
                     toast(it)

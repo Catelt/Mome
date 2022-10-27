@@ -274,7 +274,7 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private suspend fun checkMediaInMyList(presentable: Presentable) {
+    suspend fun checkMediaInMyList(presentable: Presentable) {
         checkMediaInMyListUseCase(presentable.id).collectLatest {
             it.handle(
                 success = { isExisted ->

@@ -5,12 +5,12 @@ import android.graphics.Typeface
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
-import androidx.cardview.widget.CardView
+import android.widget.LinearLayout
 import com.catelt.mome.databinding.ViewButtonMyListBinding
 
 class MyListButton @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
-) : CardView(context, attrs, defStyleAttr) {
+) : LinearLayout(context, attrs, defStyleAttr) {
     private val binding = ViewButtonMyListBinding.inflate(LayoutInflater.from(context), this, true)
     var isExisted: Boolean = true
     var isHome: Boolean = false
