@@ -50,7 +50,6 @@
         android:background="?selectableItemBackgroundBorderless"
         android:clickable="true"
         android:focusable="true"
-        android:visibility="gone"
         android:src="@drawable/ic_baseline_mic"
         android:contentDescription="@string/button" />
 

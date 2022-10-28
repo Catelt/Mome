@@ -19,6 +19,10 @@ class ConfigRepositoryImpl @Inject constructor(
         return configDataSource.updateLocale()
     }
 
+    override fun getSpeechToTextAvailable(): Flow<Boolean> {
+        return configDataSource.speechToTextAvailable
+    }
+
     override fun getDeviceLanguage(): Flow<DeviceLanguage> {
         return configDataSource.deviceLanguage
     }

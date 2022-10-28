@@ -9,6 +9,7 @@ import com.catelt.mome.data.model.DeviceLanguage
 import com.catelt.mome.data.repository.config.ConfigRepository
 import com.catelt.mome.domain.usecase.GetDeviceLanguageUseCaseImpl
 import com.catelt.mome.domain.usecase.GetMediaMultiSearchUseCaseImpl
+import com.catelt.mome.domain.usecase.GetSpeechToTextAvailableUseCaseImpl
 import com.catelt.mome.domain.usecase.movie.GetPopularMoviesUseCaseImpl
 import com.catelt.mome.utils.ImageUrlParser
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,9 +23,11 @@ class SearchViewModel @Inject constructor(
     private val getDeviceLanguageUseCase: GetDeviceLanguageUseCaseImpl,
     private val getMediaMultiSearchUseCase: GetMediaMultiSearchUseCaseImpl,
     private val getPopularMoviesUseCase: GetPopularMoviesUseCaseImpl,
+    private val getSpeechToTextAvailableUseCase: GetSpeechToTextAvailableUseCaseImpl,
     private val configRepository: ConfigRepository
 ) : BaseViewModel() {
     private val deviceLanguage: Flow<DeviceLanguage> = getDeviceLanguageUseCase()
+    private val voiceSearchAvailable: Flow<Boolean> = getSpeechToTextAvailableUseCase()
 
     val imageUrlParser: StateFlow<ImageUrlParser?> = configRepository.getImageUrlParser()
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
@@ -45,13 +48,14 @@ class SearchViewModel @Inject constructor(
     private val queryLoading: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
     val uiState: StateFlow<SearchScreenUIState> = combine(
-        queryState, searchState, resultState
-    ) { queryState, searchState, resultState ->
+        queryState, searchState, resultState, voiceSearchAvailable
+    ) { queryState, searchState, resultState, voiceSearch ->
         SearchScreenUIState(
             query = queryState.query,
             searchState = searchState,
             resultState = resultState,
-            queryLoading = queryState.loading
+            queryLoading = queryState.loading,
+            voiceSearch = voiceSearch
         )
     }.stateIn(viewModelScope, SharingStarted.Eagerly, SearchScreenUIState.default)
 
