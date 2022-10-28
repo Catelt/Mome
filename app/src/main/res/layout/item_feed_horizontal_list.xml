@@ -25,7 +25,6 @@
         android:layout_width="match_parent"
         android:layout_height="155dp"
         android:orientation="horizontal"
-        android:layout_marginStart="8dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:itemCount="8"
         android:nestedScrollingEnabled="false"

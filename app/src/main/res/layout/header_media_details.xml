@@ -78,7 +78,8 @@
         android:layout_height="40dp"
         android:layout_marginTop="8dp"
         android:clickable="true"
-        android:focusable="true" />
+        android:focusable="true"
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/txtOverview"
@@ -89,7 +90,6 @@
         android:ellipsize="end"
         android:focusable="true"
         android:foreground="?attr/selectableItemBackgroundBorderless"
-        android:maxLines="4"
         android:textColor="@color/white"
         android:textSize="14sp"
         tools:text="Hearts flip as Heather weds Tarek. Jason and Mary grapple with being ghosted. Go solo or take the next step: The agents face life-changing decisions." />
@@ -168,11 +168,12 @@
             android:clickable="true"
             android:focusable="true"
             android:gravity="center"
-            android:paddingVertical="12dp"/>
+            android:paddingVertical="12dp" />
 
         <LinearLayout
             android:id="@+id/btnRate"
             android:layout_width="80dp"
+            android:visibility="gone"
             android:layout_height="wrap_content"
             android:background="?android:selectableItemBackgroundBorderless"
             android:clickable="true"

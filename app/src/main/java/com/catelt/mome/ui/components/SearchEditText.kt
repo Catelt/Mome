@@ -48,7 +48,7 @@ class SearchEditText @JvmOverloads constructor(
     fun setButtonClear(isClear: Boolean){
         binding.apply {
             btnClear.isVisible = isClear
-            btnMic.isVisible = !isClear
+//            btnMic.isVisible = !isClear
         }
     }
 }

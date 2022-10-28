@@ -1,10 +1,13 @@
 package com.catelt.mome.ui.search
 
 
+import android.os.Bundle
+import android.transition.TransitionInflater
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
+import com.catelt.mome.R
 import com.catelt.mome.core.BaseFragment
 import com.catelt.mome.data.model.MediaType
 import com.catelt.mome.databinding.FragmentSearchBinding
@@ -33,6 +36,12 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(FragmentSearchBinding
 
     private val topSearchAdapter = TopSearchAdapter()
     private val resultSearchAdapter = ResultSearchAdapter()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val inflater = TransitionInflater.from(requireContext())
+        enterTransition = inflater.inflateTransition(R.transition.slide_right)
+    }
 
     override fun setUpAdapter() {
         topSearchAdapter.onMovieClicked = onMovieClicked

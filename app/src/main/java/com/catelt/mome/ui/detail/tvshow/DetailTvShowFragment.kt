@@ -16,7 +16,6 @@ import com.catelt.mome.core.BaseFragment
 import com.catelt.mome.data.model.AggregatedCredits
 import com.catelt.mome.data.model.Video
 import com.catelt.mome.data.model.getThumbnailUrl
-import com.catelt.mome.data.model.ophim.Media
 import com.catelt.mome.data.model.toStringCast
 import com.catelt.mome.data.model.tvshow.TvShowDetails
 import com.catelt.mome.databinding.FragmentDetailTvShowBinding
@@ -56,8 +55,6 @@ class DetailTvShowFragment : BaseFragment<FragmentDetailTvShowBinding>(
     private val episodeAdapter = EpisodeAdapter()
     private val trailerAdapter = TrailerAdapter()
     private val likeThisAdapter = LikeThisAdapter()
-
-    private val movies = mutableListOf<Media>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -143,7 +140,6 @@ class DetailTvShowFragment : BaseFragment<FragmentDetailTvShowBinding>(
                         }
 
                         uiState.associatedContentTvShow.videos?.let { videos ->
-
                             val trailers = mutableListOf<Video>()
                             videos.forEach { video ->
                                 if (video.type == getString(R.string.trailer)) {
@@ -151,62 +147,7 @@ class DetailTvShowFragment : BaseFragment<FragmentDetailTvShowBinding>(
                                 }
                             }
                             trailerAdapter.submitList(trailers)
-
-                            binding.layoutThumbnail.youtubePlayerView.apply {
-                                if (listener == null) {
-                                    lifecycle.addObserver(this)
-
-                                    val customPlayerUi =
-                                        inflateCustomPlayerUi(R.layout.view_custom_youtube_player)
-                                    val video = if (trailers.isEmpty()) {
-                                        if (videos.isNotEmpty()) {
-                                            videos.last()
-                                        } else {
-                                            null
-                                        }
-                                    } else {
-                                        trailers.last()
-                                    }
-                                    video?.let {
-                                        customPlayerUi.findViewById<ImageView>(R.id.imgBackdrop)
-                                            .apply {
-                                                load(video.getThumbnailUrl())
-                                            }
-                                        customPlayerUi.findViewById<TextView>(R.id.txtTypeVideo)
-                                            .apply {
-                                                visibility = View.VISIBLE
-                                                text = video.type
-                                            }
-
-                                        listener = object : AbstractYouTubePlayerListener() {
-                                            override fun onReady(youTubePlayer: YouTubePlayer) {
-                                                val customPlayerUiController =
-                                                    CustomPlayerUiController(
-                                                        requireContext(),
-                                                        customPlayerUi,
-                                                        youTubePlayer,
-                                                        binding.layoutThumbnail.youtubePlayerView
-                                                    )
-                                                youTubePlayer.addListener(
-                                                    customPlayerUiController
-                                                )
-                                                youTubePlayer.loadVideo(video.key, 0f)
-                                            }
-                                        }
-
-                                        val options: IFramePlayerOptions =
-                                            IFramePlayerOptions.Builder().controls(0).build()
-
-                                        listener?.let {
-                                            initialize(it, options)
-                                        }
-                                    }
-                                    binding.layoutThumbnail.youtubePlayerView.visibility =
-                                        setVisionView(video != null)
-                                    binding.layoutThumbnail.imgBackdrop.visibility =
-                                        setVisionView(video == null)
-                                }
-                            }
+                            setupYoutubeView(trailers,videos)
                         }
                         uiState.associatedContentTvShow.credits?.let { credits ->
                             setupCredit(credits)
@@ -232,6 +173,65 @@ class DetailTvShowFragment : BaseFragment<FragmentDetailTvShowBinding>(
                     }
                 }
             }
+        }
+    }
+
+    private fun setupYoutubeView(trailers : MutableList<Video>,videos : List<Video> ){
+        binding.layoutThumbnail.youtubePlayerView.apply {
+            val customPlayerUi =
+                inflateCustomPlayerUi(R.layout.view_custom_youtube_player)
+            val video = if (trailers.isEmpty()) {
+                if (videos.isNotEmpty()) {
+                    videos.last()
+                } else {
+                    null
+                }
+            } else {
+                trailers.last()
+            }
+
+            if (listener == null) {
+                lifecycle.addObserver(this)
+                video?.let {
+                    customPlayerUi.findViewById<ImageView>(R.id.imgBackdrop)
+                        .apply {
+                            load(video.getThumbnailUrl())
+                        }
+                    customPlayerUi.findViewById<TextView>(R.id.txtTypeVideo)
+                        .apply {
+                            visibility = View.VISIBLE
+                            text = video.type
+                        }
+
+                    listener = object : AbstractYouTubePlayerListener() {
+                        override fun onReady(youTubePlayer: YouTubePlayer) {
+                            val customPlayerUiController =
+                                CustomPlayerUiController(
+                                    requireContext(),
+                                    customPlayerUi,
+                                    youTubePlayer,
+                                    binding.layoutThumbnail.youtubePlayerView
+                                )
+                            youTubePlayer.addListener(
+                                customPlayerUiController
+                            )
+                            youTubePlayer.loadVideo(video.key, 0f)
+                        }
+                    }
+
+                    val options: IFramePlayerOptions =
+                        IFramePlayerOptions.Builder().controls(0).build()
+
+                    listener?.let{
+                        initialize(it, options)
+                    }
+                }
+            }
+
+            binding.layoutThumbnail.youtubePlayerView.visibility =
+                setVisionView(video != null)
+            binding.layoutThumbnail.imgBackdrop.visibility =
+                setVisionView(video == null)
         }
     }
 
@@ -298,11 +298,6 @@ class DetailTvShowFragment : BaseFragment<FragmentDetailTvShowBinding>(
         binding.layoutHeader.apply {
             txtListStarring.text = credits.toStringCast()
         }
-    }
-
-    override fun onPause() {
-        super.onPause()
-        listener = null
     }
 
     override fun onStop() {
