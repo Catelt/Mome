@@ -24,7 +24,7 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>(
                 findNavController().navigateUp()
             }
 
-            if(viewModel.getName().isNotBlank()){
+            if(viewModel.getName().isNotBlank() && viewModel.getName() != "null"){
                 txtName.text = viewModel.getName()
             }
 
