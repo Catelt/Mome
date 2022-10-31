@@ -14,6 +14,7 @@ import com.catelt.mome.databinding.FragmentSearchBinding
 import com.catelt.mome.ui.bottomsheet.MediaDetailsBottomSheet
 import com.catelt.mome.ui.search.adapter.ResultSearchAdapter
 import com.catelt.mome.ui.search.adapter.TopSearchAdapter
+import com.catelt.mome.utils.CaptureSpeechToText
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
@@ -84,6 +85,19 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(FragmentSearchBinding
                     showKeyboard(this)
                 }
             }
+            val speechToTextLauncher = registerForActivityResult(CaptureSpeechToText()) { result ->
+                if (result != null) {
+                    binding.layoutSearch.editText.apply {
+                        clearFocus()
+                        setText(result)
+                    }
+                }
+            }
+
+            binding.layoutSearch.onMicClick = {
+                speechToTextLauncher.launch(null)
+            }
+
         }
     }
 
@@ -98,6 +112,11 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(FragmentSearchBinding
                     resultSearchAdapter.imageUrlParser = imageParser
                     uiState.collectLatest {
                         binding.layoutNoResult.visibility = setVisionView(false)
+
+                        if (!binding.layoutSearch.voiceSearchAvailable){
+                            binding.layoutSearch.setMic(it.voiceSearch)
+                        }
+
                         if (it.queryLoading) {
                             binding.apply {
                                 layoutLoading.visibility = setVisionView(true)

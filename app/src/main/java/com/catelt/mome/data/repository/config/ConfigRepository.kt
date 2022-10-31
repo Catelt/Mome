@@ -11,6 +11,8 @@ interface ConfigRepository {
 
     fun updateLocale()
 
+    fun getSpeechToTextAvailable(): Flow<Boolean>
+
     fun getDeviceLanguage(): Flow<DeviceLanguage>
 
     fun getImageUrlParser(): Flow<ImageUrlParser?>

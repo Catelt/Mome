@@ -11,14 +11,16 @@ data class SearchScreenUIState(
     val query: String?,
     val searchState: SearchState,
     val resultState: ResultState,
-    val queryLoading: Boolean
+    val queryLoading: Boolean,
+    val voiceSearch: Boolean,
 ) {
     companion object {
         val default: SearchScreenUIState = SearchScreenUIState(
             query = null,
             searchState = SearchState.EmptyQuery,
             resultState = ResultState.Default(),
-            queryLoading = false
+            queryLoading = false,
+            voiceSearch = false
         )
     }
 }

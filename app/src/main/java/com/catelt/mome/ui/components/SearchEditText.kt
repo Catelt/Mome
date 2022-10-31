@@ -16,6 +16,8 @@ class SearchEditText @JvmOverloads constructor(
     private val binding = ViewSearchBarBinding.inflate(LayoutInflater.from(context), this, true)
     var handleTextChange: ((CharSequence?) -> Unit)? = null
     var editText: EditText
+    var voiceSearchAvailable: Boolean = false
+    var onMicClick: (() -> Unit)? = null
 
     init {
         binding.apply {
@@ -42,13 +44,24 @@ class SearchEditText @JvmOverloads constructor(
             btnClear.setOnClickListener {
                 editTextSearch.setText("")
             }
+
+            btnMic.setOnClickListener {
+                onMicClick?.invoke()
+            }
         }
+    }
+
+    fun setMic(value: Boolean){
+        voiceSearchAvailable = value
+        binding.btnMic.isVisible = value
     }
 
     fun setButtonClear(isClear: Boolean){
         binding.apply {
             btnClear.isVisible = isClear
-//            btnMic.isVisible = !isClear
+            if (voiceSearchAvailable) {
+                btnMic.isVisible = !isClear
+            }
         }
     }
 }
