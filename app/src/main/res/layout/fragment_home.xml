@@ -1,229 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.motion.widget.MotionLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/container"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/black"
-    app:layoutDescription="@xml/fragment_home_scene">
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    tools:context=".ui.categories.ItemPickerFragment">
 
-    <androidx.core.widget.NestedScrollView
-        android:id="@+id/nestScrollView"
+    <include
+        android:id="@+id/layoutHeaderHome"
+        layout="@layout/fragment_header_home"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="-60dp"
-        android:overScrollMode="never"
-        android:scrollbars="none"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_height="wrap_content" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <include
-                android:id="@+id/layoutHeaderHome"
-                layout="@layout/fragment_header_home"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-            <com.catelt.mome.ui.components.HorizontalList
-                android:id="@+id/listTrending"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:visibility="gone" />
-
-            <com.catelt.mome.ui.components.HorizontalList
-                android:id="@+id/listUpCome"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:visibility="gone" />
-
-            <com.catelt.mome.ui.components.HorizontalList
-                android:id="@+id/listPopular"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:visibility="gone" />
-
-            <com.catelt.mome.ui.components.HorizontalList
-                android:id="@+id/listExplore"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:visibility="gone" />
-
-        </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/subTitleAppBarWhenScrollUp"
-        android:layout_width="match_parent"
-        android:layout_height="95dp"
-        android:layout_marginTop="-36dp"
-        android:alpha="1"
-        android:background="@color/background_appbar"
-        app:layout_constraintTop_toTopOf="parent">
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/appBar"
+    <com.catelt.mome.ui.components.HorizontalList
+        android:id="@+id/listTrending"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="-36dp"
-        android:alpha="0"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_marginStart="8dp"
+        android:visibility="gone" />
 
-        <ImageView
-            android:id="@+id/imgIconApp"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_gravity="top"
-            android:contentDescription="@string/image"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@mipmap/ic_launcher_foreground" />
-
-        <ImageView
-            android:id="@+id/btnBack"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="top"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="16dp"
-            android:contentDescription="@string/image"
-            android:visibility="invisible"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_arrow_back" />
-
-        <TextView
-            android:id="@+id/txtTitleAppBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="16dp"
-            android:text="@string/categories"
-            android:textSize="16sp"
-            android:visibility="invisible"
-            app:layout_constraintLeft_toRightOf="@id/btnBack"
-            app:layout_constraintTop_toTopOf="parent" />
-
-
-        <ImageView
-            android:id="@+id/btnSearch"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_weight="1"
-            android:contentDescription="@string/button"
-            android:foregroundGravity="right"
-            app:layout_constraintEnd_toStartOf="@+id/btnProfile"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_search" />
-
-        <ImageView
-            android:id="@+id/btnProfile"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="10dp"
-            android:contentDescription="@string/button"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_user" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <androidx.constraintlayout.motion.widget.MotionLayout
-        android:id="@+id/subTitleAppBar"
+    <com.catelt.mome.ui.components.HorizontalList
+        android:id="@+id/listUpCome"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"
-        android:paddingStart="15dp"
-        android:paddingEnd="15dp"
-        app:layoutDescription="@xml/fragment_header_title_home_scene"
-        app:layout_constraintTop_toTopOf="@id/appBar">
+        android:layout_marginStart="8dp"
+        android:visibility="gone" />
 
-        <TextView
-            android:id="@+id/txtTvShows"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:text="@string/tv_shows"
-            android:textSize="17sp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toLeftOf="@id/txtMovies"
-            app:layout_constraintTop_toTopOf="parent" />
+    <com.catelt.mome.ui.components.HorizontalList
+        android:id="@+id/listPopular"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:visibility="gone" />
 
-        <TextView
-            android:id="@+id/txtMovies"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="@string/movies"
-            android:textSize="17sp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+    <com.catelt.mome.ui.components.HorizontalList
+        android:id="@+id/listExplore"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:visibility="gone" />
 
-        <LinearLayout
-            android:id="@+id/txtCategories"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="horizontal"
-            app:layout_constraintLeft_toRightOf="@id/txtMovies"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="UseCompoundDrawables">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/categories"
-                android:textSize="17sp" />
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_chevron_down" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/txtAllCategories"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:visibility="invisible"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="@id/subTitleAppBar"
-            tools:ignore="UseCompoundDrawables">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/all_categories"
-                android:textColor="@color/grey_light_2"
-                android:textSize="16sp" />
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_chevron_down"
-                app:tint="@color/grey_light_1" />
-        </LinearLayout>
-
-    </androidx.constraintlayout.motion.widget.MotionLayout>
-
-
-</androidx.constraintlayout.motion.widget.MotionLayout>
+</LinearLayout>

@@ -3,13 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/homeFragment">
+    app:startDestination="@id/mainHomeFragment">
 
     <fragment
-        android:id="@+id/homeFragment"
-        android:name="com.catelt.mome.ui.home.HomeFragment"
-        android:label="fragment_home"
-        tools:layout="@layout/fragment_home" />
+        android:id="@+id/mainHomeFragment"
+        android:name="com.catelt.mome.ui.home.MainHomeFragment"
+        android:label="fragment_main_home"
+        tools:layout="@layout/fragment_main_home" />
     <fragment
         android:id="@+id/upcomingFragment"
         android:name="com.catelt.mome.ui.upcoming.UpcomingFragment"
@@ -45,6 +45,11 @@
         android:name="com.catelt.mome.ui.profile.ProfileFragment"
         android:label="fragment_profile"
         tools:layout="@layout/fragment_profile" />
+    <fragment
+        android:id="@+id/itemPickerFragment"
+        android:name="com.catelt.mome.ui.categories.ItemPickerFragment"
+        android:label="fragment_item_picker"
+        tools:layout="@layout/fragment_item_picker" />
 
 
 </navigation>
