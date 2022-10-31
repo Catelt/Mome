@@ -46,7 +46,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
     override fun setUpViews() {
         binding.apply {
             genreId?.let {
-                sendData(it)
+                sendData(it,viewModel.getIsMovie())
             }
 
             layoutHeaderHome.btnPlay.setEnable(viewModel.uiState.value.ophim?.status == true)
@@ -304,7 +304,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
         }
     }
 
-    private fun sendData(genreId: Int) {
-        requireActivity().supportFragmentManager.setFragmentResult(REQUEST_KEY, bundleOf(BUNDLE_ID_GENRE_HOME to genreId))
+    private fun sendData(genreId: Int,isMovie: Boolean) {
+        requireActivity().supportFragmentManager.setFragmentResult(REQUEST_KEY, bundleOf(BUNDLE_ID_GENRE_HOME to genreId,
+            BUNDLE_IS_MOVIE to isMovie))
     }
 }

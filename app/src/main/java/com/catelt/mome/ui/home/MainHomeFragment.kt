@@ -197,12 +197,14 @@ class MainHomeFragment : BaseFragment<FragmentMainHomeBinding>(
 
         requireActivity().supportFragmentManager.setFragmentResultListener(REQUEST_KEY,viewLifecycleOwner) { _, bundle ->
             val id = bundle.getInt(BUNDLE_ID_GENRE_HOME)
+            val isMovie = bundle.getBoolean(BUNDLE_IS_MOVIE)
             if (id != 0) {
                 binding.txtContentCategories.text = viewModel.getGenre(id)
             } else {
                 binding.txtContentCategories.text = getString(R.string.all_categories)
             }
             viewModel.setGenreId(id)
+            viewModel.setIsMovie(isMovie)
         }
     }
 
