@@ -2,7 +2,6 @@ package com.catelt.mome.ui.detail.movie
 
 
 import android.os.Bundle
-import android.transition.TransitionInflater
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -47,19 +46,33 @@ class DetailMovieFragment : BaseFragment<FragmentDetailMovieBinding>(
     FragmentDetailMovieBinding::inflate
 ) {
     override val viewModel: DetailMovieViewModel by viewModels()
+    override var isTransitionInflater = true
     private var listener: YouTubePlayerListener? = null
 
     private val trailerAdapter = TrailerAdapter()
     private val likeThisAdapter = ListGridAdapter()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        val inflater = TransitionInflater.from(requireContext())
-        enterTransition = inflater.inflateTransition(R.transition.slide_right)
+    private var isUpComing = ""
+
+    override fun setUpArgument(bundle: Bundle) {
+        bundle.apply {
+            isUpComing = getString(BUNDLE_DETAIL_UPCOMING,"")
+        }
     }
 
     override fun setUpViews() {
         binding.apply {
+            if (isUpComing.isNotBlank()){
+                layoutHeader.apply {
+                    btnPlay.visibility = setVisionView(false)
+                    txtArrivalDate.visibility = setVisionView(true)
+                    txtArrivalDate.text = isUpComing
+                    root.visibility = setVisionView(false)
+                }
+                layoutShimmer.visibility = setVisionView(true)
+                layoutShimmer.startShimmer()
+            }
+
             recyclerViewLikeThis.adapter = likeThisAdapter
             likeThisAdapter.onMovieClicked = { movieId ->
                 MediaDetailsBottomSheet.newInstance(movieId, true)
@@ -171,6 +184,8 @@ class DetailMovieFragment : BaseFragment<FragmentDetailMovieBinding>(
                         .apply {
                             load(video.getThumbnailUrl())
                         }
+
+                    println(it.type)
                     customPlayerUi.findViewById<TextView>(R.id.txtTypeVideo)
                         .apply {
                             visibility = View.VISIBLE
@@ -196,16 +211,14 @@ class DetailMovieFragment : BaseFragment<FragmentDetailMovieBinding>(
                     val options: IFramePlayerOptions =
                         IFramePlayerOptions.Builder().controls(0).build()
 
-                    listener?.let{
-                        initialize(it, options)
+                    listener?.let{ listener ->
+                        initialize(listener, options)
                     }
                 }
-            }
 
-            binding.layoutThumbnail.youtubePlayerView.visibility =
-                setVisionView(video != null)
-            binding.layoutThumbnail.imgBackdrop.visibility =
-                setVisionView(video == null)
+                binding.layoutThumbnail.youtubePlayerView.visibility =
+                    setVisionView(video != null)
+            }
         }
     }
 
@@ -228,6 +241,10 @@ class DetailMovieFragment : BaseFragment<FragmentDetailMovieBinding>(
     private fun setupMovieDetail(movie: MovieDetails) {
         binding.apply {
             layoutHeader.apply {
+                root.visibility = setVisionView(true)
+                layoutShimmer.visibility = setVisionView(false)
+                layoutShimmer.stopShimmer()
+
                 txtTitle.text = movie.title
                 txtYear.text = movie.getCalendarRelease()?.get(Calendar.YEAR).toString()
                 txtRuntime.text = movie.getRunTime()
@@ -250,8 +267,14 @@ class DetailMovieFragment : BaseFragment<FragmentDetailMovieBinding>(
                     toast(getString(R.string.message_feature_coming_soon))
                 }
 
-                btnShare.setOnClickListener {
-                    toast(getString(R.string.message_feature_coming_soon))
+                lifecycleScope.launch {
+                    launch {
+                        ShareUtils.share(movie,true,isUpComing).collectLatest { link ->
+                            btnShare.setOnClickListener {
+                                ShareUtils.shareUrl(requireActivity(),link,movie.title)
+                            }
+                        }
+                    }
                 }
             }
             layoutThumbnail.imgBackdrop.loadDefault(likeThisAdapter.imageUrlParser?.getImageUrl(movie.backdropPath, ImageUrlParser.ImageType.Backdrop))

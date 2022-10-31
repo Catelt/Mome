@@ -102,6 +102,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth-ktx'
     implementation 'com.google.firebase:firebase-firestore-ktx'
     implementation 'com.google.firebase:firebase-messaging-ktx'
+    implementation 'com.google.firebase:firebase-dynamic-links-ktx'
 
     //Auth
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'

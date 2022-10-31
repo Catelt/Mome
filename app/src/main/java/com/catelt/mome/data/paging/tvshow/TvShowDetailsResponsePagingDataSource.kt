@@ -35,8 +35,14 @@ class TvShowDetailsResponsePagingDataSource(
             val currentPage = tvShowResponse.page
             val totalPages = 1
 
+            val data = if (tvShowResponse.tvShows.size > 12){
+                tvShowResponse.tvShows.subList(0,12)
+            }else{
+                tvShowResponse.tvShows
+            }
+
             LoadResult.Page(
-                data = tvShowResponse.tvShows,
+                data = data,
                 prevKey = if (nextPage == 1) null else nextPage - 1,
                 nextKey = if (currentPage + 1 > totalPages) null else currentPage + 1
             )

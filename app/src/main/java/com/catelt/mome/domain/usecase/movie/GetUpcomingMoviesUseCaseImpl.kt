@@ -23,7 +23,7 @@ class GetUpcomingMoviesUseCaseImpl @Inject constructor(
                 data.filter {
                     val today = LocalDate.now()
                     val localDate = LocalDate.parse(it.releaseDate, DateFormat.default)
-                    localDate.isAfter(today)
+                    localDate.isAfter(today) && it.overview.isNotBlank()
                 }.map { it }
             }
     }

@@ -1,7 +1,5 @@
 package com.catelt.mome.ui.detail.tvshow
 
-import android.os.Bundle
-import android.transition.TransitionInflater
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -24,10 +22,7 @@ import com.catelt.mome.ui.components.CustomPlayerUiController
 import com.catelt.mome.ui.detail.TrailerAdapter
 import com.catelt.mome.ui.detail.tvshow.adapter.EpisodeAdapter
 import com.catelt.mome.ui.detail.tvshow.adapter.LikeThisAdapter
-import com.catelt.mome.utils.BUNDLE_CURRENT_EPISODE
-import com.catelt.mome.utils.BUNDLE_ID_MEDIA
-import com.catelt.mome.utils.BUNDLE_SLUG_MEDIA
-import com.catelt.mome.utils.ImageUrlParser
+import com.catelt.mome.utils.*
 import com.catelt.mome.utils.extension.getCalendarRelease
 import com.catelt.mome.utils.extension.loadDefault
 import com.catelt.mome.utils.extension.setAgeTitle
@@ -50,17 +45,12 @@ class DetailTvShowFragment : BaseFragment<FragmentDetailTvShowBinding>(
     FragmentDetailTvShowBinding::inflate
 ) {
     override val viewModel: DetailTvShowViewModel by viewModels()
+    override var isTransitionInflater = true
 
     private var listener: YouTubePlayerListener? = null
     private val episodeAdapter = EpisodeAdapter()
     private val trailerAdapter = TrailerAdapter()
     private val likeThisAdapter = LikeThisAdapter()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        val inflater = TransitionInflater.from(requireContext())
-        enterTransition = inflater.inflateTransition(R.transition.slide_right)
-    }
 
     override fun setUpViews() {
         binding.apply {
@@ -222,16 +212,13 @@ class DetailTvShowFragment : BaseFragment<FragmentDetailTvShowBinding>(
                     val options: IFramePlayerOptions =
                         IFramePlayerOptions.Builder().controls(0).build()
 
-                    listener?.let{
-                        initialize(it, options)
+                    listener?.let{ listener ->
+                        initialize(listener, options)
                     }
                 }
+                binding.layoutThumbnail.youtubePlayerView.visibility =
+                    setVisionView(video != null)
             }
-
-            binding.layoutThumbnail.youtubePlayerView.visibility =
-                setVisionView(video != null)
-            binding.layoutThumbnail.imgBackdrop.visibility =
-                setVisionView(video == null)
         }
     }
 
@@ -280,8 +267,14 @@ class DetailTvShowFragment : BaseFragment<FragmentDetailTvShowBinding>(
                     toast(getString(R.string.message_feature_coming_soon))
                 }
 
-                btnShare.setOnClickListener {
-                    toast(getString(R.string.message_feature_coming_soon))
+                lifecycleScope.launch {
+                    launch {
+                        ShareUtils.share(tvShow,false).collectLatest { link ->
+                            btnShare.setOnClickListener {
+                                ShareUtils.shareUrl(requireActivity(),link,tvShow.title)
+                            }
+                        }
+                    }
                 }
             }
             txtNameTvShow.text = tvShow.name

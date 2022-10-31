@@ -3,6 +3,7 @@ package com.catelt.mome.core
 import android.content.Context
 import android.graphics.Rect
 import android.os.Bundle
+import android.transition.TransitionInflater
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -29,6 +30,8 @@ abstract class BaseFragment<VBinding : ViewBinding>(
 
     open var isHideBottom: Boolean = false
 
+    open var isTransitionInflater: Boolean = false
+
     open val viewModel: BaseViewModel? get() = null
 
     open fun setUpViews() {}
@@ -41,9 +44,9 @@ abstract class BaseFragment<VBinding : ViewBinding>(
 
     private var statusBarHeight = 0
 
-    private var toast : Toast? = null
+    private var toast: Toast? = null
     fun toast(message: String) {
-        if (toast != null){
+        if (toast != null) {
             toast?.cancel()
         }
         toast = Toast.makeText(context, message, Toast.LENGTH_SHORT)
@@ -52,6 +55,11 @@ abstract class BaseFragment<VBinding : ViewBinding>(
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (isTransitionInflater) {
+            val inflater = TransitionInflater.from(requireContext())
+            enterTransition = inflater.inflateTransition(R.transition.slide_right)
+        }
+
         arguments?.run {
             setUpArgument(this)
         }
@@ -81,7 +89,7 @@ abstract class BaseFragment<VBinding : ViewBinding>(
                 WindowCompat.setDecorFitsSystemWindows(it.window, false)
                 changeColorStatusBar(R.color.transparent)
             } else {
-                if (statusBarHeight == 0){
+                if (statusBarHeight == 0) {
                     val rectangle = Rect()
                     it.window.decorView.getWindowVisibleDisplayFrame(rectangle)
                     statusBarHeight = rectangle.top

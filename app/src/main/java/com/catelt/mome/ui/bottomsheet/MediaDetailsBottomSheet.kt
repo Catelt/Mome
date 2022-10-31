@@ -100,10 +100,6 @@ class MediaDetailsBottomSheet(
                 toast(getString(R.string.message_feature_coming_soon))
             }
 
-            btnShare.setOnClickListener {
-                toast(getString(R.string.message_feature_coming_soon))
-            }
-
             btnDetail.setOnClickListener {
                 mainContainer.callOnClick()
             }
@@ -143,6 +139,16 @@ class MediaDetailsBottomSheet(
                     R.id.detailMovieFragment,
                     bundleOf(BUNDLE_ID_MEDIA to data.id)
                 )
+            }
+
+            lifecycleScope.launch {
+                launch {
+                    ShareUtils.share(data,true).collectLatest { link ->
+                        btnShare.setOnClickListener {
+                            ShareUtils.shareUrl(requireActivity(),link,data.title)
+                        }
+                    }
+                }
             }
 
         }
@@ -185,6 +191,16 @@ class MediaDetailsBottomSheet(
                     R.id.detailTvShowFragment,
                     bundleOf(BUNDLE_ID_MEDIA to data.id)
                 )
+            }
+
+            lifecycleScope.launch {
+                launch {
+                    ShareUtils.share(data,false).collectLatest { link ->
+                        btnShare.setOnClickListener {
+                            ShareUtils.shareUrl(requireActivity(),link,data.title)
+                        }
+                    }
+                }
             }
         }
     }

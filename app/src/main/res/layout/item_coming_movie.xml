@@ -5,6 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/black"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?selectableItemBackgroundBorderless"
     android:orientation="horizontal">
 
     <LinearLayout
@@ -61,7 +64,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@color/grey_dark_1"
-                android:scaleType="fitXY"/>
+                android:scaleType="fitXY" />
 
         </androidx.cardview.widget.CardView>
 
@@ -95,10 +98,10 @@
 
             <com.catelt.mome.ui.components.RemindButton
                 android:id="@+id/btnRemind"
-                android:visibility="gone"
                 android:layout_width="80dp"
                 android:layout_height="wrap_content"
-                android:background="?android:selectableItemBackground" />
+                android:background="?android:selectableItemBackground"
+                android:visibility="gone" />
 
             <LinearLayout
                 android:id="@+id/btnInfo"

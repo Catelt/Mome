@@ -67,6 +67,16 @@
                     android:id="@+id/layoutThumbnail"
                     layout="@layout/item_thumbnail_container" />
 
+                <com.facebook.shimmer.ShimmerFrameLayout
+                    android:id="@+id/layoutShimmer"
+                    android:layout_width="match_parent"
+                    android:visibility="gone"
+                    android:layout_height="wrap_content">
+                    <include
+                        android:id="@+id/layoutHeaderLoading"
+                        layout="@layout/header_media_details_loading"/>
+                </com.facebook.shimmer.ShimmerFrameLayout>
+
                 <include
                     android:id="@+id/layoutHeader"
                     layout="@layout/header_media_details" />

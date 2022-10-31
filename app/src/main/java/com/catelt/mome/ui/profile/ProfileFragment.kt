@@ -16,6 +16,7 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>(
     FragmentProfileBinding::inflate
 ) {
     override var isHideBottom = true
+    override var isTransitionInflater = true
     override val viewModel: ProfileViewModel by viewModels()
 
     override fun setUpViews() {
