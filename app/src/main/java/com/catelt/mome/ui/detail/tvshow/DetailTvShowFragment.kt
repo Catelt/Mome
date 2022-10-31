@@ -60,7 +60,7 @@ class DetailTvShowFragment : BaseFragment<FragmentDetailTvShowBinding>(
             }
 
             episodeAdapter.onMovieClicked = { episodeNumber, name ->
-                viewModel.uiState.value.associatedContentTvShow.ophim?.apply {
+                viewModel.uiState.value.ophim?.apply {
                     episodeResponses[0].let {
                         it.episodes.let { list ->
                             if (list.size >= episodeNumber) {
@@ -155,7 +155,7 @@ class DetailTvShowFragment : BaseFragment<FragmentDetailTvShowBinding>(
                         }.launchIn(lifecycleScope)
 
                         binding.layoutHeader.btnPlay.apply {
-                            setEnable(uiState.associatedContentTvShow.ophim?.status == true)
+                            setEnable(uiState.ophim?.status == true)
                             setOnClickListener {
                                 setOnClickPlayVideo()
                             }
@@ -224,7 +224,7 @@ class DetailTvShowFragment : BaseFragment<FragmentDetailTvShowBinding>(
 
     private fun setOnClickPlayVideo(position: Int = 0) {
         viewModel.uiState.value.apply {
-            associatedContentTvShow.ophim?.apply {
+            ophim?.apply {
                 findNavController().navigate(
                     R.id.videoPlayerFragment,
                     bundleOf(

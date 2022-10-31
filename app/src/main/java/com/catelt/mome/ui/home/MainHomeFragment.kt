@@ -147,9 +147,10 @@ class MainHomeFragment : BaseFragment<FragmentMainHomeBinding>(
 
     private fun onClickMovie(idGenre: Int? = null) {
         binding.apply {
+            txtTitleAppBar.text = getString(R.string.movies)
+
             if (!isShowTitleAppBar || idGenre != null) {
                 viewModel.addStack()
-                txtTitleAppBar.text = getString(R.string.movies)
                 nestScrollView.scrollTo(0, 0)
 
                 host.navController.navigate(
@@ -164,9 +165,10 @@ class MainHomeFragment : BaseFragment<FragmentMainHomeBinding>(
 
     private fun onClickTvShow(idGenre: Int? = null) {
         binding.apply {
+            txtTitleAppBar.text = getString(R.string.tv_shows)
+
             if (!isShowTitleAppBar || idGenre != null) {
                 viewModel.addStack()
-                txtTitleAppBar.text = getString(R.string.tv_shows)
                 nestScrollView.scrollTo(0, 0)
 
                 host.navController.navigate(

@@ -79,23 +79,23 @@ class DetailTvShowViewModel @Inject constructor(
 
 
     private val associatedContent: StateFlow<AssociatedContentTvShow> = combine(
-        tvShowBackdrops, videos, credits, ophim
-    ) { backdrops, videos, credits, episodes ->
+        tvShowBackdrops, videos, credits
+    ) { backdrops, videos, credits ->
         AssociatedContentTvShow(
             backdrops = backdrops,
             videos = videos,
             credits = credits,
-            ophim = episodes
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(10), AssociatedContentTvShow.default)
 
     val uiState: StateFlow<DetailTvShowUIState> = combine(
-        tvShowDetails, associatedTvShow, associatedContent, error
-    ) { details, associatedTvSeries, visualContent, error ->
+        tvShowDetails, associatedTvShow, associatedContent, ophim, error
+    ) { details, associatedTvSeries, visualContent, episodes, error ->
         DetailTvShowUIState(
             tvShowDetails = details,
             associatedTvShow = associatedTvSeries,
             associatedContentTvShow = visualContent,
+            ophim = episodes,
             error = error
         )
     }.stateIn(
@@ -164,7 +164,7 @@ class DetailTvShowViewModel @Inject constructor(
             viewModelScope.launch {
                 val tvShowDetails = data
                 if (deviceLanguage.languageCode != "vi") {
-                   _tvShowDetails.emit(tvShowDetails)
+                    _tvShowDetails.emit(tvShowDetails)
 
                     launch {
                         tvShowDetails?.let {
