@@ -14,9 +14,7 @@ import androidx.navigation.fragment.findNavController
 import com.catelt.mome.R
 import com.catelt.mome.core.BaseFragment
 import com.catelt.mome.databinding.FragmentMainHomeBinding
-import com.catelt.mome.utils.BUNDLE_ID_GENRE
-import com.catelt.mome.utils.BUNDLE_IS_MOVIE
-import com.catelt.mome.utils.REQUEST_KEY
+import com.catelt.mome.utils.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -33,10 +31,6 @@ class MainHomeFragment : BaseFragment<FragmentMainHomeBinding>(
     private var saveStateMotion: Bundle? = null
     private var isShowTitleAppBar: Boolean = true
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        listenerDataFragment()
-    }
     @SuppressLint("ClickableViewAccessibility")
     override fun setUpViews() {
         saveStateMotion?.let {
@@ -71,7 +65,19 @@ class MainHomeFragment : BaseFragment<FragmentMainHomeBinding>(
             }
 
             txtCategories.setOnClickListener {
-                findNavController().navigate(R.id.itemPickerFragment)
+                findNavController().navigate(
+                    R.id.itemPickerFragment, bundleOf(
+                        BUNDLE_ID_GENRE to viewModel.genreId.value
+                    )
+                )
+            }
+
+            txtAllCategories.setOnClickListener {
+                findNavController().navigate(
+                    R.id.itemPickerFragment, bundleOf(
+                        BUNDLE_ID_GENRE to viewModel.genreId.value
+                    )
+                )
             }
 
             txtTvShows.setOnTouchListener { _, event ->
@@ -81,25 +87,23 @@ class MainHomeFragment : BaseFragment<FragmentMainHomeBinding>(
                 false
             }
 
-            if (viewModel.getCountStack() > 0){
+            if (viewModel.getCountStack() > 0) {
                 if (viewModel.getIsMovie()) {
-                    txtMovies.callOnClick()
+                    subTitleAppBar.transitionToState(R.id.end2, 0)
+                    onClickMovie()
                 } else {
-                    txtTvShows.callOnClick()
+                    subTitleAppBar.transitionToState(R.id.end1, 0)
+                    onClickTvShow()
                 }
             }
 
             btnBack.setOnClickListener {
-                viewModel.setIsMovie(!viewModel.getIsMovie())
-                if (viewModel.getCountStack() < 1){
+                viewModel.popStack()
+                host.navController.navigateUp()
+                if (viewModel.getCountStack() == 0) {
                     setupAppBar(false)
+                    subTitleAppBar.transitionToStart()
                 }
-                else{
-                    host.navController.navigateUp()
-                    viewModel.popStack()
-                }
-
-                subTitleAppBar.transitionToStart()
                 nestScrollView.scrollTo(0, 0)
             }
 
@@ -110,24 +114,20 @@ class MainHomeFragment : BaseFragment<FragmentMainHomeBinding>(
             btnSearch.setOnClickListener {
                 findNavController().navigate(R.id.searchFragment)
             }
+            listenerDataFragment()
+
         }
     }
 
     override fun setUpViewModel() {
         viewModel.apply {
-            countStack.observe(viewLifecycleOwner){
-                if (it > 0){
-                    setupAppBar(true)
-                }
-                else{
-                    setupAppBar(false)
-                }
-            }
             lifecycleScope.launch {
                 launch {
-                    category.collectLatest {
-                        if (it != 0){
-                            binding.txtContentCategories.text = getGenre(it)
+                    countStack.collectLatest {
+                        if (it > 0) {
+                            setupAppBar(true)
+                        } else {
+                            setupAppBar(false)
                         }
                     }
                 }
@@ -145,40 +145,64 @@ class MainHomeFragment : BaseFragment<FragmentMainHomeBinding>(
         }
     }
 
-    private fun onClickMovie() {
+    private fun onClickMovie(idGenre: Int? = null) {
         binding.apply {
-            if (!isShowTitleAppBar) {
-                viewModel.setIsMovie(true)
+            if (!isShowTitleAppBar || idGenre != null) {
                 viewModel.addStack()
                 txtTitleAppBar.text = getString(R.string.movies)
                 nestScrollView.scrollTo(0, 0)
-                host.navController.navigate(R.id.action_homeFragment_self, bundleOf(
-                    BUNDLE_IS_MOVIE to true
-                ))
-            }
-        }
-    }
 
-    private fun onClickTvShow() {
-        binding.apply {
-            if (!isShowTitleAppBar) {
-                viewModel.setIsMovie(false)
-                viewModel.addStack()
-                txtTitleAppBar.text = getString(R.string.tv_shows)
-                nestScrollView.scrollTo(0, 0)
                 host.navController.navigate(
                     R.id.action_homeFragment_self, bundleOf(
-                        BUNDLE_IS_MOVIE to false
+                        BUNDLE_IS_MOVIE to true,
+                        BUNDLE_ID_GENRE to idGenre
                     )
                 )
             }
         }
     }
 
-    private fun listenerDataFragment(){
+    private fun onClickTvShow(idGenre: Int? = null) {
+        binding.apply {
+            if (!isShowTitleAppBar || idGenre != null) {
+                viewModel.addStack()
+                txtTitleAppBar.text = getString(R.string.tv_shows)
+                nestScrollView.scrollTo(0, 0)
+
+                host.navController.navigate(
+                    R.id.action_homeFragment_self, bundleOf(
+                        BUNDLE_IS_MOVIE to false,
+                        BUNDLE_ID_GENRE to idGenre
+                    )
+                )
+            }
+        }
+    }
+
+    private fun handleCallOnClick(idGenre: Int) {
+        if (viewModel.getIsMovie()) {
+            binding.subTitleAppBar.transitionToState(R.id.end2, 300)
+            onClickMovie(idGenre)
+        } else {
+            binding.subTitleAppBar.transitionToState(R.id.end1, 300)
+            onClickTvShow(idGenre)
+        }
+    }
+
+    private fun listenerDataFragment() {
         setFragmentResultListener(REQUEST_KEY) { _, bundle ->
             val result = bundle.getInt(BUNDLE_ID_GENRE)
-            viewModel.setCategory(result)
+            handleCallOnClick(result)
+        }
+
+        requireActivity().supportFragmentManager.setFragmentResultListener(REQUEST_KEY,viewLifecycleOwner) { _, bundle ->
+            val id = bundle.getInt(BUNDLE_ID_GENRE_HOME)
+            if (id != 0) {
+                binding.txtContentCategories.text = viewModel.getGenre(id)
+            } else {
+                binding.txtContentCategories.text = getString(R.string.all_categories)
+            }
+            viewModel.setGenreId(id)
         }
     }
 

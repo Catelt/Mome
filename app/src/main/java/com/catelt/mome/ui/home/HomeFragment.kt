@@ -1,6 +1,7 @@
 package com.catelt.mome.ui.home
 
 
+import android.os.Bundle
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -27,6 +28,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
 ) {
     override val viewModel: HomeViewModel by viewModels()
     override var isFullScreen = true
+    private var genreId: Int? = null
 
     private val onMovieClicked = { movieId: Int ->
         MediaDetailsBottomSheet.newInstance(movieId, viewModel.getIsMovie())
@@ -35,8 +37,18 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
 
     private var imageParser: ImageUrlParser? = null
 
+    override fun setUpArgument(bundle: Bundle) {
+        bundle.apply {
+            genreId = getInt(BUNDLE_ID_GENRE)
+        }
+    }
+
     override fun setUpViews() {
         binding.apply {
+            genreId?.let {
+                sendData(it)
+            }
+
             layoutHeaderHome.btnPlay.setEnable(viewModel.uiState.value.ophim?.status == true)
 
             layoutHeaderHome.btnList.apply {
@@ -290,5 +302,9 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
                 onMovieClicked(presentable.id)
             }
         }
+    }
+
+    private fun sendData(genreId: Int) {
+        requireActivity().supportFragmentManager.setFragmentResult(REQUEST_KEY, bundleOf(BUNDLE_ID_GENRE_HOME to genreId))
     }
 }

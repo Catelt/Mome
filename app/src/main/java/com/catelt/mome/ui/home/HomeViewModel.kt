@@ -1,6 +1,5 @@
 package com.catelt.mome.ui.home
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
@@ -23,6 +22,7 @@ import com.catelt.mome.domain.usecase.firebase.CheckMediaInMyListUseCaseImpl
 import com.catelt.mome.domain.usecase.firebase.RemoveMediaMyListUseCaseImpl
 import com.catelt.mome.domain.usecase.movie.*
 import com.catelt.mome.domain.usecase.tvshow.*
+import com.catelt.mome.utils.BUNDLE_ID_GENRE
 import com.catelt.mome.utils.BUNDLE_IS_MOVIE
 import com.catelt.mome.utils.ImageUrlParser
 import com.catelt.mome.utils.SlugUtils
@@ -59,8 +59,10 @@ class HomeViewModel @Inject constructor(
     private val deviceLanguage: Flow<DeviceLanguage> = getDeviceLanguageUseCase.invoke()
     private val isMovie = MutableStateFlow(true)
     private val dataIsMovie = savedStateHandle.getLiveData<Boolean>(BUNDLE_IS_MOVIE)
-    val category = MutableStateFlow(0)
-    val countStack = MutableLiveData(0)
+    private val _genreId = savedStateHandle.getLiveData<Int>(BUNDLE_ID_GENRE)
+    val genreId = MutableStateFlow(0)
+
+    val countStack = MutableStateFlow(0)
 
     var trailerMedia: List<Presentable> = emptyList()
     var positionNowPlaying = Random.nextInt(0, 10)
@@ -88,30 +90,32 @@ class HomeViewModel @Inject constructor(
     val imageUrlParser: StateFlow<ImageUrlParser?> = configRepository.getImageUrlParser()
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
-    val moviesGenres: StateFlow<List<Genre>?> = configRepository.getMoviesGenres()
+    private val moviesGenres: StateFlow<List<Genre>?> = configRepository.getMoviesGenres()
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
     private val moviesState: StateFlow<MoviesState> = deviceLanguage.mapLatest { deviceLanguage ->
+        val id = _genreId.value ?: 0
         MoviesState(
             nowPlaying = getNowPlayingMoviesUseCase(deviceLanguage, false).cachedIn(viewModelScope),
-            discover = getDiscoverAllMoviesUseCase(deviceLanguage).cachedIn(viewModelScope),
-            popular = getPopularMoviesUseCaseImpl(deviceLanguage).cachedIn(viewModelScope),
-            trending = getTrendingMoviesUseCase(deviceLanguage).cachedIn(viewModelScope),
-            topRated = getTopRatedMoviesUseCase(deviceLanguage).cachedIn(viewModelScope)
+            discover = getDiscoverAllMoviesUseCase(deviceLanguage,id).cachedIn(viewModelScope),
+            popular = getPopularMoviesUseCaseImpl(deviceLanguage,id).cachedIn(viewModelScope),
+            trending = getTrendingMoviesUseCase(deviceLanguage,id).cachedIn(viewModelScope),
+            topRated = getTopRatedMoviesUseCase(deviceLanguage,id).cachedIn(viewModelScope)
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(10), MoviesState.default)
 
     private val tvShowsState: StateFlow<TvShowsState> = deviceLanguage.mapLatest { deviceLanguage ->
+        val id = _genreId.value ?: 0
         TvShowsState(
             onTheAir = getOnTheAirTvShowsUseCase(deviceLanguage, true)
                 .cachedIn(viewModelScope),
-            discover = getDiscoverAllTvShowsUseCase(deviceLanguage)
+            discover = getDiscoverAllTvShowsUseCase(deviceLanguage,id)
                 .cachedIn(viewModelScope),
-            topRated = getTopRatedTvShowsUseCase(deviceLanguage)
+            topRated = getTopRatedTvShowsUseCase(deviceLanguage,id)
                 .cachedIn(viewModelScope),
-            trending = getTrendingTvShowsUseCase(deviceLanguage)
+            trending = getTrendingTvShowsUseCase(deviceLanguage,id)
                 .cachedIn(viewModelScope),
-            airingToday = getAiringTodayTvShowsUseCase(deviceLanguage)
+            airingToday = getAiringTodayTvShowsUseCase(deviceLanguage,id)
                 .cachedIn(viewModelScope)
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(10), TvShowsState.default)
@@ -140,6 +144,7 @@ class HomeViewModel @Inject constructor(
         setIsMovie(dataIsMovie.value ?: true)
 
         viewModelScope.launch {
+
             media.collectLatest { presentable ->
                 ophim.emit(null)
                 isMyList.emit(false)
@@ -180,9 +185,9 @@ class HomeViewModel @Inject constructor(
         return isMovie.value
     }
 
-    fun setCategory(genreId: Int) {
+    fun setGenreId(value: Int){
         viewModelScope.launch {
-            category.emit(genreId)
+            genreId.emit(value)
         }
     }
 
@@ -309,19 +314,25 @@ class HomeViewModel @Inject constructor(
     }
 
     fun addStack() {
-        val data = countStack.value ?: 0
-        countStack.postValue(data + 1)
+        viewModelScope.launch {
+            countStack.value.let {
+                val new = it + 1
+                countStack.emit(new)
+            }
+        }
     }
 
     fun popStack() {
-        val data = countStack.value ?: 1
-        if (data > 0) {
-            countStack.postValue(data - 1)
+        viewModelScope.launch {
+            countStack.value.let {
+                val new = if (it > 0) it - 1 else 0
+                countStack.emit(new)
+            }
         }
     }
 
     fun getCountStack(): Int {
-        return countStack.value ?: 0
+        return countStack.value
     }
 
     fun randomMedia(isRandom: Boolean = true) {
