@@ -31,8 +31,14 @@ class MovieDetailsResponsePagingDataSource (
             val currentPage = movieResponse.page
             val totalPages = 1
 
+            val data = if (movieResponse.movies.size > 12){
+                movieResponse.movies.subList(0,12)
+            }else{
+                movieResponse.movies
+            }
+
             LoadResult.Page(
-                data = movieResponse.movies,
+                data = data,
                 prevKey = if (nextPage == 1) null else nextPage - 1,
                 nextKey = if (currentPage + 1 > totalPages) null else currentPage + 1
             )

@@ -7,6 +7,7 @@ import java.util.*
 fun MovieDetails.getRunTime(): String?{
     val time = this.runtime
     time?.let {
+        if (time == 0) return null
         return "${time/60}h ${time%60}m"
     }
     return null

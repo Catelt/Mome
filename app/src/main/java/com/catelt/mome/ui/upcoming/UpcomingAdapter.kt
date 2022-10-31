@@ -15,7 +15,7 @@ import java.time.LocalDate
 
 class UpcomingAdapter : BasePagingAdapter<Movie>() {
     var imageUrlParser: ImageUrlParser? = null
-    var onMovieClicked: ((Int) -> Unit)? = null
+    var onMovieClicked: ((Int,String) -> Unit)? = null
     var genres: List<Genre>? = null
 
 
@@ -50,7 +50,6 @@ class UpcomingAdapter : BasePagingAdapter<Movie>() {
 
                 val localDate = LocalDate.parse(movie.releaseDate, DateFormat.default)
 
-
                 txtArrivalDate.text = root.context.getString(
                     R.string.text_arrival_date, localDate.format(DateFormat.upcoming)
                 )
@@ -65,6 +64,18 @@ class UpcomingAdapter : BasePagingAdapter<Movie>() {
                     )
                 )
             }
+        }
+    }
+
+    override fun setOnClickItem(position: Int) {
+        val movie = getItem(position)
+
+        val localDate = LocalDate.parse(movie?.releaseDate, DateFormat.default)
+
+        val textArrivalDate = "Coming ${localDate.format(DateFormat.upcoming)}"
+
+        movie?.let {
+            onMovieClicked?.invoke(movie.id,textArrivalDate)
         }
     }
 }

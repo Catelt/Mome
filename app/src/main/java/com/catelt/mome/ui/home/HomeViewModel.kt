@@ -131,7 +131,6 @@ class HomeViewModel @Inject constructor(
                 }
                 launch {
                     isMovie.collectLatest { isMovie ->
-                        println(isMovie)
                         if (isMovie) {
                             launch {
                                 getMovieDetails(presentable.id)

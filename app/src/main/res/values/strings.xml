@@ -124,4 +124,6 @@
     <string name="button_next_ep">Next Ep.</string>
     <string name="button_audio_subtitles"><![CDATA[Audio & Subtitles]]></string>
 
+    <string name="title_share">Seen "%1$s" on Mome yet?</string>
+
 </resources>
