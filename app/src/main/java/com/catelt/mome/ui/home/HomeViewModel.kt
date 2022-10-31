@@ -1,9 +1,12 @@
 package com.catelt.mome.ui.home
 
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
 import com.catelt.mome.core.BaseViewModel
 import com.catelt.mome.data.model.DeviceLanguage
+import com.catelt.mome.data.model.Genre
 import com.catelt.mome.data.model.MediaType
 import com.catelt.mome.data.model.Presentable
 import com.catelt.mome.data.model.account.Media
@@ -20,6 +23,7 @@ import com.catelt.mome.domain.usecase.firebase.CheckMediaInMyListUseCaseImpl
 import com.catelt.mome.domain.usecase.firebase.RemoveMediaMyListUseCaseImpl
 import com.catelt.mome.domain.usecase.movie.*
 import com.catelt.mome.domain.usecase.tvshow.*
+import com.catelt.mome.utils.BUNDLE_IS_MOVIE
 import com.catelt.mome.utils.ImageUrlParser
 import com.catelt.mome.utils.SlugUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,6 +31,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.random.Random
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
@@ -48,10 +53,17 @@ class HomeViewModel @Inject constructor(
     private val addMediaMyListUseCase: AddMediaMyListUseCaseImpl,
     private val removeMediaMyListUseCase: RemoveMediaMyListUseCaseImpl,
     private val checkMediaInMyListUseCase: CheckMediaInMyListUseCaseImpl,
-    private val configRepository: ConfigRepository
+    private val configRepository: ConfigRepository,
+    private val savedStateHandle: SavedStateHandle
 ) : BaseViewModel() {
     private val deviceLanguage: Flow<DeviceLanguage> = getDeviceLanguageUseCase.invoke()
     private val isMovie = MutableStateFlow(true)
+    private val dataIsMovie = savedStateHandle.getLiveData<Boolean>(BUNDLE_IS_MOVIE)
+    val category = MutableStateFlow(0)
+    val countStack = MutableLiveData(0)
+
+    var trailerMedia: List<Presentable> = emptyList()
+    var positionNowPlaying = Random.nextInt(0, 10)
 
     private val isMyList = MutableStateFlow(false)
     val media = MutableStateFlow(
@@ -74,6 +86,9 @@ class HomeViewModel @Inject constructor(
     )
 
     val imageUrlParser: StateFlow<ImageUrlParser?> = configRepository.getImageUrlParser()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, null)
+
+    val moviesGenres: StateFlow<List<Genre>?> = configRepository.getMoviesGenres()
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
     private val moviesState: StateFlow<MoviesState> = deviceLanguage.mapLatest { deviceLanguage ->
@@ -122,6 +137,8 @@ class HomeViewModel @Inject constructor(
     }.stateIn(viewModelScope, SharingStarted.Eagerly, HomeUIState.default)
 
     init {
+        setIsMovie(dataIsMovie.value ?: true)
+
         viewModelScope.launch {
             media.collectLatest { presentable ->
                 ophim.emit(null)
@@ -163,7 +180,13 @@ class HomeViewModel @Inject constructor(
         return isMovie.value
     }
 
-    fun setCurrentMedia(presentable: Presentable) {
+    fun setCategory(genreId: Int) {
+        viewModelScope.launch {
+            category.emit(genreId)
+        }
+    }
+
+    private fun setCurrentMedia(presentable: Presentable) {
         viewModelScope.launch {
             media.emit(presentable)
         }
@@ -283,5 +306,37 @@ class HomeViewModel @Inject constructor(
                 }
             )
         }
+    }
+
+    fun addStack() {
+        val data = countStack.value ?: 0
+        countStack.postValue(data + 1)
+    }
+
+    fun popStack() {
+        val data = countStack.value ?: 1
+        if (data > 0) {
+            countStack.postValue(data - 1)
+        }
+    }
+
+    fun getCountStack(): Int {
+        return countStack.value ?: 0
+    }
+
+    fun randomMedia(isRandom: Boolean = true) {
+        if (isRandom) {
+            positionNowPlaying = Random.nextInt(0, 10)
+        }
+        if (trailerMedia.isNotEmpty()) {
+            setCurrentMedia(trailerMedia[positionNowPlaying])
+        }
+    }
+
+    fun getGenre(genreId: Int): String?{
+        moviesGenres.value?.forEach {
+            if (genreId == it.id) return it.name
+        }
+        return null
     }
 }

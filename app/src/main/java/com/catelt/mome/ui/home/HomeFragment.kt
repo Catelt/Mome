@@ -1,15 +1,10 @@
 package com.catelt.mome.ui.home
 
 
-import android.annotation.SuppressLint
-import android.os.Bundle
-import android.view.MotionEvent
-import androidx.activity.OnBackPressedCallback
 import androidx.core.os.bundleOf
-import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import androidx.paging.PagingData
 import coil.load
 import com.catelt.mome.R
@@ -25,142 +20,37 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import kotlin.random.Random
 
 @AndroidEntryPoint
 class HomeFragment : BaseFragment<FragmentHomeBinding>(
     FragmentHomeBinding::inflate
 ) {
     override val viewModel: HomeViewModel by viewModels()
-    private var saveStateMotion: Bundle? = null
+    override var isFullScreen = true
 
-    private var positionNowPlaying = Random.nextInt(0, 15)
     private val onMovieClicked = { movieId: Int ->
         MediaDetailsBottomSheet.newInstance(movieId, viewModel.getIsMovie())
             .show(requireActivity().supportFragmentManager, movieId.toString())
     }
 
-    private var trailerMedia: List<Presentable> = emptyList()
     private var imageParser: ImageUrlParser? = null
-    private var isShowTitleAppBar: Boolean = false
 
-    init {
-        isFullScreen = true
-    }
-
-    @SuppressLint("ClickableViewAccessibility")
     override fun setUpViews() {
-        requireActivity().onBackPressedDispatcher.addCallback(
-            viewLifecycleOwner,
-            object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    if (isShowTitleAppBar) {
-                        binding.btnBack.callOnClick()
-                    } else {
-                        isEnabled = false
-                        requireActivity().onBackPressed()
-                    }
-                }
-            })
-
         binding.apply {
-            btnSearch.setOnClickListener {
-                findNavController().navigate(R.id.searchFragment)
-            }
-
             layoutHeaderHome.btnPlay.setEnable(viewModel.uiState.value.ophim?.status == true)
-            txtMovies.setOnTouchListener { _, event ->
-                if (event.action == MotionEvent.ACTION_UP) {
-                    onClickMovie()
-                }
-                false
-            }
-
-            txtTvShows.setOnTouchListener { _, event ->
-                if (event.action == MotionEvent.ACTION_UP) {
-                    onClickTvShow()
-                }
-                false
-            }
-
-
-            if (isShowTitleAppBar) {
-                isShowTitleAppBar = false
-                if (viewModel.getIsMovie()) {
-                    txtMovies.callOnClick()
-                    onClickMovie()
-                } else {
-                    txtTvShows.callOnClick()
-                    onClickTvShow()
-                }
-            }
 
             layoutHeaderHome.btnList.apply {
                 isHome = true
                 setOnClickListener {
-                    if (isExisted) {
-                        viewModel.onRemoveClick(trailerMedia[positionNowPlaying])
-                    } else {
-                        viewModel.onAddMediaClick(trailerMedia[positionNowPlaying])
+                    viewModel.apply {
+                        if (isExisted) {
+                            onRemoveClick(trailerMedia[positionNowPlaying])
+                        } else {
+                            onAddMediaClick(trailerMedia[positionNowPlaying])
+                        }
+                        setUI(!isExisted)
                     }
-                    setUI(!isExisted)
                 }
-            }
-
-            btnBack.setOnClickListener {
-                viewModel.setIsMovie(!viewModel.getIsMovie())
-                setupAppBar(false)
-                subTitleAppBar.transitionToStart()
-                nestScrollView.scrollTo(0, 0)
-            }
-
-            btnProfile.setOnClickListener {
-                findNavController().navigate(R.id.profileFragment)
-            }
-
-            btnSearch.setOnClickListener {
-                findNavController().navigate(R.id.searchFragment)
-            }
-
-            txtCategories.setOnClickListener {
-                toast(getString(R.string.message_feature_coming_soon))
-            }
-
-            txtAllCategories.setOnClickListener {
-                toast(getString(R.string.message_feature_coming_soon))
-            }
-        }
-    }
-
-    private fun setupAppBar(isShow: Boolean) {
-        binding.apply {
-            isShowTitleAppBar = isShow
-            txtTitleAppBar.isVisible = isShow
-            btnBack.isVisible = isShow
-            imgIconApp.isVisible = !isShow
-        }
-    }
-
-    private fun onClickMovie() {
-        binding.apply {
-            if (!isShowTitleAppBar) {
-                viewModel.setIsMovie(true)
-                setupAppBar(true)
-                txtTitleAppBar.text = getString(R.string.movies)
-                nestScrollView.scrollTo(0, 0)
-                randomMedia()
-            }
-        }
-    }
-
-    private fun onClickTvShow() {
-        binding.apply {
-            if (!isShowTitleAppBar) {
-                viewModel.setIsMovie(false)
-                setupAppBar(true)
-                txtTitleAppBar.text = getString(R.string.tv_shows)
-                nestScrollView.scrollTo(0, 0)
-                randomMedia()
             }
         }
     }
@@ -366,9 +256,12 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
     }
 
     private fun setOnClickPlayVideo(position: Int = 0) {
+        val host = requireActivity().supportFragmentManager
+            .findFragmentById(R.id.nav_host_fragment) as NavHostFragment?
+
         viewModel.uiState.value.apply {
             ophim?.apply {
-                findNavController().navigate(
+                host?.navController?.navigate(
                     R.id.videoPlayerFragment,
                     bundleOf(
                         BUNDLE_TITLE_MEDIA to if (viewModel.getIsMovie()) viewModel.media.value.title else null,
@@ -396,27 +289,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
             btnInfo.setOnClickListener {
                 onMovieClicked(presentable.id)
             }
-        }
-    }
-
-    override fun onPause() {
-        super.onPause()
-        saveStateMotion = binding.root.transitionState
-    }
-
-    override fun onResume() {
-        super.onResume()
-        saveStateMotion?.let {
-            binding.root.transitionState = saveStateMotion
-        }
-    }
-
-    private fun randomMedia(isRandom: Boolean = true) {
-        if (isRandom) {
-            positionNowPlaying = Random.nextInt(0, 15)
-        }
-        if (trailerMedia.isNotEmpty()) {
-            viewModel.setCurrentMedia(trailerMedia[positionNowPlaying])
         }
     }
 }

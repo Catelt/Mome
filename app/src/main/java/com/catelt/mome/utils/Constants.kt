@@ -5,7 +5,10 @@ const val REQUEST_SIGN_IN = 101
 
 const val BASE_LINK_MEDIA = "https://mome.page.link/"
 
+const val REQUEST_KEY = "requestKey"
 const val BUNDLE_ID_MEDIA = "id_media"
+const val BUNDLE_IS_MOVIE = "is_movie"
+const val BUNDLE_ID_GENRE = "id_genre"
 const val BUNDLE_TITLE_MEDIA = "title_media"
 const val BUNDLE_CURRENT_EPISODE = "current_episode"
 const val BUNDLE_SLUG_MEDIA = "slug_media"
