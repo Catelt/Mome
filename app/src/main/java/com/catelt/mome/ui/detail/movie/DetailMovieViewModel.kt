@@ -91,23 +91,23 @@ class DetailMovieViewModel @Inject constructor(
 
 
     private val associatedContent: StateFlow<AssociatedContent> = combine(
-        movieBackdrops, videos, credits, ophim
-    ) { backdrops, videos, credits, ophim ->
+        movieBackdrops, videos, credits
+    ) { backdrops, videos, credits  ->
         AssociatedContent(
             backdrops = backdrops,
             videos = videos,
             credits = credits,
-            ophim = ophim
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(10), AssociatedContent.default)
 
     val uiState: StateFlow<MovieDetailsScreenUIState> = combine(
-        movieDetails, associatedMovies, associatedContent, error
-    ) { details, associatedMovies, visualContent, error ->
+        movieDetails, associatedMovies, associatedContent, ophim, error
+    ) { details, associatedMovies, visualContent, ophim, error ->
         MovieDetailsScreenUIState(
             movieDetails = details,
             associatedMovies = associatedMovies,
             associatedContent = visualContent,
+            ophim = ophim,
             error = error
         )
     }.stateIn(

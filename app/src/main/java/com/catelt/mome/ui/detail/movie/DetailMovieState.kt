@@ -15,6 +15,7 @@ data class MovieDetailsScreenUIState(
     val movieDetails: MovieDetails?,
     val associatedMovies: AssociatedMovies,
     val associatedContent: AssociatedContent,
+    val ophim: OphimResponse?,
     val error: String?
 ) {
     companion object {
@@ -23,6 +24,7 @@ data class MovieDetailsScreenUIState(
                 movieDetails = null,
                 associatedMovies = AssociatedMovies.default,
                 associatedContent = AssociatedContent.default,
+                ophim = null,
                 error = null
             )
         }
@@ -61,14 +63,12 @@ data class AssociatedContent(
     val backdrops: List<Image>,
     val videos: List<Video>?,
     val credits: Credits?,
-    val ophim: OphimResponse?,
 ) {
     companion object {
         val default: AssociatedContent = AssociatedContent(
             backdrops = emptyList(),
             videos = null,
             credits = null,
-            ophim = null
         )
     }
 }

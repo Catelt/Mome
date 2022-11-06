@@ -152,7 +152,6 @@
             tools:ignore="UseCompoundDrawables">
 
             <TextView
-                android:id="@+id/txtContentCategories"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/categories"
@@ -178,6 +177,7 @@
             tools:ignore="UseCompoundDrawables">
 
             <TextView
+                android:id="@+id/txtContentCategories"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/all_categories"

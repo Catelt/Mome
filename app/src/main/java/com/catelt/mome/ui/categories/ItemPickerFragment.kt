@@ -67,6 +67,5 @@ class ItemPickerFragment : BaseFragment<FragmentItemPickerBinding>(
 
     private fun sendData(genreId: Int){
         setFragmentResult(REQUEST_KEY, bundleOf(BUNDLE_ID_GENRE to genreId))
-
     }
 }

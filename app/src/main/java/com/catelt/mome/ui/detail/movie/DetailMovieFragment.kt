@@ -151,7 +151,7 @@ class DetailMovieFragment : BaseFragment<FragmentDetailMovieBinding>(
                             }.launchIn(lifecycleScope)
 
                         binding.layoutHeader.btnPlay.apply {
-                            setEnable(movieDetailSate.associatedContent.ophim?.status == true)
+                            setEnable(movieDetailSate.ophim?.status == true)
                             setOnClickListener {
                                 setOnClickPlayVideo()
                             }
@@ -224,7 +224,7 @@ class DetailMovieFragment : BaseFragment<FragmentDetailMovieBinding>(
 
     private fun setOnClickPlayVideo(position: Int = 0) {
         viewModel.uiState.value.apply {
-            associatedContent.ophim?.apply {
+            ophim?.apply {
                 findNavController().navigate(
                     R.id.videoPlayerFragment,
                     bundleOf(

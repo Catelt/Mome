@@ -16,6 +16,7 @@ data class DetailTvShowUIState(
     val tvShowDetails: TvShowDetails?,
     val associatedTvShow: AssociatedTvShow,
     val associatedContentTvShow: AssociatedContentTvShow,
+    val ophim: OphimResponse?,
     val error: String?
 ) {
     companion object {
@@ -24,6 +25,7 @@ data class DetailTvShowUIState(
                 tvShowDetails = null,
                 associatedTvShow = AssociatedTvShow.default,
                 associatedContentTvShow = AssociatedContentTvShow.default,
+                ophim = null,
                 error = null
             )
         }
@@ -34,14 +36,12 @@ data class AssociatedContentTvShow(
     val backdrops: List<Image>,
     val videos: List<Video>?,
     val credits: AggregatedCredits?,
-    val ophim: OphimResponse?
 ) {
     companion object {
         val default: AssociatedContentTvShow = AssociatedContentTvShow(
             backdrops = emptyList(),
             videos = null,
             credits = null,
-            ophim = null
         )
     }
 }
