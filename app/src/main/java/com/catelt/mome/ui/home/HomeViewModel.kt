@@ -151,26 +151,26 @@ class HomeViewModel @Inject constructor(
                 launch {
                     checkMediaInMyList(presentable)
                 }
-                launch {
-                    isMovie.collectLatest { isMovie ->
-                        if (isMovie) {
-                            launch {
-                                getMovieDetails(presentable.id)
-                            }
-                            launch {
-                                getMovieDetails(presentable.id, DeviceLanguage.default)
-                            }
-                        } else {
-                            launch {
-                                getTvShowDetail(presentable.id)
-                            }
-                            launch {
-                                getTvShowDetail(presentable.id, DeviceLanguage.default)
-                            }
-                        }
-                    }
-
-                }
+//                launch {
+//                    isMovie.collectLatest { isMovie ->
+//                        if (isMovie) {
+//                            launch {
+//                                getMovieDetails(presentable.id)
+//                            }
+//                            launch {
+//                                getMovieDetails(presentable.id, DeviceLanguage.default)
+//                            }
+//                        } else {
+//                            launch {
+//                                getTvShowDetail(presentable.id)
+//                            }
+//                            launch {
+//                                getTvShowDetail(presentable.id, DeviceLanguage.default)
+//                            }
+//                        }
+//                    }
+//
+//                }
             }
         }
     }

@@ -20,7 +20,6 @@ import com.catelt.mome.domain.usecase.firebase.RemoveMediaMyListUseCaseImpl
 import com.catelt.mome.domain.usecase.tvshow.*
 import com.catelt.mome.utils.BUNDLE_ID_MEDIA
 import com.catelt.mome.utils.ImageUrlParser
-import com.catelt.mome.utils.SlugUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -142,11 +141,11 @@ class DetailTvShowViewModel @Inject constructor(
                         deviceLanguage = deviceLanguage
                     )
                 }
-                launch {
-                    getTvShowDetails(
-                        tvShowId = tvShowId
-                    )
-                }
+//                launch {
+//                    getTvShowDetails(
+//                        tvShowId = tvShowId
+//                    )
+//                }
             }
         }
     }
@@ -172,9 +171,9 @@ class DetailTvShowViewModel @Inject constructor(
                         }
                     }
                 }
-                tvShowDetails?.name?.let {
-                    getMediaDetail(SlugUtils.slugify(tvShowDetails.name))
-                }
+//                tvShowDetails?.name?.let {
+//                    getMediaDetail(SlugUtils.slugify(tvShowDetails.name))
+//                }
             }
         }.onFailure {
             onFailure(this)
