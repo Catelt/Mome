@@ -21,7 +21,6 @@ import com.catelt.mome.domain.usecase.firebase.RemoveMediaMyListUseCaseImpl
 import com.catelt.mome.domain.usecase.movie.GetMovieDetailsUseCaseImpl
 import com.catelt.mome.domain.usecase.tvshow.GetTvShowDetailsUseCaseImpl
 import com.catelt.mome.utils.ImageUrlParser
-import com.catelt.mome.utils.SlugUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
@@ -123,9 +122,9 @@ class MediaDetailsBottomViewModel @Inject constructor(
                     }
                 }
 
-                data?.title?.let {
-                    getMediaDetail(SlugUtils.slugify(data.title))
-                }
+//                data?.title?.let {
+//                    getMediaDetail(SlugUtils.slugify(data.title))
+//                }
             }
         }.onFailure {
             onFailure(this)
@@ -155,9 +154,9 @@ class MediaDetailsBottomViewModel @Inject constructor(
                     }
                 }
 
-                data?.name?.let {
-                    getMediaDetail(SlugUtils.slugify(data.name))
-                }
+//                data?.name?.let {
+//                    getMediaDetail(SlugUtils.slugify(data.name))
+//                }
             }
         }.onFailure {
             onFailure(this)
@@ -213,25 +212,25 @@ class MediaDetailsBottomViewModel @Inject constructor(
         }
     }
 
-    private suspend fun getMediaDetail(
-        slugName: String
-    ) {
-        getMediaDetailUserCase(
-            slugName = slugName,
-        ).onSuccess {
-            viewModelScope.launch {
-                if (data?.status == true) {
-                    if (ophim.value == null) {
-                        ophim.emit(data.movie)
-                    }
-                }
-            }
-        }.onFailure {
-            onFailure(this)
-        }.onException {
-            onError(this)
-        }
-    }
+//    private suspend fun getMediaDetail(
+//        slugName: String
+//    ) {
+//        getMediaDetailUserCase(
+//            slugName = slugName,
+//        ).onSuccess {
+//            viewModelScope.launch {
+//                if (data?.status == true) {
+//                    if (ophim.value == null) {
+//                        ophim.emit(data.movie)
+//                    }
+//                }
+//            }
+//        }.onFailure {
+//            onFailure(this)
+//        }.onException {
+//            onError(this)
+//        }
+//    }
 
     fun setMediaId(value: Int){
         viewModelScope.launch {

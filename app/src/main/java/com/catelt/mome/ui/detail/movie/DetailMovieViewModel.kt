@@ -21,7 +21,6 @@ import com.catelt.mome.domain.usecase.firebase.RemoveMediaMyListUseCaseImpl
 import com.catelt.mome.domain.usecase.movie.*
 import com.catelt.mome.utils.BUNDLE_ID_MEDIA
 import com.catelt.mome.utils.ImageUrlParser
-import com.catelt.mome.utils.SlugUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
@@ -138,9 +137,9 @@ class DetailMovieViewModel @Inject constructor(
                 launch {
                     getMovieVideos(movieId, deviceLanguage)
                 }
-                launch {
-                    getMovieDetails(movieId)
-                }
+//                launch {
+//                    getMovieDetails(movieId)
+//                }
             }
         }
 
@@ -193,9 +192,9 @@ class DetailMovieViewModel @Inject constructor(
                     }
                 }
 
-                movieDetails?.title?.let {
-                    getMediaDetail(SlugUtils.slugify(movieDetails.title))
-                }
+//                movieDetails?.title?.let {
+//                    getMediaDetail(SlugUtils.slugify(movieDetails.title))
+//                }
 
                 data?.collection?.id?.let { collectionId ->
                     getMovieCollection(
