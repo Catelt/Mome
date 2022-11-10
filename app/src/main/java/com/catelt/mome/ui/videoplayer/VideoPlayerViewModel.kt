@@ -24,11 +24,8 @@ import com.catelt.mome.utils.BUNDLE_SLUG_MEDIA
 import com.catelt.mome.utils.BUNDLE_TITLE_MEDIA
 import com.catelt.mome.utils.ImageUrlParser
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import wseemann.media.FFmpegMediaMetadataRetriever
 import javax.inject.Inject
 
 @HiltViewModel
@@ -130,39 +127,39 @@ class VideoPlayerViewModel @Inject constructor(
     }
 
 
-    var job: Job? = null
-    fun getVideoFrame(uri: String?) {
-        job?.cancel()
-        job = viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val retriever = FFmpegMediaMetadataRetriever()
-                val thumbnailList = mutableListOf<Bitmap?>()
-
-                retriever.setDataSource(uri)
-
-                val videoLengthInMs =
-                    (retriever.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_DURATION)!!
-                        .toInt() * 1000).toLong()
-                val internal = videoLengthInMs / TIME_PREVIEW
-
-                for (i in 0..internal) {
-                    val bitmap = retriever.getFrameAtTime(
-                        i * TIME_PREVIEW + TIME_PREVIEW / MINUS_DELAY,
-                        FFmpegMediaMetadataRetriever.OPTION_CLOSEST
-                    )
-                    thumbnailList.add(bitmap)
-
-                    viewModelScope.launch {
-                        mBitmapList.emit(thumbnailList)
-                    }
-                }
-                retriever.release()
-            } catch (ex: RuntimeException) {
-                ex.printStackTrace()
-            }
-        }
-
-    }
+//    var job: Job? = null
+//    fun getVideoFrame(uri: String?) {
+//        job?.cancel()
+//        job = viewModelScope.launch(Dispatchers.IO) {
+//            try {
+//                val retriever = FFmpegMediaMetadataRetriever()
+//                val thumbnailList = mutableListOf<Bitmap?>()
+//
+//                retriever.setDataSource(uri)
+//
+//                val videoLengthInMs =
+//                    (retriever.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_DURATION)!!
+//                        .toInt() * 1000).toLong()
+//                val internal = videoLengthInMs / TIME_PREVIEW
+//
+//                for (i in 0..internal) {
+//                    val bitmap = retriever.getFrameAtTime(
+//                        i * TIME_PREVIEW + TIME_PREVIEW / MINUS_DELAY,
+//                        FFmpegMediaMetadataRetriever.OPTION_CLOSEST
+//                    )
+//                    thumbnailList.add(bitmap)
+//
+//                    viewModelScope.launch {
+//                        mBitmapList.emit(thumbnailList)
+//                    }
+//                }
+//                retriever.release()
+//            } catch (ex: RuntimeException) {
+//                ex.printStackTrace()
+//            }
+//        }
+//
+//    }
 
     private suspend fun getSeasonDetails(tvShowId: Int, deviceLanguage: DeviceLanguage) {
         getSeasonDetailsUseCase(

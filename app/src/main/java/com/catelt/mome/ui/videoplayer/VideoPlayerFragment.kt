@@ -506,7 +506,7 @@ class VideoPlayerFragment : BaseFragment<FragmentVideoPlayerBinding>(
                 )
             }
         }
-        viewModel.job?.cancel()
+//        viewModel.job?.cancel()
         releasePlayer()
         super.onDestroy()
     }
