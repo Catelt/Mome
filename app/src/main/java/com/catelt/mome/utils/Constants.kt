@@ -17,5 +17,8 @@ const val BUNDLE_DETAIL_UPCOMING = "detail_upcoming"
 
 const val USER_FIREBASE = "user"
 const val MY_LIST_FIREBASE = "my_list"
+const val MY_WATCH_TIME = "watch_time_list"
+const val MOVIE_FIREBASE = "movie"
+
 
 const val FIELD_ID_MEDIA = "id"
