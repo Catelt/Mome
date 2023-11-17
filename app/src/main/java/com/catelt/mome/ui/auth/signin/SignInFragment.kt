@@ -14,7 +14,6 @@ import com.catelt.mome.core.OnSignInStartedListener
 import com.catelt.mome.databinding.FragmentSignInBinding
 import com.catelt.mome.ui.auth.home.AuthViewModel
 import com.catelt.mome.utils.REQUEST_SIGN_IN
-import com.facebook.login.LoginManager
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.common.api.ApiException
@@ -65,18 +64,6 @@ class SignInFragment : BaseFragment<FragmentSignInBinding>(
                         startActivityForResult(client?.signInIntent, REQUEST_SIGN_IN)
                     }
                 })
-            }
-
-            btnFacebook.setOnClickListener {
-                LoginManager.getInstance()
-                    .logInWithReadPermissions(
-                        requireActivity(), viewModel.callbackManager, listOf(
-                            AuthViewModel.PUBLIC_PROFILE,
-                            AuthViewModel.EMAIL,
-                            AuthViewModel.USER_FRIEND
-                        )
-                    )
-                viewModel.loginWithFacebook()
             }
         }
     }

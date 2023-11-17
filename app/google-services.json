@@ -14,11 +14,19 @@
       },
       "oauth_client": [
         {
-          "client_id": "541715569412-556e7bir6nkejqh9a2gkj8253o17ki73.apps.googleusercontent.com",
+          "client_id": "541715569412-6gv5s3lhm4o1dbilr786beq2a7k82t05.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.catelt.mome",
-            "certificate_hash": "488b772fb56ec5d89547448de4a7d4f7f854c626"
+            "certificate_hash": "22a2648fd0a5ff1889444665c9d3f24f237b09d1"
+          }
+        },
+        {
+          "client_id": "541715569412-u94s7ko8lctgber9steeo66r73e8g4og.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.catelt.mome",
+            "certificate_hash": "3b859c6d2a631894170415d3c68e58fd37bc8d03"
           }
         },
         {

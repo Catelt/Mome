@@ -107,7 +107,6 @@ dependencies {
     //Auth
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'com.google.android.gms:play-services-auth:20.3.0'
-    implementation 'com.facebook.android:facebook-android-sdk:latest.release'
 
     //Coil
     implementation "io.coil-kt:coil:2.2.1"
