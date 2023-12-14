@@ -14,7 +14,6 @@ import com.catelt.mome.core.OnSignInStartedListener
 import com.catelt.mome.databinding.FragmentSignUpBinding
 import com.catelt.mome.ui.auth.home.AuthViewModel
 import com.catelt.mome.utils.REQUEST_SIGN_IN
-import com.facebook.login.LoginManager
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.common.api.ApiException
@@ -66,18 +65,6 @@ class SignUpFragment : BaseFragment<FragmentSignUpBinding>(
                     }
                 })
             }
-
-            btnFacebook.setOnClickListener {
-                LoginManager.getInstance()
-                    .logInWithReadPermissions(
-                        requireActivity(), viewModel.callbackManager, listOf(
-                            AuthViewModel.PUBLIC_PROFILE,
-                            AuthViewModel.EMAIL,
-                            AuthViewModel.USER_FRIEND
-                        )
-                    )
-                viewModel.loginWithFacebook()
-            }
         }
     }
 
@@ -117,7 +104,6 @@ class SignUpFragment : BaseFragment<FragmentSignUpBinding>(
 
     @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        viewModel.callbackManager.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_SIGN_IN && resultCode == Activity.RESULT_OK && data != null) {
             val task = GoogleSignIn.getSignedInAccountFromIntent(data)
             try {

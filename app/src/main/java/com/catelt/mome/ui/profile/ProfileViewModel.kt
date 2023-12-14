@@ -3,7 +3,6 @@ package com.catelt.mome.ui.profile
 import androidx.lifecycle.viewModelScope
 import com.catelt.mome.core.BaseViewModel
 import com.catelt.mome.data.model.account.UserManager
-import com.facebook.login.LoginManager
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,8 +27,6 @@ class ProfileViewModel @Inject constructor(
         userManager.logOut()
         //Google SignOut
         googleSignInClient.signOut()
-        //Facebook SignOut
-        LoginManager.getInstance().logOut()
         viewModelScope.launch {
             isLogged.emit(userManager.isLogged())
         }

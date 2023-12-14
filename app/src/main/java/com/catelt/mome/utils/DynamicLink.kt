@@ -1,10 +1,7 @@
 package com.catelt.mome.utils
 
 import android.net.Uri
-import android.widget.Toast
 import com.catelt.mome.BuildConfig
-import com.catelt.mome.R
-import com.facebook.FacebookSdk.getApplicationContext
 import com.google.firebase.dynamiclinks.ktx.androidParameters
 import com.google.firebase.dynamiclinks.ktx.dynamicLinks
 import com.google.firebase.dynamiclinks.ktx.shortLinkAsync
@@ -21,9 +18,6 @@ object DynamicLink {
             }
         }.addOnSuccessListener {
             handlerLink(it.shortLink.toString())
-        }.addOnFailureListener {
-            Toast.makeText(getApplicationContext(), getApplicationContext().getString(R.string.error_default_message), Toast.LENGTH_SHORT)
-                .show()
-        }
+        }.addOnFailureListener {}
     }
 }

@@ -58,7 +58,7 @@ jobs:
         uses: wzieba/Firebase-Distribution-Github-Action@v1
         with:
           appId: 1:541715569412:android:c5e8e87768507952544e51
-          token: ${{secrets.FIREBASE_TOKEN}}
-          groups: ViewGO
+          serviceCredentialsFileContent: ${{ secrets.CREDENTIAL_FILE_CONTENT }}
+          testers: hovanduy0501@gmail.com
           file: app/build/outputs/apk/release/app-release.apk
           releaseNotesFile: log.txt
