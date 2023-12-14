@@ -9,12 +9,6 @@ import com.catelt.mome.data.model.account.User
 import com.catelt.mome.data.model.account.UserManager
 import com.catelt.mome.data.repository.firebase.FirebaseRepositoryImpl
 import com.catelt.mome.utils.USER_FIREBASE
-import com.facebook.AccessToken
-import com.facebook.CallbackManager
-import com.facebook.FacebookCallback
-import com.facebook.FacebookException
-import com.facebook.login.LoginManager
-import com.facebook.login.LoginResult
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FacebookAuthProvider
@@ -37,7 +31,6 @@ open class AuthViewModel @Inject constructor(
     val validPasswordLiveData = MutableLiveData<String>()
 
     val isLogged = MutableStateFlow(userManager.isLogged())
-    val callbackManager: CallbackManager = CallbackManager.Factory.create()
 
     // GOOGLE
     fun signInWithGoogle(listener: OnSignInStartedListener) {
@@ -48,27 +41,6 @@ open class AuthViewModel @Inject constructor(
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         signInWithCredential(credential)
 
-    }
-
-    // FaceBook
-    fun loginWithFacebook() {
-        LoginManager.getInstance()
-            .registerCallback(callbackManager, object : FacebookCallback<LoginResult> {
-                override fun onSuccess(result: LoginResult) {
-                    handleFacebookAccessToken(result.accessToken)
-                }
-
-                override fun onCancel() {
-                }
-
-                override fun onError(error: FacebookException) {
-                }
-            })
-    }
-
-    protected fun handleFacebookAccessToken(token: AccessToken) {
-        val credential = FacebookAuthProvider.getCredential(token.token)
-        signInWithCredential(credential)
     }
 
     private fun signInWithCredential(credential: AuthCredential) {

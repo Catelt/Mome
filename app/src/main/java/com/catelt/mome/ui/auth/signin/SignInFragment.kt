@@ -109,7 +109,6 @@ class SignInFragment : BaseFragment<FragmentSignInBinding>(
 
     @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        viewModel.callbackManager.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_SIGN_IN && resultCode == Activity.RESULT_OK && data != null) {
             val task = GoogleSignIn.getSignedInAccountFromIntent(data)
             try {
