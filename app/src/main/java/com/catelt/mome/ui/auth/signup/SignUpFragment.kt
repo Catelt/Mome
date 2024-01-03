@@ -61,7 +61,7 @@ class SignUpFragment : BaseFragment<FragmentSignUpBinding>(
                 viewModel.signInWithGoogle(object :
                     OnSignInStartedListener {
                     override fun onSignInStarted(client: GoogleSignInClient?) {
-                        startActivityForResult(client?.signInIntent, REQUEST_SIGN_IN)
+                        client?.signInIntent?.let { startActivityForResult(it, REQUEST_SIGN_IN) }
                     }
                 })
             }

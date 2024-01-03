@@ -64,7 +64,8 @@ class DetailMovieFragment : BaseFragment<FragmentDetailMovieBinding>(
         binding.apply {
             if (isUpComing.isNotBlank()){
                 layoutHeader.apply {
-                    btnPlay.visibility = setVisionView(false)
+                    // TODO: Handle Button Play
+//                    btnPlay.visibility = setVisionView(false)
                     txtArrivalDate.visibility = setVisionView(true)
                     txtArrivalDate.text = isUpComing
                     root.visibility = setVisionView(false)
@@ -150,12 +151,13 @@ class DetailMovieFragment : BaseFragment<FragmentDetailMovieBinding>(
                                 likeThisAdapter.submitData(list)
                             }.launchIn(lifecycleScope)
 
-                        binding.layoutHeader.btnPlay.apply {
-                            setEnable(movieDetailSate.ophim?.status == true)
-                            setOnClickListener {
-                                setOnClickPlayVideo()
-                            }
-                        }
+                        // TODO: Handle Button Play
+//                        binding.layoutHeader.btnPlay.apply {
+//                            setEnable(movieDetailSate.ophim?.status == true)
+//                            setOnClickListener {
+//                                setOnClickPlayVideo()
+//                            }
+//                        }
                     }
 
                 }
@@ -263,19 +265,21 @@ class DetailMovieFragment : BaseFragment<FragmentDetailMovieBinding>(
                     }
                 }
 
-                btnRate.setOnClickListener {
-                    toast(getString(R.string.message_feature_coming_soon))
-                }
+                // TODO: Handle Button Rate
+//                btnRate.setOnClickListener {
+//                    toast(getString(R.string.message_feature_coming_soon))
+//                }
 
-                lifecycleScope.launch {
-                    launch {
-                        ShareUtils.share(movie,true,isUpComing).collectLatest { link ->
-                            btnShare.setOnClickListener {
-                                ShareUtils.shareUrl(requireActivity(),link,movie.title)
-                            }
-                        }
-                    }
-                }
+                // TODO: Handle Button Share
+//                lifecycleScope.launch {
+//                    launch {
+//                        ShareUtils.share(movie,true,isUpComing).collectLatest { link ->
+//                            btnShare.setOnClickListener {
+//                                ShareUtils.shareUrl(requireActivity(),link,movie.title)
+//                            }
+//                        }
+//                    }
+//                }
             }
             layoutThumbnail.imgBackdrop.loadDefault(likeThisAdapter.imageUrlParser?.getImageUrl(movie.backdropPath, ImageUrlParser.ImageType.Backdrop))
         }

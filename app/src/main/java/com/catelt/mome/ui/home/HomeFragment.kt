@@ -49,7 +49,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
                 sendData(it,viewModel.getIsMovie())
             }
 
-            layoutHeaderHome.btnPlay.setEnable(viewModel.uiState.value.ophim?.status == true)
+            // TODO: Handle Button Play
+//            layoutHeaderHome.btnPlay.setEnable(viewModel.uiState.value.ophim?.status == true)
 
             layoutHeaderHome.btnList.apply {
                 isHome = true
@@ -249,16 +250,17 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
                                     }
                                 }
 
-                                binding.layoutHeaderHome.btnPlay.setEnable(false)
-
-                                homeUIState.ophim?.let { data ->
-                                    binding.layoutHeaderHome.btnPlay.apply {
-                                        setEnable(data.status)
-                                        setOnClickListener {
-                                            setOnClickPlayVideo()
-                                        }
-                                    }
-                                }
+                                // TODO: Handle Button Play
+//                                binding.layoutHeaderHome.btnPlay.setEnable(false)
+//
+//                                homeUIState.ophim?.let { data ->
+//                                    binding.layoutHeaderHome.btnPlay.apply {
+//                                        setEnable(data.status)
+//                                        setOnClickListener {
+//                                            setOnClickPlayVideo()
+//                                        }
+//                                    }
+//                                }
                             }
                         }
                     }
