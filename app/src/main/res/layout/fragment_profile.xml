@@ -198,10 +198,24 @@
 
 
             <TextView
-                android:id="@+id/txtLogout"
+                android:id="@+id/txtDeleteAccount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="50dp"
+                android:drawablePadding="10dp"
+                android:gravity="center"
+                android:paddingVertical="10dp"
+                android:text="@string/delete_account"
+                android:textColor="@color/Primary"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+
+            <TextView
+                android:id="@+id/txtLogout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
                 android:drawablePadding="10dp"
                 android:gravity="center"
                 android:paddingVertical="10dp"
