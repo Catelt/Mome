@@ -2,6 +2,8 @@ package com.catelt.mome.data.repository.firebase
 
 import androidx.paging.PagingData
 import com.catelt.mome.data.model.account.Media
+import com.catelt.mome.data.model.firebase.MovieFirebase
+import com.catelt.mome.data.model.firebase.TimeAt
 import com.catelt.mome.data.remote.firebase.FirebaseResponse
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseUser
@@ -62,4 +64,21 @@ interface FirebaseRepository {
         userId: String,
         mediaId: Int,
     ): Flow<FirebaseResponse<Boolean>>
+
+    fun addWatchTimeAt(
+        userId: String,
+        mediaId: Int,
+        episode: Int,
+        timeAt: TimeAt,
+    ): Flow<FirebaseResponse<Boolean>>
+
+    fun getWatchTimeAt(
+        userId: String,
+        mediaId: Int,
+        episode: Int,
+    ): Flow<FirebaseResponse<TimeAt>>
+
+    fun getMovie(
+        mediaId: Int
+    ): Flow<FirebaseResponse<MovieFirebase>>
 }

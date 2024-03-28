@@ -4,17 +4,17 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.catelt.mome.data.model.account.Media
+import com.catelt.mome.data.model.firebase.MovieFirebase
+import com.catelt.mome.data.model.firebase.TimeAt
 import com.catelt.mome.data.paging.firebase.FirebasePagingDataSource
 import com.catelt.mome.data.remote.firebase.FirebaseResponse
-import com.catelt.mome.utils.FIELD_ID_MEDIA
-import com.catelt.mome.utils.MY_LIST_FIREBASE
-import com.catelt.mome.utils.SIZE_PAGE
-import com.catelt.mome.utils.USER_FIREBASE
+import com.catelt.mome.utils.*
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.toObject
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
@@ -230,7 +230,7 @@ class FirebaseRepositoryImpl @Inject constructor(
     override fun checkMediaInMyList(
         userId: String,
         mediaId: Int
-    ): Flow<FirebaseResponse<Boolean>>  = callbackFlow {
+    ): Flow<FirebaseResponse<Boolean>> = callbackFlow {
         db.collection(USER_FIREBASE)
             .document(userId)
             .collection(MY_LIST_FIREBASE)
@@ -250,4 +250,74 @@ class FirebaseRepositoryImpl @Inject constructor(
             channel.close()
         }
     }.flowOn(defaultDispatcher)
+
+    override fun addWatchTimeAt(
+        userId: String,
+        mediaId: Int,
+        episode: Int,
+        timeAt: TimeAt,
+    ): Flow<FirebaseResponse<Boolean>> = callbackFlow {
+        val id = "${mediaId}_${episode}"
+        db.collection(USER_FIREBASE)
+            .document(userId)
+            .collection(MY_WATCH_TIME)
+            .document(id)
+            .set(timeAt)
+            .addOnSuccessListener {
+                trySend(FirebaseResponse.Success(true))
+            }
+            .addOnFailureListener {
+                trySend(FirebaseResponse.Error(it))
+            }
+        awaitClose {
+            channel.close()
+        }
+    }.flowOn(defaultDispatcher)
+
+    override fun getWatchTimeAt(
+        userId: String,
+        mediaId: Int,
+        episode: Int
+    ): Flow<FirebaseResponse<TimeAt>> = callbackFlow {
+        val id = "${mediaId}_${episode}"
+        db.collection(USER_FIREBASE)
+            .document(userId)
+            .collection(MY_WATCH_TIME)
+            .document(id)
+            .get()
+            .addOnSuccessListener {
+                if (it.exists() && it.data != null) {
+                    val data = it.toObject<TimeAt>()
+                    data?.let {
+                        trySend(FirebaseResponse.Success(data))
+                    }
+                }
+            }
+            .addOnFailureListener {
+                trySend(FirebaseResponse.Error(it))
+            }
+        awaitClose {
+            channel.close()
+        }
+    }.flowOn(defaultDispatcher)
+
+    override fun getMovie(mediaId: Int): Flow<FirebaseResponse<MovieFirebase>> = callbackFlow {
+        db.collection(MOVIE_FIREBASE)
+            .document(mediaId.toString())
+            .get()
+            .addOnSuccessListener {
+                if (it.exists() && it.data != null) {
+                    val data = it.toObject<MovieFirebase>()
+                    data?.let {
+                        trySend(FirebaseResponse.Success(data))
+                    }
+                }
+            }
+            .addOnFailureListener {
+                trySend(FirebaseResponse.Error(it))
+            }
+        awaitClose {
+            channel.close()
+        }
+    }
 }
