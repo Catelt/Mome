@@ -31,4 +31,10 @@ class ProfileViewModel @Inject constructor(
             isLogged.emit(userManager.isLogged())
         }
     }
+
+    fun deleteAccount(){
+        firebaseAuth.currentUser?.delete()?.addOnSuccessListener {
+            logOut()
+        }
+    }
 }
