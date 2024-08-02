@@ -3,9 +3,9 @@ package com.catelt.mome.utils
 import android.net.Uri
 import com.catelt.mome.BuildConfig
 import com.google.firebase.dynamiclinks.ktx.androidParameters
-import com.google.firebase.dynamiclinks.ktx.dynamicLinks
 import com.google.firebase.dynamiclinks.ktx.shortLinkAsync
-import com.google.firebase.ktx.Firebase
+import com.google.firebase.Firebase
+import com.google.firebase.dynamiclinks.dynamicLinks
 
 object DynamicLink {
     private const val BASE_URI_PREFIX = "https://mome.page.link"
