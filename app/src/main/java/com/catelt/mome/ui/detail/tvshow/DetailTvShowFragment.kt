@@ -154,12 +154,13 @@ class DetailTvShowFragment : BaseFragment<FragmentDetailTvShowBinding>(
                             likeThisAdapter.submitData(list)
                         }.launchIn(lifecycleScope)
 
-                        binding.layoutHeader.btnPlay.apply {
-                            setEnable(uiState.ophim?.status == true)
-                            setOnClickListener {
-                                setOnClickPlayVideo()
-                            }
-                        }
+                        // TODO: Handle Button Play
+//                        binding.layoutHeader.btnPlay.apply {
+//                            setEnable(uiState.ophim?.status == true)
+//                            setOnClickListener {
+//                                setOnClickPlayVideo()
+//                            }
+//                        }
                     }
                 }
             }
@@ -263,19 +264,21 @@ class DetailTvShowFragment : BaseFragment<FragmentDetailTvShowBinding>(
                     }
                 }
 
-                btnRate.setOnClickListener {
-                    toast(getString(R.string.message_feature_coming_soon))
-                }
+                // TODO: Handle Button Rate
+//                btnRate.setOnClickListener {
+//                    toast(getString(R.string.message_feature_coming_soon))
+//                }
 
-                lifecycleScope.launch {
-                    launch {
-                        ShareUtils.share(tvShow,false).collectLatest { link ->
-                            btnShare.setOnClickListener {
-                                ShareUtils.shareUrl(requireActivity(),link,tvShow.title)
-                            }
-                        }
-                    }
-                }
+                // TODO: Handle Button Share
+//                lifecycleScope.launch {
+//                    launch {
+//                        ShareUtils.share(tvShow,false).collectLatest { link ->
+//                            btnShare.setOnClickListener {
+//                                ShareUtils.shareUrl(requireActivity(),link,tvShow.title)
+//                            }
+//                        }
+//                    }
+//                }
             }
             txtNameTvShow.text = tvShow.name
             layoutThumbnail.imgBackdrop.loadDefault(

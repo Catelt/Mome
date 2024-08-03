@@ -118,7 +118,6 @@
                         android:id="@+id/btnGoogle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="8dp"
                         android:background="@drawable/background_button_auth"
                         android:padding="20dp"
                         android:paddingStart="35dp"
@@ -126,19 +125,6 @@
                         android:src="@drawable/ic_google"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintRight_toLeftOf="@+id/guideline3" />
-
-                    <ImageView
-                        android:id="@+id/btnFacebook"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:background="@drawable/background_button_auth"
-                        android:padding="20dp"
-                        android:paddingStart="35dp"
-                        android:paddingEnd="35dp"
-                        android:src="@drawable/ic_fb"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintLeft_toRightOf="@+id/guideline3" />
                 </LinearLayout>
 
 

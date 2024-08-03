@@ -71,16 +71,17 @@ class MediaDetailsBottomSheet(
                         uiState.tvShowsDetails?.let {
                             setupUITvShow(it, imageParser)
                         }
-                        uiState.ophim?.let {
-                            binding.btnPlay.setOnClickListener {
-                                viewModel.viewModelScope.launch {
-                                    setOnClickPlayVideo()
-                                    delay(100)
-                                    dismiss()
-                                }
-                            }
-                        }
-                        binding.btnPlay.isEnabled = uiState.ophim != null
+                        // TODO: Handle Play Button
+//                        uiState.ophim?.let {
+//                            binding.btnPlay.setOnClickListener {
+//                                viewModel.viewModelScope.launch {
+//                                    setOnClickPlayVideo()
+//                                    delay(100)
+//                                    dismiss()
+//                                }
+//                            }
+//                        }
+//                        binding.btnPlay.isEnabled = uiState.ophim != null
 
                         isExisted = uiState.isMyList
                         setUIMyList(uiState.isMyList)
@@ -141,15 +142,16 @@ class MediaDetailsBottomSheet(
                 )
             }
 
-            lifecycleScope.launch {
-                launch {
-                    ShareUtils.share(data,true).collectLatest { link ->
-                        btnShare.setOnClickListener {
-                            ShareUtils.shareUrl(requireActivity(),link,data.title)
-                        }
-                    }
-                }
-            }
+            // TODO: Handle Button Share
+//            lifecycleScope.launch {
+//                launch {
+//                    ShareUtils.share(data,true).collectLatest { link ->
+//                        btnShare.setOnClickListener {
+//                            ShareUtils.shareUrl(requireActivity(),link,data.title)
+//                        }
+//                    }
+//                }
+//            }
 
         }
     }
@@ -193,15 +195,16 @@ class MediaDetailsBottomSheet(
                 )
             }
 
-            lifecycleScope.launch {
-                launch {
-                    ShareUtils.share(data,false).collectLatest { link ->
-                        btnShare.setOnClickListener {
-                            ShareUtils.shareUrl(requireActivity(),link,data.title)
-                        }
-                    }
-                }
-            }
+            // TODO: Handle Button Share
+//            lifecycleScope.launch {
+//                launch {
+//                    ShareUtils.share(data,false).collectLatest { link ->
+//                        btnShare.setOnClickListener {
+//                            ShareUtils.shareUrl(requireActivity(),link,data.title)
+//                        }
+//                    }
+//                }
+//            }
         }
     }
 

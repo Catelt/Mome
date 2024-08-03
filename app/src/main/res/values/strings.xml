@@ -118,6 +118,10 @@
     <string name="account">Account</string>
     <string name="help">Help</string>
     <string name="sign_out">Sign Out</string>
+    <string name="delete_account">Delete Account</string>
+    <string name="delete_account_content">"Are you sure you want to Delete?"</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 
     <string name="button_lock">Lock</string>
     <string name="button_episodes">Episodes</string>

@@ -79,13 +79,13 @@
         android:textSize="16sp"
         android:textStyle="bold" />
 
-    <com.catelt.mome.ui.components.PlayButton
-        android:id="@+id/btnPlay"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_marginTop="16dp"
-        android:clickable="true"
-        android:focusable="true" />
+<!--    <com.catelt.mome.ui.components.PlayButton-->
+<!--        android:id="@+id/btnPlay"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="40dp"-->
+<!--        android:layout_marginTop="16dp"-->
+<!--        android:clickable="true"-->
+<!--        android:focusable="true" />-->
 
     <com.catelt.mome.ui.components.DownloadButton
         android:layout_width="match_parent"
@@ -184,55 +184,55 @@
             android:gravity="center"
             android:paddingVertical="12dp" />
 
-        <LinearLayout
-            android:id="@+id/btnRate"
-            android:layout_width="80dp"
-            android:visibility="gone"
-            android:layout_height="wrap_content"
-            android:background="?android:selectableItemBackgroundBorderless"
-            android:clickable="true"
-            android:focusable="true"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:paddingVertical="12dp">
+<!--        <LinearLayout-->
+<!--            android:id="@+id/btnRate"-->
+<!--            android:layout_width="80dp"-->
+<!--            android:visibility="gone"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:background="?android:selectableItemBackgroundBorderless"-->
+<!--            android:clickable="true"-->
+<!--            android:focusable="true"-->
+<!--            android:gravity="center"-->
+<!--            android:orientation="vertical"-->
+<!--            android:paddingVertical="12dp">-->
 
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_like"
-                app:tint="@color/white" />
+<!--            <ImageView-->
+<!--                android:layout_width="24dp"-->
+<!--                android:layout_height="24dp"-->
+<!--                android:src="@drawable/ic_like"-->
+<!--                app:tint="@color/white" />-->
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="Rate"
-                android:textSize="12sp" />
-        </LinearLayout>
+<!--            <TextView-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginTop="4dp"-->
+<!--                android:text="Rate"-->
+<!--                android:textSize="12sp" />-->
+<!--        </LinearLayout>-->
 
-        <LinearLayout
-            android:id="@+id/btnShare"
-            android:layout_width="80dp"
-            android:layout_height="wrap_content"
-            android:background="?android:selectableItemBackgroundBorderless"
-            android:clickable="true"
-            android:focusable="true"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:paddingVertical="12dp">
+<!--        <LinearLayout-->
+<!--            android:id="@+id/btnShare"-->
+<!--            android:layout_width="80dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:background="?android:selectableItemBackgroundBorderless"-->
+<!--            android:clickable="true"-->
+<!--            android:focusable="true"-->
+<!--            android:gravity="center"-->
+<!--            android:orientation="vertical"-->
+<!--            android:paddingVertical="12dp">-->
 
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:contentDescription="@string/button"
-                android:src="@drawable/ic_share" />
+<!--            <ImageView-->
+<!--                android:layout_width="24dp"-->
+<!--                android:layout_height="24dp"-->
+<!--                android:contentDescription="@string/button"-->
+<!--                android:src="@drawable/ic_share" />-->
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="Share"
-                android:textSize="12sp" />
-        </LinearLayout>
+<!--            <TextView-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginTop="4dp"-->
+<!--                android:text="Share"-->
+<!--                android:textSize="12sp" />-->
+<!--        </LinearLayout>-->
     </LinearLayout>
 </LinearLayout>

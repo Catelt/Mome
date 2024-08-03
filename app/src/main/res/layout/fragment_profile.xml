@@ -89,6 +89,7 @@
                 android:background="@drawable/background_button_profile"
                 android:clickable="true"
                 android:focusable="true"
+                android:visibility="gone"
                 android:foreground="?android:selectableItemBackgroundBorderless"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
@@ -128,6 +129,7 @@
                 android:background="@drawable/background_button_profile"
                 android:clickable="true"
                 android:focusable="true"
+                android:visibility="gone"
                 android:foreground="?android:selectableItemBackgroundBorderless"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
@@ -167,6 +169,7 @@
                 android:background="@drawable/background_button_profile"
                 android:clickable="true"
                 android:focusable="true"
+                android:visibility="gone"
                 android:foreground="?android:selectableItemBackgroundBorderless"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
@@ -198,10 +201,24 @@
 
 
             <TextView
-                android:id="@+id/txtLogout"
+                android:id="@+id/txtDeleteAccount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="50dp"
+                android:drawablePadding="10dp"
+                android:gravity="center"
+                android:paddingVertical="10dp"
+                android:text="@string/delete_account"
+                android:textColor="@color/Primary"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+
+            <TextView
+                android:id="@+id/txtLogout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
                 android:drawablePadding="10dp"
                 android:gravity="center"
                 android:paddingVertical="10dp"

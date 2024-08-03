@@ -17,8 +17,8 @@ import com.catelt.mome.utils.BASE_LINK_MEDIA
 import com.catelt.mome.utils.BUNDLE_DETAIL_UPCOMING
 import com.catelt.mome.utils.BUNDLE_ID_MEDIA
 import com.google.firebase.dynamiclinks.PendingDynamicLinkData
-import com.google.firebase.dynamiclinks.ktx.dynamicLinks
-import com.google.firebase.ktx.Firebase
+import com.google.firebase.Firebase
+import com.google.firebase.dynamiclinks.dynamicLinks
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
