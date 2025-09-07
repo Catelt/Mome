@@ -1,7 +1,6 @@
 package com.catelt.mome.core
 
 import android.content.Context
-import android.graphics.Rect
 import android.os.Bundle
 import android.transition.TransitionInflater
 import android.view.LayoutInflater
@@ -11,7 +10,9 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.Toast
 import androidx.core.content.ContextCompat
-import androidx.core.view.WindowCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsControllerCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
@@ -29,6 +30,8 @@ abstract class BaseFragment<VBinding : ViewBinding>(
     open var isFullScreen: Boolean = false
 
     open var isHideBottom: Boolean = false
+
+    open var addBottomNavigationPadding: Boolean = true
 
     open var isTransitionInflater: Boolean = false
 
@@ -71,7 +74,10 @@ abstract class BaseFragment<VBinding : ViewBinding>(
         savedInstanceState: Bundle?
     ): View? {
         binding = inflate(inflater, container, false)
-        setUpHomeScreen()
+        if (!isFullScreen) {
+            addPadding()
+        }
+        applyStatusBarStyle()
         hideBottomNavigation()
         return binding.root
     }
@@ -83,26 +89,24 @@ abstract class BaseFragment<VBinding : ViewBinding>(
         setUpViews()
     }
 
-    private fun setUpHomeScreen() {
-        activity?.let {
-            if (isFullScreen) {
-                WindowCompat.setDecorFitsSystemWindows(it.window, false)
-                changeColorStatusBar(R.color.transparent)
-            } else {
-                if (statusBarHeight == 0) {
-                    val rectangle = Rect()
-                    it.window.decorView.getWindowVisibleDisplayFrame(rectangle)
-                    statusBarHeight = rectangle.top
-                }
-                binding.root.setPadding(0, statusBarHeight, 0, 0)
-                changeColorStatusBar(R.color.black)
-            }
-        }
+    private fun applyStatusBarStyle() {
+        val activityRef = activity ?: return
+        val window = activityRef.window
+        val decorView = window.decorView
+        WindowInsetsControllerCompat(window, decorView).isAppearanceLightStatusBars = false
     }
 
-    private fun changeColorStatusBar(color: Int) {
-        val window = requireActivity().window
-        window.statusBarColor = ContextCompat.getColor(requireContext(), color)
+    private fun addPadding() {
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.setPadding(
+                view.paddingLeft,
+                insets.top,
+                view.paddingRight,
+                view.paddingBottom
+            )
+            windowInsets
+        }
     }
 
     private fun hideBottomNavigation() {
