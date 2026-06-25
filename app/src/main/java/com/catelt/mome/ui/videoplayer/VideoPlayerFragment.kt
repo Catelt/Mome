@@ -10,12 +10,15 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.ActivityInfo
+import android.graphics.Bitmap
 import android.graphics.Rect
 import android.graphics.drawable.Icon
 import android.os.Build
 import android.os.Bundle
+import android.util.DisplayMetrics
 import android.view.ScaleGestureDetector
 import android.view.View
+import android.view.ViewGroup
 import android.widget.*
 import androidx.activity.OnBackPressedCallback
 import androidx.core.net.toUri
@@ -24,6 +27,9 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.target.Target.SIZE_ORIGINAL
 import com.catelt.mome.R
 import com.catelt.mome.core.BaseFragment
 import com.catelt.mome.databinding.FragmentVideoPlayerBinding
@@ -32,11 +38,12 @@ import com.catelt.mome.utils.brightness.BrightnessUtils
 import com.catelt.mome.utils.brightness.changeAppScreenBrightnessValue
 import com.catelt.mome.utils.brightness.changeBrightnessToDefault
 import com.catelt.mome.utils.brightness.changeMaxBrightness
-import com.google.android.exoplayer2.C
-import com.google.android.exoplayer2.ExoPlayer
-import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.*
+import com.google.android.exoplayer2.ui.DefaultTimeBar
+import com.google.android.exoplayer2.ui.TimeBar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -63,9 +70,16 @@ class VideoPlayerFragment : BaseFragment<FragmentVideoPlayerBinding>(
 
     private var scaleGestureDetector: ScaleGestureDetector? = null
 
+    private var thumbnail : Bitmap? = null
     //Argument custom control view
     private lateinit var mainContainer: View
     private lateinit var seekBarBrightness: SeekBar
+
+    private lateinit var exoProgress: DefaultTimeBar
+    private lateinit var previewFrameLayout: ViewGroup
+    private lateinit var imgReview: ImageView
+
+    private lateinit var txtPosition: TextView
     private lateinit var txtTitle: TextView
     private lateinit var btnBack: ImageView
     private lateinit var btnSpeed: LinearLayout
@@ -105,6 +119,9 @@ class VideoPlayerFragment : BaseFragment<FragmentVideoPlayerBinding>(
 
     override fun setUpViewModel() {
         viewModel.apply {
+            mediaTitle.observe(viewLifecycleOwner){
+                txtTitle.text = it
+            }
             lifecycleScope.launch {
                 launch {
                     imageUrlParser.collectLatest {
@@ -112,18 +129,31 @@ class VideoPlayerFragment : BaseFragment<FragmentVideoPlayerBinding>(
                     }
                 }
                 launch {
-                    movies.collectLatest {
-                        if (it.isNotEmpty()){
-                            adapter.submitList(it)
-                            isMovie = (it.size == 1 && it[0].stillPath?.isBlank() == true)
-
-                            setupVideo()
-
-                            if (!isMovie){
-                                layoutEpisode.visibility = setVisionView(true)
-                                recycleView.adapter = adapter
-                                layoutNextEp.visibility = setVisionView(currentPosition < it.size - 1)
+//                    movies.collectLatest {
+//                        if (it.isNotEmpty()) {
+//                            adapter.submitList(it)
+//                            isMovie = (it.size == 1 && it[0].stillPath?.isBlank() == true)
+//
+//                            setupVideo()
+//
+//                            if (!isMovie) {
+//                                layoutEpisode.visibility = setVisionView(true)
+//                                recycleView.adapter = adapter
+//                                layoutNextEp.visibility =
+//                                    setVisionView(currentPosition < it.size - 1)
+//                            }
+//                        }
+//                    }
+                    episode.collectLatest {
+                        it?.let {
+                            CoroutineScope(Dispatchers.IO).launch {
+                                thumbnail = Glide.with(requireContext())
+                                    .asBitmap()
+                                    .load(it.thumbnail)
+                                    .submit()
+                                    .get()
                             }
+                            setupVideo()
                         }
                     }
                 }
@@ -145,6 +175,12 @@ class VideoPlayerFragment : BaseFragment<FragmentVideoPlayerBinding>(
         binding.root.apply {
             mainContainer = findViewById(R.id.mainContainer)
             seekBarBrightness = findViewById(R.id.seekBarBrightness)
+
+            exoProgress = findViewById(com.google.android.exoplayer2.R.id.exo_progress)
+            previewFrameLayout = findViewById(R.id.previewFrameLayout)
+            imgReview = findViewById(R.id.imgPreview)
+
+            txtPosition = findViewById(R.id.txtPosition)
             txtTitle = findViewById(R.id.txtTitle)
             btnBack = findViewById(R.id.btnBack)
             btnSpeed = findViewById(R.id.btnSpeed)
@@ -197,6 +233,21 @@ class VideoPlayerFragment : BaseFragment<FragmentVideoPlayerBinding>(
             override fun onStopTrackingTouch(p0: SeekBar?) {
             }
 
+        })
+
+        exoProgress.addListener(object : TimeBar.OnScrubListener {
+            override fun onScrubMove(timeBar: TimeBar, position: Long) {
+                previewFrameLayout.visibility = View.VISIBLE
+                val targetX = updatePreviewX(position.toInt(), exoPlayer.duration.toInt())
+                previewFrameLayout.x = targetX.toFloat()
+                updatePreviewFrame(position)
+            }
+
+            override fun onScrubStop(timeBar: TimeBar, position: Long, canceled: Boolean) {
+                previewFrameLayout.visibility = View.INVISIBLE
+            }
+
+            override fun onScrubStart(timeBar: TimeBar, position: Long) {}
         })
 
         binding.playView.setControllerVisibilityListener {
@@ -320,26 +371,59 @@ class VideoPlayerFragment : BaseFragment<FragmentVideoPlayerBinding>(
                     }
                 }
             }
+
+            override fun onIsPlayingChanged(isPlaying: Boolean) {
+                super.onIsPlayingChanged(isPlaying)
+                if (isPlaying){
+                    binding.playView.postDelayed(this@VideoPlayerFragment::getCurrentPlayerPosition, POLL_INTERVAL_MS);
+                }
+            }
         })
         binding.playView.doOnLayout { updatePictureInPictureParams() }
     }
 
-    private fun setupVideo() {
-        viewModel.movies.value.let { list ->
-            list[currentPosition].apply {
-                if (isMovie) {
-                    txtTitle.text = title
-                } else {
-                    val newTitle = "E$numberEpisode \"$title\""
-                    txtTitle.text = newTitle
-                }
+    private fun getCurrentPlayerPosition() {
+        txtPosition.text = ToString.timePosition(exoPlayer.currentPosition,exoPlayer.duration)
 
-                val mediaItem = MediaItem.fromUri((url ?: "").toUri())
-                if (exoPlayer.mediaItemCount > 0) {
-                    exoPlayer.clearMediaItems()
+        if (exoPlayer.isPlaying) {
+            binding.playView.postDelayed({ getCurrentPlayerPosition() }, POLL_INTERVAL_MS)
+        }
+    }
+
+
+    private fun setupVideo() {
+//        viewModel.movies.value.let { list ->
+//            list[currentPosition].apply {
+//                if (isMovie) {
+//                    txtTitle.text = title
+//                } else {
+//                    val newTitle = "E$numberEpisode \"$title\""
+//                    txtTitle.text = newTitle
+//                }
+//
+//                val mediaItem = MediaItem.fromUri((url ?: "").toUri())
+//                if (exoPlayer.mediaItemCount > 0) {
+//                    exoPlayer.clearMediaItems()
+//                }
+//
+//                exoPlayer.setMediaItem(mediaItem)
+//                exoPlayer.prepare()
+//                viewModel.getVideoFrame(url)
+//            }
+//        }
+        viewModel.episode.value?.let { movie ->
+            val mediaItem = MediaItem.fromUri((movie.url ?: "").toUri())
+            if (exoPlayer.mediaItemCount > 0) {
+                exoPlayer.clearMediaItems()
+            }
+            exoPlayer.setMediaItem(mediaItem)
+            exoPlayer.prepare()
+            lifecycleScope.launch {
+                viewModel.timeAt.collectLatest {
+                    if (it > 0){
+                        exoPlayer.seekTo(it)
+                    }
                 }
-                exoPlayer.setMediaItem(mediaItem)
-                exoPlayer.prepare()
             }
         }
     }
@@ -403,6 +487,13 @@ class VideoPlayerFragment : BaseFragment<FragmentVideoPlayerBinding>(
         exoPlayer.pause()
     }
 
+    override fun onPause() {
+        requireActivity().lifecycleScope.launch {
+            viewModel.addWatchTimeAt(exoPlayer.currentPosition)
+        }
+        super.onPause()
+    }
+
     @SuppressLint("SourceLockedOrientationActivity")
     override fun onDestroy() {
         activity?.let {
@@ -415,6 +506,7 @@ class VideoPlayerFragment : BaseFragment<FragmentVideoPlayerBinding>(
                 )
             }
         }
+//        viewModel.job?.cancel()
         releasePlayer()
         super.onDestroy()
     }
@@ -503,6 +595,65 @@ class VideoPlayerFragment : BaseFragment<FragmentVideoPlayerBinding>(
         }
     }
 
+    private fun updatePreviewX(progress: Int, max: Int): Int {
+        if (max == 0) {
+            return 0
+        }
+
+        val parent = previewFrameLayout.parent as ViewGroup
+        val layoutParams = previewFrameLayout.layoutParams as ViewGroup.MarginLayoutParams
+        val offset = progress.toFloat() / max
+        val minimumX: Int = previewFrameLayout.left
+        val maximumX = (parent.width - parent.paddingRight - layoutParams.rightMargin)
+
+        val previewPaddingRadius: Int =
+            dpToPx(resources.displayMetrics, DefaultTimeBar.DEFAULT_SCRUBBER_DRAGGED_SIZE_DP).div(2)
+        val previewLeftX = (exoProgress as View).left.toFloat()
+        val previewRightX = (exoProgress as View).right.toFloat()
+        val previewSeekBarStartX: Float = previewLeftX + previewPaddingRadius
+        val previewSeekBarEndX: Float = previewRightX - previewPaddingRadius
+        val currentX = (previewSeekBarStartX + (previewSeekBarEndX - previewSeekBarStartX) * offset)
+        val startX: Float = currentX - previewFrameLayout.width / 2f
+        val endX: Float = startX + previewFrameLayout.width
+
+        return if (startX >= minimumX && endX <= maximumX) {
+            startX.toInt()
+        } else if (startX < minimumX) {
+            minimumX
+        } else {
+            maximumX - previewFrameLayout.width
+        }
+    }
+
+    private fun dpToPx(displayMetrics: DisplayMetrics, dps: Int): Int {
+        return (dps * displayMetrics.density).toInt()
+    }
+
+    private fun updatePreviewFrame(position: Long) {
+//        lifecycleScope.launch {
+//            viewModel.mBitmapList.collectLatest{ list ->
+//                list?.let {
+//                    val position = (time / (VideoPlayerViewModel.TIME_PREVIEW/ 1000)).toInt()
+//
+//                    if (position < list.size){
+//                        imgReview.load(list[position])
+//                    }
+//                    else{
+//                        previewFrameLayout.visibility = View.INVISIBLE
+//                    }
+//                }
+//            }
+//        }
+        Glide.with(imgReview)
+            .load(thumbnail)
+            .override(SIZE_ORIGINAL,SIZE_ORIGINAL)
+            .transform(GlideThumbnailTransformation(position))
+            .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+            .into(imgReview)
+
+    }
+
+
     companion object {
         fun newInstance(
             mediaId: Int,
@@ -518,6 +669,7 @@ class VideoPlayerFragment : BaseFragment<FragmentVideoPlayerBinding>(
             }
         }
 
+        private const val POLL_INTERVAL_MS = 500L
         private const val BROADCAST_PLAY = "play"
         private const val BROADCAST_PAUSE = "pause"
         private const val BROADCAST_REWIND = "rewind"
